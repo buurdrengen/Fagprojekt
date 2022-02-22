@@ -10,6 +10,7 @@ import skimage.io
 import matplotlib.pyplot as plt
 
 plt.close('all')
+print("Dette er en test")
 
 x = 1300
 y = 3000
