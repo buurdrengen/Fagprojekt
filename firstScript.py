@@ -2,7 +2,7 @@
 """
 Created on Tue Feb 22 08:39:30 2022
 
-@author: Bruger
+@author: VIKTIS THE CHAMP
 """
 
 import numpy as np
