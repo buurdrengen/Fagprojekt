@@ -1,6 +1,3 @@
-from re import T
-
-
 import numpy as np
 
 def autocolen(acf,leng=1):
@@ -10,8 +7,9 @@ def autocolen(acf,leng=1):
     leng er længden af billedet i enhed [længde per pixel], valgfri
     """
     t = np.exp(-1)
-    N = np.arange(np.size(acf))
-    
-    n = N[autocolen <= t][0]
+    n = np.arange(np.size(acf))[acf <= t]
+   
+    if np.size(n) == 0:
+        return 0
 
-    return n*leng
+    return n[0]*leng
