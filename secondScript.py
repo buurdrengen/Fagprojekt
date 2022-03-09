@@ -17,13 +17,13 @@ clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
 clipMod = np.copy(clip)
 clipMod[blurredClip > threshold] = 1
 
-fig, ax = plt.subplots()
 plt.figure(0)
 plt.hist(x=blurredClip.flatten(), bins=256, range=(0,1))
 plt.title('frequency of grayscale pigments.')
 plt.xlabel('Brightness')
 plt.show()
 
+fig, ax = plt.subplots()
 plt.figure(1)
 skimage.io.imshow(clip)
 plt.title('Clipout of image in grayscale, untreated')
