@@ -43,3 +43,4 @@ plt.figure(3)
 plt.plot(X,vertical)
 
 
+# dette er en ny linje
