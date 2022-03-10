@@ -44,3 +44,5 @@ x1 = np.arange(0, 100)
 y1 = M[0,100]
 plt.plot(x1,y1)
 plt.show()
+
+## Hej mads
