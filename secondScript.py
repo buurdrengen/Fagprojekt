@@ -23,7 +23,7 @@ plt.title('frequency of grayscale pigments.')
 plt.xlabel('Brightness')
 plt.show()
 
-fig, ax = plt.subplots()
+
 plt.figure(1)
 skimage.io.imshow(clip)
 plt.title('Clipout of image in grayscale, untreated')
