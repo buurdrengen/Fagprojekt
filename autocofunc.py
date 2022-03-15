@@ -21,6 +21,9 @@ N = 2*margin
 horizontal = np.sum(clip,axis = 0)/N
 vertical = np.sum(clip,axis = 1)/N
 
+# from clipBlur import clipBlur
+# def autoCor()
+
 ## En linje 
 linje = clip[1,:]
 sm.tsa.acf(linje,nlags = 100)
@@ -40,9 +43,7 @@ plt.figure(1)
 tsaplots.plot_acf(M,lags = 100)
 plt.show()
 
-x1 = np.arange(0, 100)
-y1 = M[0,100]
-plt.plot(x1,y1)
-plt.show()
-
-## Hej mads
+# x1 = np.arange(0, 100)
+# y1 = M[0,100]
+# plt.plot(x1,y1)
+# plt.show()
