@@ -3,7 +3,7 @@ import numpy as np
 def autocolen(acf,leng=1):
     """
     Beregner Autokorrelationslængden
-    acf er en beregnet vektor af ACF
+    acf er en beregnet vektor af Auto korrelations funktionen
     leng er længden af billedet i enhed [længde per pixel], valgfri
     """
     t = np.exp(-1)

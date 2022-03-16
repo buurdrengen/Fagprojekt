@@ -14,7 +14,7 @@ y = 3000
 margin = 1000
 threshold = 0.6
 sigma = 5.0
-filename = "data/img01.jpg"
+filename = 'thin_slices/leadice/20200205/20200206_110750.jpg'
 
 # the variable that decides how many pixels we want to see the autocorrelation for. (length of displacement from 0 to end.) 
 # Maximum is marginX
@@ -66,7 +66,7 @@ plt.ylabel('autocorrelation')
 plt.title('autocorrelation as a function of displacement')
 plt.show()
 
-autLength = autocolen(autfct) * conversion
+autLength = autocolen(autfct, conversion)
 print('the autocorrelation length is {:.2f} mm'.format(autLength))
 
 
