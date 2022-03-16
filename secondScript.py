@@ -66,7 +66,7 @@ plt.ylabel('autocorrelation')
 plt.title('autocorrelation as a function of displacement')
 plt.show()
 
-autLength = autocolen(autfct) * conversion
+autLength = autocolen(autfct,conversion)
 print('the autocorrelation length is {:.2f} mm'.format(autLength))
 
 
