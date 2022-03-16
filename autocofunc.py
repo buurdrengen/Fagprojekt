@@ -58,7 +58,7 @@ def autoCor(clipBlur):
 
     # lags bestemmer hvor mange punkter der plottes 
     plt.figure(1)   
-    plot_acf(M,lags = 1999)
+    tsaplots.plot_acf(M,lags = 100)
     plt.show()
     return M
 
