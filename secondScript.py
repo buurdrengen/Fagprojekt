@@ -4,6 +4,7 @@ import skimage.io
 import matplotlib.pyplot as plt
 from clipBlur import *
 from autocofunc import *
+from autocolen import *
 import statsmodels.api as sm
 from statsmodels.graphics import tsaplots
 
@@ -14,6 +15,13 @@ margin = 1000
 threshold = 0.6
 sigma = 5.0
 filename = "data/img01.jpg"
+
+# the variable that decides how many pixels we want to see the autocorrelation for. (length of displacement from 0 to end.) 
+# Maximum is marginX
+end = 500
+
+# conversion variable is the distance (in mm) per pixel in the picture.
+conversion = 90/2000
 
 # Get a clipout of the picture (clip) and a clipout of the picture after it has been blurred (blurredClip)
 clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
@@ -47,14 +55,19 @@ plt.title('modified picture clipout')
 plt.show()
 
 # Make the autocorrelationfunction applying to out picture
-autfct = autoCor(clipMod)
+autfct = autoCor(clipMod, plot = False)
 
-Xbar = np.arange(2000)
-print(autfct)
+# Define a displacement vector for the autocorrelation
+Xbar = np.arange(end)
 plt.figure(3)
-plt.plot(Xbar, autfct)
+plt.plot(Xbar, autfct[0:end])
+plt.xlabel('displacement [pixels]')
+plt.ylabel('autocorrelation')
+plt.title('autocorrelation as a function of displacement')
 plt.show()
 
+autLength = autocolen(autfct) * conversion
+print('the autocorrelation length is {:.2f} mm'.format(autLength))
 
 
 

@@ -52,8 +52,8 @@ def autoCor(clipBlur, nlags = 1999, plot = True):
     for i, clips in enumerate(clipBlur):
         auto = sm.tsa.acf(clips,nlags = 1999)
         M = M + auto
-        if i %10 == 0: 
-            print(i)
+        # if i %10 == 0: 
+            # print(i)
     M = 1/2000*M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
@@ -65,7 +65,7 @@ def autoCor(clipBlur, nlags = 1999, plot = True):
     # plt.figure(1)   
     # tsaplots.plot_acf(M,lags = 100)
     # plt.show()
-    # return M
+    return M
 
 
 
