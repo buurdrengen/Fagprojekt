@@ -51,9 +51,9 @@ autfct = autoCor(clipMod)
 
 Xbar = np.arange(2000)
 print(autfct)
-# plt.figure(3)
-# plt.plot(Xbar, autfct)
-# plt.show()
+plt.figure(3)
+plt.plot(Xbar, autfct)
+plt.show()
 
 
 
