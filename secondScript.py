@@ -3,6 +3,9 @@ import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 from clipBlur import *
+from autocofunc import *
+import statsmodels.api as sm
+from statsmodels.graphics import tsaplots
 
 # Define the variables used to analyze the picture
 x = 1300
@@ -42,6 +45,15 @@ plt.title('modified picture clipout')
 
 # Print all the figures created
 plt.show()
+
+# Make the autocorrelationfunction applying to out picture
+autfct = autoCor(clipMod)
+
+Xbar = np.arange(2000)
+print(autfct)
+# plt.figure(3)
+# plt.plot(Xbar, autfct)
+# plt.show()
 
 
 

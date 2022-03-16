@@ -20,3 +20,5 @@ clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
 M = autoCor(blurredClip)
 
 ## Dette viser hvor smart github er 
+
+print(np.arange(10))
