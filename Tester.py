@@ -19,4 +19,3 @@ filename = "data/img01.jpg"
 clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
 M = autoCor(blurredClip)
 
-print(f"Size of M: %f", np.shape(M))

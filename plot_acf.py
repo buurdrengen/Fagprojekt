@@ -134,14 +134,17 @@ def plot_acf(
     fig, ax = utils.create_mpl_ax(ax)
 
     lags, _, irregular = tsaplots._prepare_data_corr_plot(x, lags, zero)
-    print(f"Size of lags: %f",np.shape(lags))
+  
     vlines_kwargs = {} if vlines_kwargs is None else vlines_kwargs
 
     confint = None
     # acf has different return type based on alpha
     acf_x = x
+    print(f"Size of M: {np.shape(acf_x)}")
     if alpha is not None:
-        acf_x, confint = acf_x[:2]
+        [acf_x, confint] = acf_x[:2]
+    print(f"Size of M: {np.shape(acf_x[:2])}")
+    print(f"Size of confint: {np.shape(confint)}")
 
     tsaplots._plot_corr(
         ax,
