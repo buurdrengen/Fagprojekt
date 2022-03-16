@@ -24,7 +24,11 @@
 #from clipBlur import clipBlur
 from plot_acf import plot_acf
 
+<<<<<<< Updated upstream
 def autoCor(clipBlur, nlags = 1999, plot = True):
+=======
+def autoCor(clipBlur):
+>>>>>>> Stashed changes
     # Function 
     # Viser autocorrelation mellem alle pixels i det clipped/blurred billede. 
 
@@ -36,7 +40,6 @@ def autoCor(clipBlur, nlags = 1999, plot = True):
     import matplotlib.pyplot as plt 
     import statsmodels.api as sm
     from statsmodels.graphics import tsaplots
-    from autocolen import autocolen
 
     # Denne funktion tager det klippede og blurrede billede og bestemmer autocorrelation for alle pixels.
     # Nedenfor er testscript til hvordan autocorrelationsfunktionen fungerer for en enkelt linje. 
@@ -50,24 +53,26 @@ def autoCor(clipBlur, nlags = 1999, plot = True):
     ## Et helt billede
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(2000)
-    #C = np.zeros(2000)
     for i, clips in enumerate(clipBlur):
-        auto = sm.tsa.acf(clips, nlags = nlags)
+        auto = sm.tsa.acf(clips,nlags = 1999)
         M = M + auto
-        #C = C + conf
         if i %10 == 0: 
             print(i)
-
     M = 1/2000*M
+<<<<<<< Updated upstream
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes   
     if plot:
         plot_acf(M, lags = 100)
+=======
+>>>>>>> Stashed changes
 
-    acl = autocolen(M,90/2000)
-    print(f"Autokorrelationslængden er {acl} mm")
-    return M
+    # # lags bestemmer hvor mange punkter der plottes 
+    # plt.figure(1)   
+    # tsaplots.plot_acf(M,lags = 100)
+    # plt.show()
+    # return M
 
 
 
