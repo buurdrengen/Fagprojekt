@@ -3,7 +3,6 @@ from statsmodels.graphics import utils
 import numpy as np
 import matplotlib.pyplot as plt
 
-# This is a modified version of of statsmodels.graphics.plot_acf
 
 def plot_acf(acf, lags, n=1):
 
@@ -12,26 +11,29 @@ def plot_acf(acf, lags, n=1):
     x = x*90/2000
     m = lsm(x,y)
     fy = func(m,x)
+    print(m)
     plt.figure
     plt.plot(x,y,'bo')
     plt.plot(x,fy,'k-')
+    plt.grid(True)
     plt.show()
 
 
 def lsm(x,y,m=[1, -1]):
-    x = x
-    y = y
-    m = m
-    for i in range(10):
-        da = dfda(m,x)
-        dk = dfdk(m,x)
-        G = np.vstack((da,dk))
-        GH = np.dot(G,np.transpose(G))
-        yz = func(m,x)
-        delta = np.dot(np.dot(G,y-yz),np.linalg.pinv(GH))
-        res = np.dot(delta,np.transpose(delta))
-        m = m + res
-        print(f"Residuals: {res}")
+    """
+    Least square method
+    """
+    y = y[:, np.newaxis]
+
+    for i in range(5):
+        d1 = dfd1(m,x)
+        d2 = dfd2(m,x)
+        G = np.transpose(np.vstack((d1,d2)))
+        yz = y - func(m,x)[:,np.newaxis]
+        delta = np.linalg.pinv(G).dot(yz) #magic
+        res = np.dot(np.transpose(delta)[0],delta)
+        m = m + np.transpose(delta)[0]
+        print(f"Residuals for {i}: {res}")
         if res < 1e-5:
             break
         
@@ -39,16 +41,11 @@ def lsm(x,y,m=[1, -1]):
 
 
 
-    print(f"size of delta is {np.shape(delta)}")
-    print(delta)
-    return 0
-
-
 def func(m,x):
-    return m[0]*np.exp(m[1]*x)
+    return m[0]*np.exp(m[1]*x) # + m[2]*np.exp(m[3]*x)
 
-def dfda(m,x):
+def dfd1(m,x):
     return np.exp(m[1]*x)
 
-def dfdk(m,x):
+def dfd2(m,x):
     return m[0]*m[1]*np.exp(m[1]*x)
