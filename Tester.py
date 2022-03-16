@@ -1,8 +1,11 @@
 import numpy as np
-from autocolen import autocolen
-a = 2+4
-print(a)
+import matplotlib.pyplot as plt 
+import statsmodels.api as sm
+from statsmodels.graphics import tsaplots
 
-x = np.array([1, 1, 1, 1, 0.2])
 
-print(autocolen(x,90/2000))
+x = np.arange(20)
+
+plt.figure(1)   
+tsaplots.plot_acf(x,lags = 19)
+plt.show()
