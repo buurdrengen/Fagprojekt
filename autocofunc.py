@@ -65,7 +65,7 @@ def autoCor(clipBlur, nlags = 1999, plot = True):
     # plt.figure(1)   
     # tsaplots.plot_acf(M,lags = 100)
     # plt.show()
-    # return M
+    return M
 
 
 
