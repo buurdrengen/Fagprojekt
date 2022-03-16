@@ -21,7 +21,9 @@
 # horizontal = np.sum(clip,axis = 0)/N
 # vertical = np.sum(clip,axis = 1)/N
 
-from clipBlur import clipBlur
+#from clipBlur import clipBlur
+from plot_acf import plot_acf
+
 def autoCor(clipBlur):
     # Function 
     # Viser autocorrelation mellem alle pixels i det clipped/blurred billede. 
@@ -56,7 +58,7 @@ def autoCor(clipBlur):
 
     # lags bestemmer hvor mange punkter der plottes 
     plt.figure(1)   
-    tsaplots.plot_acf(M,lags = 1999)
+    plot_acf(M,lags = 1999)
     plt.show()
     return M
 
