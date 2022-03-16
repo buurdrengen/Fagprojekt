@@ -24,7 +24,7 @@
 #from clipBlur import clipBlur
 from plot_acf import plot_acf
 
-def autoCor(clipBlur, nlags = 1999):
+def autoCor(clipBlur, nlags = 1999, plot = True):
     # Function 
     # Viser autocorrelation mellem alle pixels i det clipped/blurred billede. 
 
@@ -62,7 +62,8 @@ def autoCor(clipBlur, nlags = 1999):
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes   
-    plot_acf(M, lags = 100)
+    if plot:
+        plot_acf(M, lags = 100)
 
     acl = autocolen(M,90/2000)
     print(f"Autokorrelationslængden er {acl} mm")
