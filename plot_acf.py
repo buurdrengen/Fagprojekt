@@ -64,10 +64,10 @@ def lsm(x,y, m=[0.1, 1, -1, 1, -1], niter=50, func=1):
             yz = y - func3(m,x)[:,np.newaxis]
         
         delta = np.linalg.lstsq(G,yz,rcond=None)[0]
-        print(np.shape(delta))
+        #print(np.shape(delta))
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)
-        print(f"Residuals for {i}: {res}")
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
