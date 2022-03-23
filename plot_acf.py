@@ -5,29 +5,40 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1):
+def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None):
 
     x = np.arange(lags)
     y = acf[x]
     x = x*conversion
     m = lsm(x,y, niter=niter, func=func)
+
     if func == 1:
         fy = func1(m,x)
+        plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
     elif func == 2:
         fy = func2(m,x)
+        plotlabel = r'$c_2 \exp(k_2 x^2) + c_1 \exp(k_1 x) + c_0$'
     elif func == 3:
         fy = func3(m,x)
+        plotlabel = r'$c_1 \exp(k_1 x^2)  + c_0$'
     
-    print(m)
-    plt.figure
-    plt.plot(x,y,'bo')
-    plt.plot(x,fy,'k-')
+    #print(m)
+    plt.figure()
+    plt.plot(x,y,'bo',label="ACF")
+    plt.plot(x,fy,'k-',label=plotlabel)
     plt.grid(True)
     plt.xlabel("Længde [mm]")
     plt.ylabel("ACF")
     plt.title("Autokorrelation")
     plt.ylim([0, 1])
-    plt.show()
+    plt.legend()
+    if saveas != None:
+        fname = str("plotimg/" + saveas)
+        print(fname)
+        plt.savefig(fname,dpi=300,format="png")
+    else:
+        plt.show()
+    plt.close()
 
 
 def lsm(x,y, m=[0.1, 1, -1, 1, -1], niter=50, func=1):
