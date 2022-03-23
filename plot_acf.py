@@ -1,6 +1,6 @@
-from turtle import width
-from statsmodels.graphics import tsaplots
-from statsmodels.graphics import utils
+#from turtle import width
+#from statsmodels.graphics import tsaplots
+#from statsmodels.graphics import utils
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -40,7 +40,7 @@ def lsm(x,y, m=[0.5, -1, 0.5, -1, 0.1], niter=50):
         delta = np.linalg.pinv(G).dot(yz) #magic
         res = np.dot(np.transpose(delta)[0],delta)
         m = m + np.transpose(delta)[0]
-        print(f"Residuals for {i}: {res}")
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
