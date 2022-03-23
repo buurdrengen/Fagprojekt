@@ -16,6 +16,8 @@ threshold = 0.6
 sigma = 5.0
 filename = 'thin_slices/leadice/20200205/20200206_110750.jpg'
 
+
+
 # the variable that decides how many pixels we want to see the autocorrelation for. (length of displacement from 0 to end.) 
 # Maximum is marginX
 end = 500
