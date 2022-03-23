@@ -3,6 +3,7 @@
 #from statsmodels.graphics import utils
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy
 
 
 def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None):
@@ -34,12 +35,23 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
     plt.legend()
     if saveas != None:
         fname = str("plotimg/" + saveas)
-        print(fname)
+        #print(fname)
         plt.savefig(fname,dpi=300,format="png")
     else:
         plt.show()
     plt.close()
 
+    rvs = np.cumsum(y)
+    cdf = np.cumsum(fy)
+
+    [stat,pval] = scipy.stats.kstest(rvs=rvs,cdf=cdf)
+    alpha = 0.01
+    n = len(rvs)
+    m = len(cdf)
+    test = np.sqrt(-np.log(alpha/2)*(1+m/n)/(2*m))
+
+    print(f"Statistic is {stat:.04f} compared to {test:.04f}")
+    print(f"p-value is {pval:.04f}")
 
 def lsm(x,y, m=[0.1, 1, -1, 1, -1], niter=50, func=1):
     """
