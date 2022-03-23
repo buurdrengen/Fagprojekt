@@ -75,11 +75,12 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
         delta = np.linalg.lstsq(G,yz,rcond=None)[0]
         #print(np.shape(delta))
         m = m + np.transpose(delta)[0]
-        res = np.transpose(delta).dot(delta)
-        print(f"Residuals for {i}: {res}")
+        res = np.transpose(delta).dot(delta)[0][0]
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
+    print(m)
     return m
 
 
@@ -95,13 +96,13 @@ def dfd0(m,x):
     return np.ones(np.size(x))
 
 def df1d1(m,x):
-    return np.exp(m[1]*x)
+    return np.exp(m[2]*x)
 
 def df1d2(m,x):
-    return m[0]*m[1]*np.exp(m[1]*x)
+    return m[0]*m[1]*np.exp(m[2]*x)
 
 def df2d1(m,x):
-    return (x + m[1] -m[2])*(x - m[1] -m[2])/(m[1]**3) * func2([0,m[1],m[2]],x)
+    return ((x - m[2])**2 - m[1]**2)/(m[1]**3) * func2([0,m[1],m[2]],x)
 
 def df2d2(m,x):
     return (x-m[2])/(m[1]**2) * func2([0,m[1],m[2]],x)
