@@ -18,7 +18,6 @@ def inputFilename():
     # see wether or not such a file exists within the specified directory.
     while True:
         # The file is not in the cwd
-        print('The while command works')
         filePath = str(input("Please enter the file path: (use double \ or / instead of \): "))
         try:
             skimage.io.imread(fname=filePath, as_gray=True)

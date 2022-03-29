@@ -5,6 +5,7 @@ from autocofunc import autoCor
 from acf import acf
 #from string import rfind
 
-acf("thin_slices/firstyearice/southerntransect/20200201_145719.jpg", plot=True, plotfunc=1)
-acf("thin_slices/firstyearice/southerntransect/20200201_145739.jpg", plot=True, plotfunc=1)
+# acf("thin_slices/firstyearice/southerntransect/20200201_145719.jpg", plot=True, plotfunc=1)
+# acf("thin_slices/firstyearice/southerntransect/20200201_145739.jpg", plot=True, plotfunc=1)
 
+print(int(6.9))
