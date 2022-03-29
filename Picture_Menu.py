@@ -42,17 +42,17 @@ while True:
         
         # First we have to test wether or not the image is defined
         try:
-            plt.subplots()
-            plt.figure(0)
-            plt.hist(x=image.flatten(), bins=256, range=(0,1))
-            plt.title('frequency of grayscale pigments.')
-            plt.xlabel('Brightness')
-            plt.figure(1)
-            skimage.io.imshow(image)
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            ax1.hist(x=image.flatten(), bins=256, range=(0,1))
+            # ax1.title('frequency of grayscale pigments.')
+            # ax1.xlabel('Brightness')
+            ax2.imshow(image, cmap = 'gray')
+            fig.set_figheight(5)
+            fig.set_figwidth(11)
             plt.show(block=False)
         except:
             print("You need to load picture first!")
-            
+
         # If the data is defined we can display the statistics
         else:            
             while True:
@@ -104,13 +104,15 @@ while True:
                     break
                 except ValueError:
                     print('You did not input a number')
-
-            marginX = int((bottom - top) / 2)
-            marginY = int((right - left) / 2)
-            xMiddle = top + marginX
-            yMiddle = left + marginY
+            
+            print('bottom = ', bottom)
+            print('top = ', top)
+            marginY = int((bottom - top) / 2)
+            marginX = int((right - left) / 2)
+            yMiddle = top + marginX
+            xMiddle = left + marginY
             print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins \
-                    to be ({:f},{:f})'.format(xMiddle, yMiddle, marginX, marginY))
+                to be ({:d},{:d})'.format(xMiddle, yMiddle, marginX, marginY))
 
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             skimage.io.imshow(clip)
@@ -134,10 +136,12 @@ while True:
         try:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 0
-            acf = autocofunc(clip, MarginX)
+            acf = autocofunc(clip, 2*MarginX)
+            auflength = autocolen(acf, conversion)
         except:
             print('You need to load some options before you can get the autocorrelation')
     
+
     #region Quit
     elif (choice == 'Quit'):
         break
