@@ -34,7 +34,7 @@ clipMod[blurredClip > threshold] = 0
 
 # Define a modified clipout of the picture that will be used to visualize the thresholding.
 clipShow = np.copy(clip)
-clipMod[blurredClip > threshold] = 1
+clipShow[blurredClip > threshold] = 1
 
 # Make a greyscale histogram to show at which brightness there are peaks.
 plt.figure(0)
