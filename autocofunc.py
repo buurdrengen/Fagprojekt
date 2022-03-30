@@ -47,13 +47,13 @@ def autoCor(clipBlur, nlags = 1999):
 
     ## Et helt billede
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
-    M = np.zeros(2000)
+    M = np.zeros(nlags+1)
     for i, clips in enumerate(clipBlur):
         auto = sm.tsa.acf(clips,nlags)
         M = M + auto
         # if i %10 == 0: 
             # print(i)
-    M = 1/2000*M
+    M = 1/(nlags+1)*M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes
