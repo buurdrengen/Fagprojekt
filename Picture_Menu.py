@@ -136,14 +136,14 @@ while True:
     
     #region Autocorrelation
     elif(choice == 'Get autocorrelation'):
-        try:
-            clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
-            clip[blurredClip > threshold] = 0
-            acf = autoCor(clip, nlags = 2*marginX-1)
-            auflength = autocolen(acf, conversion)
-            print(auflength)
-        except:
-            print('You need to load some options before you can get the autocorrelation')
+        # try:
+        clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
+        clip[blurredClip > threshold] = 0
+        acf = autoCor(clip, nlags = 2*marginX-1)
+        auflength = autocolen(acf, conversion)
+        print(auflength)
+        # except:
+        #     print('You need to load some options before you can get the autocorrelation')
     
 
     #region Quit
