@@ -109,8 +109,8 @@ while True:
             print('top = ', top)
             marginY = int((bottom - top) / 2)
             marginX = int((right - left) / 2)
-            yMiddle = top + marginX
-            xMiddle = left + marginY
+            yMiddle = top + marginY
+            xMiddle = left + marginX
             print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins \
                 to be ({:d},{:d})'.format(xMiddle, yMiddle, marginX, marginY))
 
@@ -123,8 +123,11 @@ while True:
         try:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 1
-            plt.figure(1)
-            skimage.io.imshow(clip)
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            ax1.imshow(clip, cmap = 'gray')
+            ax2.imshow(image, cmap = 'gray')
+            fig.set_figheight(5)
+            fig.set_figwidth(11)
             plt.show(block=False)
             clip[blurredClip > threshold] = 0
         except:
@@ -136,8 +139,9 @@ while True:
         try:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 0
-            acf = autocofunc(clip, 2*MarginX)
+            acf = autoCor(clip, nlags = 2*marginX-1)
             auflength = autocolen(acf, conversion)
+            print(auflength)
         except:
             print('You need to load some options before you can get the autocorrelation')
     
