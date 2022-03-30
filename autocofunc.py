@@ -23,6 +23,9 @@
 
 #from clipBlur import clipBlur
 
+from numpy import not_equal
+
+
 def autoCor(clipBlur, nlags = 1999):
     # Function 
     # Viser autocorrelation mellem alle pixels i det clipped/blurred billede. 
@@ -33,7 +36,7 @@ def autoCor(clipBlur, nlags = 1999):
     # Først importeres relevante pakker, især her statsmodels.
     import numpy as np
     import matplotlib.pyplot as plt 
-    import statsmodels.api as sm
+    from statsmodels.tsa.stattools import acf as acff
     from statsmodels.graphics import tsaplots
 
     # Denne funktion tager det klippede og blurrede billede og bestemmer autocorrelation for alle pixels.
@@ -49,11 +52,13 @@ def autoCor(clipBlur, nlags = 1999):
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
     for i, clips in enumerate(clipBlur):
-        auto = sm.tsa.acf(clips,nlags)
+        auto = acff(clips,nlags=nlags)
+        if np.size(auto) != np.size(nlags)+1:
+            print(f"Vector Mismatch, auto is {np.size(auto)} while clips is {np.size(clips)}")
         M = M + auto
         # if i %10 == 0: 
             # print(i)
-    M = 1/(nlags+1)*M
+    M = 1/i*M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes
