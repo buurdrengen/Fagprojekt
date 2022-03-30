@@ -41,17 +41,19 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
         plt.savefig(fname,dpi=300,format="png")
         plt.show(block=False)
 
-    rvs = np.cumsum(y)
-    cdf = np.cumsum(fy)
+    #rvs = np.cumsum(y)
+    #cdf = np.cumsum(fy)
 
-    [stat,pval] = scipy.stats.kstest(rvs=rvs,cdf=cdf)
+    [stat,pval] = scipy.stats.chisquare(y,fy)
     alpha = 0.01
-    n = len(rvs)
-    m = len(cdf)
-    test = np.sqrt(-np.log(alpha/2)*(1+m/n)/(2*m))
+    n = len(y)
+    m1 = len(fy)
+    test = np.sqrt(-np.log(alpha/2)*(1+m1/n)/(2*m1))
 
     print(f"Statistic is {stat:.04f} compared to {test:.04f}")
     print(f"p-value is {pval:.04f}")
+    acl = np.sqrt(2)*m[1]-m[2]
+    print(f"Autokorrelationslængde fra lsm: {acl:.04f}")
 
 #---------------------------------------------------------------
 
@@ -86,11 +88,11 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
         delta = np.linalg.lstsq(G,yz,rcond=None)[0] #Magi
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        print(f"Residuals for {i}: {res}")
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
-    print(m)
+    #print(m)
     return m
 
 

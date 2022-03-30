@@ -11,5 +11,7 @@ def autocolen(acf,leng=1):
    
     if np.size(n) == 0:
         return 0
+    else:
+        sample = acf[n-3:n+3]
 
     return n[0]*leng

@@ -49,7 +49,7 @@ def autoCor(clipBlur, nlags = 1999):
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(2000)
     for i, clips in enumerate(clipBlur):
-        auto = sm.tsa.acf(clips,nlags = 1999)
+        auto = sm.tsa.acf(clips,nlags)
         M = M + auto
         # if i %10 == 0: 
             # print(i)
