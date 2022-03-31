@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import scipy
 from statsmodels.tsa.stattools import acf as acff
 from clipBlur import clipBlur
+from numpy.linalg import solve
 
 
 def acf(filename, xy=[1300,3000], margin=1000, threshold = 0.6, sigma = 5.0, lags=100, conversion = 90/2000, plot=False, plotfunc=1):
@@ -163,11 +164,11 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
             yz = y- func2(m,x)
         
         Cobs = np.eye(np.size(x))*(np.array(1/(1+np.abs(x)+2*np.sqrt(np.abs(x)))))
-        A = G.T * Cobs * G
-        b = (G.T *Cobs).dot(yz)
+        A = G.T.dot(Cobs).dot(G)
+        b = G.T.dot(Cobs).dot(yz)
 
 
-        delta = np.linalg.lstsq(G,yz,rcond=None)[0] #Magi
+        delta = solve(A,b) #Magi
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
         #print(f"Residuals for {i}: {res}")
