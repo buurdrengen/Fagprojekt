@@ -74,9 +74,9 @@ def autocolen(acf,scale=1):
     elif n[0] >=1 and n[0] <= (np.size(acf)-1):
         dx = 1
         dy = acf[n[0]] - acf[n[0]-1]
-        target = t - acf[n[0]-1]
+        target = acf[n[0]-1] - t
         m = dx*dy/target
-        n = n[0] - m
+        n = n[0] + m
         #print(f"m er {m:.3f}, n er {n}")
     else:
         print("")
@@ -102,9 +102,9 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
         plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
     elif func == 2:
         fy = func2(m,x)
-        plotlabel = r'$c_1 / \sqrt{2 \pi \sigma^2} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma}\right) + c_0$'
+        plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
 
-    #print(m)
+    print(m)
     plt.figure()
     plt.plot(x,y,'bo',label="ACF")
     plt.plot(x,fy,'k-',label=plotlabel)
@@ -131,9 +131,11 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
 
     print(f"Statistic is {stat:.04f} compared to {test:.04f}")
     print(f"p-value is {pval:.04f}")
-    acl = np.sqrt(2)*m[1]-m[2]
-    functype = {1: "eksponentiel", 2: "Gauss"}
-    print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl:.04f}mm")
+    acl = [0,-1/m[2], np.sqrt(2)*m[1]-m[2]]
+    functype = ["null", "eksponentiel", "Gauss"]
+    print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
+
+    return m
 
 #---------------------------------------------------------------
 
@@ -143,28 +145,28 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
     Least square method
     """
     # Omdanner til søjlevektorer
-    y = np.hstack([np.flip(y),y])[:,np.newaxis]
-    x = np.hstack([np.flip(-x),x])[:,np.newaxis]
+    if func == 2:
+        y = np.hstack([np.flip(y),y])
+        x = np.hstack([np.flip(-x),x])
+
+    y = y[:,np.newaxis]
+    x = x[:,np.newaxis]
 
     #Itererer
     for i in range(niter): 
 
+  
+        G = df(m=m, x=x, func=func)
         if func == 1:
-            # eksponentiel funktion m1*exp(m2*x) + m0
-            d0 = dfd0(m,x)
-            d1 = df1d1(m,x)
-            d2 = df1d2(m,x)
-            G = np.hstack((d0,d1,d2))
             yz = y - func1(m,x)
         elif func == 2:
-            #Gaussisk funktion exp(x^2) + a0
-            d0 = dfd0(m,x)
-            d1 = df2d1(m,x)
-            d2 = df2d2(m,x)
-            d3 = df2d3(m,x)
-            G = np.hstack((d0,d1,d2,d3))
-            yz = y - func2(m,x)
+            yz = y- func2(m,x)
         
+        Cobs = np.eye(np.size(x))*(np.array(1/(1+np.abs(x)+2*np.sqrt(np.abs(x)))))
+        A = G.T * Cobs * G
+        b = (G.T *Cobs).dot(yz)
+
+
         delta = np.linalg.lstsq(G,yz,rcond=None)[0] #Magi
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
@@ -172,6 +174,8 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
         if res < 1e-8:
             break
         
+        
+
     #print(m)
     return m
 
@@ -186,20 +190,35 @@ def func2(m,x):
 
 #--------------------------------------------------------------
 
-def dfd0(m,x): #c_0
-    return np.ones(np.size(x))[:,np.newaxis]
+def df(m,x,func):
 
-def df1d1(m,x):
-    return np.exp(m[2]*x)
+    if func == 1:
+        G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
+        np.exp(m[2]*x), #dfd1
+        m[1]*m[2]*np.exp(m[2]*x)]) #dfd2
+    elif func == 2:
+       G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
+       (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x), #dfd1
+       ((x-m[2])/(m[1]**2)) * func2([0,m[1],m[2],m[3]],x), #dfd2
+       func2([0,m[1],m[2],1],x)]) #dfd3
 
-def df1d2(m,x):
-    return m[0]*m[1]*np.exp(m[2]*x)
+    return G 
 
-def df2d1(m,x): #sigma
-    return (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x)
 
-def df2d2(m,x): #mu
-    return ((x-m[2])/(m[1]**2)) * func2([0,m[1],m[2],m[3]],x)
+# def dfd0(m,x): #c_0
+#     return np.ones(np.size(x))[:,np.newaxis]
 
-def df2d3(m,x): #C_1
-    return func2([0,m[1],m[2],1],x)
+# def df1d1(m,x):
+#     return np.exp(m[2]*x)
+
+# def df1d2(m,x):
+#     return m[1]*m[2]*np.exp(m[2]*x)
+
+# def df2d1(m,x): #sigma
+#     return (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x)
+
+# def df2d2(m,x): #mu
+#     return ((x-m[2])/(m[1]**2)) * func2([0,m[1],m[2],m[3]],x)
+
+# def df2d3(m,x): #C_1
+#     return func2([0,m[1],m[2],1],x)
