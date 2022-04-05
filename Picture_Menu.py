@@ -23,7 +23,8 @@ from inputFilename import *
 
 
 # Create the options for the menus that are to be used later.
-options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Display modified picture', 'Get autocorrelation','Quit'])
+options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Display modified picture', \
+    'Get autocorrelation', 'Save', 'Quit'])
 # optionsSettings = np.array(['Set blur', 'Set clipoutrange and pixel to mm conversionrate', 'Set threshold',\
 #      'Set picture length', 'Display clipout', 'Done'])
 
@@ -145,6 +146,19 @@ while True:
         # except:
         #     print('You need to load some options before you can get the autocorrelation')
     
+
+    #region Save
+    elif(choice == 'Save'):
+        Matrix = np.empty((1,11))
+        Matrix[:] = np.NaN
+        try:
+            txtName = fileName + 'txt'
+            Matrix[0,0:10] = np.array([blur, top, bottom, left, right, \
+                conversion, threshold, marginY, marginX, yMiddle, xMiddle])
+            savetxt(txtName, Matrix, delimiter=',')
+        except:
+            print('Something was not saved correctly')
+    #endregion Save
 
     #region Quit
     elif (choice == 'Quit'):
