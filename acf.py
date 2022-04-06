@@ -6,10 +6,10 @@ from clipBlur import clipBlur
 from numpy.linalg import solve
 
 
-def acf(filename, xy=[1300,3000], margin=1000, threshold = 0.6, sigma = 5.0, lags=100, conversion = 90/2000, plot=False, plotfunc=1):
+def acf(clip, xy=[1300,3000], margin=1000, threshold = 0.6, sigma = 5.0, lags=100, conversion = 90/2000, plot=False, plotfunc=1):
     [x,y] = xy
 
-    clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
+    #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
     M = autoCor(blurredClip)
     acl = autocolen(M,conversion)
 
@@ -152,27 +152,27 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
 
     y = y[:,np.newaxis]
     x = x[:,np.newaxis]
-    print(f"size of x {np.shape(x)}")
+    #print(f"size of x {np.shape(x)}")
 
     #Itererer
     for i in range(niter): 
 
   
         G = df(m=m, x=x, func=func)
-        print(f"size of G {np.shape(G)}")
+        #print(f"size of G {np.shape(G)}")
         if func == 1:
             yz = y - func1(m,x)
         elif func == 2:
             yz = y- func2(m,x)
         
-        sigma = 1/(1+x)
-        print(f"size of sigma {np.shape(sigma)}")
-        Cobs = np.eye(np.size(x))*sigma
-        print(f"size of cobs {np.shape(Cobs)}")
+        #sigma = 1/(1+x)
+        #print(f"size of sigma {np.shape(sigma)}")
+        Cobs = np.eye(np.size(x))#*sigma
+        #print(f"size of cobs {np.shape(Cobs)}")
         A = G.T.dot(Cobs).dot(G)
-        print(f"size of A {np.shape(A)}")
+        print(A)
         b = G.T.dot(Cobs).dot(yz)
-        print(f"size of b {np.shape(b)}")
+        print(b)
 
         delta = solve(A,b) #Magi
         m = m + np.transpose(delta)[0]
