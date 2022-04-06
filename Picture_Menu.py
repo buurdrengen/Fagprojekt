@@ -24,7 +24,7 @@ from acf import *
 
 
 # Create the options for the menus that are to be used later.
-options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Display modified picture', \
+options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Set threshold, sigma', 'Display modified picture', \
     'Get autocorrelation', 'Save', 'Quit'])
 # optionsSettings = np.array(['Set blur', 'Set clipoutrange and pixel to mm conversionrate', 'Set threshold',\
 #      'Set picture length', 'Display clipout', 'Done'])
@@ -116,7 +116,21 @@ while True:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         skimage.io.imshow(clip)
     #endregion Display Statistics        
-        
+
+    elif(choice == 'Set threshold, sigma'):
+        while True:
+            try:
+                threshold = float(input('Please type the threshold you would like: '))
+                break
+            except ValueError:
+                print('You did not input a number')
+        while True:
+            try:
+                blur = float(input('Please type the standard devation of the blur: '))
+                break
+            except ValueError:
+                print('You did not input a real number')
+    
     #region Display modified picture
     elif(choice == 'Display modified picture'):
         try:
@@ -147,7 +161,7 @@ while True:
         filename = filePath[-1].split(".")[0]
         Matrix = np.empty((1,11))
         Matrix[:] = np.NaN
-        txtName = filename + '.txt'
+        txtName = 'variables/' + filename + '.txt'
         Matrix[0,0:11] = np.array([blur, top, bottom, left, right, \
             conversion, threshold, marginY, marginX, yMiddle, xMiddle])
         np.savetxt(txtName, Matrix, delimiter=',')
