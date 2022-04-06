@@ -135,14 +135,11 @@ while True:
     
     #region Autocorrelation
     elif(choice == 'Get autocorrelation'):
-        # try:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
-        auflength = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = 1)
-        print(f"ACL er {auflength:0.2} mm")
-        # except:
-        #     print('You need to load some options before you can get the autocorrelation')
-    
+        auflength = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
+        print(f"ACL is {auflength:0.2} mm")
+    #endregion Autocorrelation
 
     #region Save
     elif(choice == 'Save'):
