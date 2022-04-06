@@ -6,11 +6,10 @@ from clipBlur import clipBlur
 from numpy.linalg import solve
 
 
-def acf(clip, xy=[1300,3000], margin=1000, threshold = 0.6, sigma = 5.0, lags=100, conversion = 90/2000, plot=False, plotfunc=1):
-    [x,y] = xy
+def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, filename="Plot"):
 
     #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
-    M = autoCor(blurredClip)
+    M = autoCor(clip)
     acl = autocolen(M,conversion)
 
 
