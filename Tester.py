@@ -10,8 +10,9 @@ from acf import acf
 
 clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
 clip[blurredClip > 0.65] = 0
-len = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2])
-print(f"ACL er {len:.3}mm")
+len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=100)
+print(f"Autocorrelation length is {len:.3}mm")
+print(f"The best fit is a {funct} function")
 #acf("thin_slices/firstyearice/southerntransect/20200201_145739.jpg", plot=True, plotfunc=2)
 
 # # plt.figure(10)
