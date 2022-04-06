@@ -6,7 +6,7 @@ from clipBlur import clipBlur
 from numpy.linalg import solve
 
 
-def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, filename="Plot"):
+def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot"):
 
     #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
     M = autoCor(clip)
@@ -15,9 +15,7 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, filename="
 
     if plot:
         for plt in plotfunc:
-            x1 = filename.rfind('/')
-            x2 = filename.rfind('.')
-            fname = str(filename[x1+1:x2] + '-f' + str(plt) + '.png')
+            fname = f"{plotname}-f{plt}.png"
             plot_acf(M, lags = lags, func = plt, saveas = fname)
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
@@ -87,17 +85,23 @@ def autocolen(acf,scale=1):
     return n*scale
 
 
-def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None):
+def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None, lsmpoints = 21):
 
     x = np.arange(lags)
     y = acf[x]
     x = x*conversion
+
+    sx = x[0:lsmpoints+1]
+    sy = y[0:lsmpoints+1]
+
     if func == 1:
-        m0 = [0.1, 1, -1]
+        m0 = [0.1, 1.1, -1]
     elif func == 2:
-        m0 = [0.1,1,0.1,1]
-    
-    m = lsm(x, y, m=m0, niter=niter, func=func)
+        m0 = [0.1,1,0.1,1.1]
+        sy = np.hstack([np.flip(y[1:]),y])
+        sx = np.hstack([np.flip(-x[1:]),x])
+
+    m = lsm(sx, sy, m=m0, niter=niter, func=func)
 
     if func == 1:
         fy = func1(m,x)
@@ -133,7 +137,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
 
     print(f"Statistic is {stat:.04f} compared to {test:.04f}")
     print(f"p-value is {pval:.04f}")
-    acl = [0,-1/m[2], np.sqrt(2)*m[1]-m[2]]
+    acl = [0,-1/m[2], np.sqrt(2)*np.abs(m[1])-m[2]]
     functype = ["null", "eksponentiel", "Gauss"]
     print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
 
@@ -142,14 +146,12 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
 #---------------------------------------------------------------
 
 
-def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
+def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
     """
     Least square method
     """
     # Omdanner til søjlevektorer
-    if func == 2:
-        y = np.hstack([np.flip(y),y])
-        x = np.hstack([np.flip(-x),x])
+
 
     y = y[:,np.newaxis]
     x = x[:,np.newaxis]
@@ -157,34 +159,37 @@ def lsm(x,y, m=[0.1, 1, -1], niter=50, func=1):
 
     #Itererer
     for i in range(niter): 
-
-  
         G = df(m=m, x=x, func=func)
+        GT = G.T
         #print(f"size of G {np.shape(G)}")
         if func == 1:
             yz = y - func1(m,x)
         elif func == 2:
-            yz = y- func2(m,x)
+            yz = y - func2(m,x)
         
-        #sigma = 1/(1+x)
+        sigma = 1 #Tilret sigma ved lejlighed
         #print(f"size of sigma {np.shape(sigma)}")
-        Cobs = np.eye(np.size(x))#*sigma
+        Cobs = np.eye(np.size(x))*sigma
         #print(f"size of cobs {np.shape(Cobs)}")
-        A = G.T.dot(Cobs).dot(G)
+        A = GT.dot(G)
         print(A)
-        b = G.T.dot(Cobs).dot(yz)
-        print(b)
+        print(np.linalg.det(A))
+        #print(A)
+        b = GT.dot(yz)
+        #print(b)
 
         delta = solve(A,b) #Magi
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        #print(f"Residuals for {i}: {res}")
+        print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
         
+    if i == niter-1:
+        print("Warning: Solution does not converge sufficiently fast!")
 
-    #print(m)
+    print(m)
     return m
 
 
@@ -203,7 +208,7 @@ def df(m,x,func):
     if func == 1:
         G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
         np.exp(m[2]*x), #dfd1
-        m[1]*m[2]*np.exp(m[2]*x)]) #dfd2
+        m[1]*x*np.exp(m[2]*x)]) #dfd2
     elif func == 2:
        G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
        (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x), #dfd1

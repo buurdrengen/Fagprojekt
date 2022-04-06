@@ -7,7 +7,11 @@ from acf import acf
 from plot_acf import func2
 import matplotlib.pyplot as plt
 
-acf("20200220_221515.jpg", plot=True, plotfunc=[1,2])
+
+clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
+clip[blurredClip > 0.65] = 0
+len = acf(clip, plotname="Name", plot = True, plotfunc = [1])
+print(f"ACL er {len:.3}mm")
 #acf("thin_slices/firstyearice/southerntransect/20200201_145739.jpg", plot=True, plotfunc=2)
 
 # plt.figure(10)
