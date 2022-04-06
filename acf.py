@@ -6,7 +6,7 @@ from clipBlur import clipBlur
 from numpy.linalg import solve
 
 
-def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot"):
+def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -23,7 +23,7 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
     if plot:
         for plt in plotfunc:
             fname = f"{plotname}-f{plt}.png"
-            m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname)
+            m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
             #print(f"Error for {plt} is {fitctrl:.4e}")
             if fitctrl < bestfitctrl:
                 #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
@@ -101,21 +101,24 @@ def autocolen(acf,scale=1):
     return n*scale
 
 
-def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None, lsmpoints = 21):
+def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None, lsmpoints = 0):
+
+    #set interp-points
+    if lsmpoints == 0: lsmpoints = lags
 
     x = np.arange(lags)
     y = acf[x]
     x = x*conversion
 
-    sx = x[0:lsmpoints+1]
-    sy = y[0:lsmpoints+1]
+    sx = x#[0:lsmpoints+1]
+    sy = y#[0:lsmpoints+1]
 
     if func == 1:
         m0 = [0.1, 1.1, -1]
     elif func == 2:
-        m0 = [0.1,1,0.1,1.1]
-        sy = np.hstack([np.flip(y[1:]),y])
-        sx = np.hstack([np.flip(-x[1:]),x])
+        m0 = [0.1,0.5,0.1,0.75]
+        sy = np.hstack([np.flip(sy[1:]),sy[1:]])
+        sx = np.hstack([np.flip(-sx[1:]),sx[1:]])
 
     m = lsm(sx, sy, m=m0, niter=niter, func=func)
 
@@ -155,7 +158,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
     #print(f"p-value is {pval:.04f}")
     e = np.exp(1)
     acl = [0,
-    -(np.log(np.abs((m[0]*e - 1)/(m[1]*e)))/m[2])/m[2], 
+    -1/m[2], 
     np.sqrt(2)*np.abs(m[1])-m[2]]
 
     functype = ["null", "eksponentiel", "Gauss"]
@@ -180,6 +183,10 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
     x = x[:,np.newaxis]
     #print(f"size of x {np.shape(x)}")
 
+    # plt.figure(10+func)
+    # plt.plot(x,y,'k-*')
+    # plt.show()
+
     #Itererer
     for i in range(niter): 
         G = df(m=m, x=x, func=func)
@@ -195,16 +202,18 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         Cobs = np.eye(np.size(x))*sigma
         #print(f"size of cobs {np.shape(Cobs)}")
         A = GT.dot(G)
-        #print(A)
-        #print(np.linalg.det(A))
-        #print(A)
+        print(f"Iteration {i}:")
+        print(A)
+        print(np.linalg.det(A))
+        print(m)
+        #print(A)q
         b = GT.dot(yz)
         #print(b)
 
-        delta = solve(A,b) #Magi
+        delta = solve(A,b) #Magic
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        #print(f"Residuals for {i}: {res}")
+        print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
