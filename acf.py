@@ -68,16 +68,18 @@ def autocolen(acf,scale=1):
     """
     t = np.exp(-1)
     n = np.arange(np.size(acf))[acf <= t]
-   
+    n0 = n[0]
+
     if np.size(n) == 0:
         return 0
-    elif n[0] >=1 and n[0] <= (np.size(acf)-1):
+    elif n0 >=1 and n0 <= (np.size(acf)-1):
         dx = 1
-        dy = acf[n[0]] - acf[n[0]-1]
-        target = acf[n[0]-1] - t
-        m = dx*dy/target
-        n = n[0] + m
+        dy = acf[n0] - acf[n0-1]
+        target = t - acf[n0-1]
+        m = target/dy
+        n = n0 + m - 1
         #print(f"m er {m:.3f}, n er {n}")
+        #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
     else:
         print("")
         #print(f"n er {n}")
@@ -172,8 +174,8 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         Cobs = np.eye(np.size(x))*sigma
         #print(f"size of cobs {np.shape(Cobs)}")
         A = GT.dot(G)
-        print(A)
-        print(np.linalg.det(A))
+        #print(A)
+        #print(np.linalg.det(A))
         #print(A)
         b = GT.dot(yz)
         #print(b)
@@ -181,7 +183,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         delta = solve(A,b) #Magi
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        print(f"Residuals for {i}: {res}")
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
@@ -189,7 +191,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
     if i == niter-1:
         print("Warning: Solution does not converge sufficiently fast!")
 
-    print(m)
+    #print(m)
     return m
 
 

@@ -16,7 +16,7 @@ def autocolen(acf,leng=1):
         dy = acf[n[0]] - acf[n[0]-1]
         target = t - acf[n[0]-1]
         m = dx*dy/target
-        n = n[0]
+        n = n[0] 
         print("m er {m:.3f}, n er {n}")
 
     return n*leng
