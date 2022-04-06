@@ -27,7 +27,7 @@ def clipBlur(filename, x, y, marginX, marginY, sigma=1.0):
     image = skimage.io.imread(fname=filename, as_gray=True)
     clip = image[y-marginY:y+marginY, x-marginX:x+marginX]
 
-    blurredImage = skimage.filters.gaussian(image, sigma=sigma)
+    blurredImage = skimage.filters.gaussian(image, sigma=sigma, truncate=3.5)
     blurredClip = blurredImage[y-marginY:y+marginY, x-marginX:x+marginX]
 
 
