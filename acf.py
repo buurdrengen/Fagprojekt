@@ -8,20 +8,34 @@ from numpy.linalg import solve
 
 def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot"):
 
+    #Set plotfunc as iterable
+    if type(plotfunc) == int:
+        plotfunc = [plotfunc]
+
     #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
     M = autoCor(clip)
     acl = autocolen(M,conversion)
 
+    bestm = 0
+    bestfunc = 0
+    bestfitctrl = np.inf
 
     if plot:
         for plt in plotfunc:
             fname = f"{plotname}-f{plt}.png"
-            plot_acf(M, lags = lags, func = plt, saveas = fname)
+            m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname)
+            #print(f"Error for {plt} is {fitctrl:.4e}")
+            if fitctrl < bestfitctrl:
+                #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
+                bestm = m
+                bestfunc = plt
+                bestfitctrl = fitctrl
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return acl
+    functype = ["null","Exponetial","Gaussian"]
 
+    return acl, functype[bestfunc]
 
 def autoCor(clipBlur, nlags = 1999):
     # Function 
@@ -128,22 +142,29 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
         plt.savefig(fname,dpi=300,format="png")
         plt.show(block=False)
 
-    #rvs = np.cumsum(y)
-    #cdf = np.cumsum(fy)
+    rvs = np.cumsum(y)
+    cdf = np.cumsum(fy)
 
-    [stat,pval] = scipy.stats.kstest(y,fy)
+    [stat,pval] = scipy.stats.kstest(rvs,cdf)
     alpha = 0.01
     n = len(y)
     m1 = len(fy)
     test = np.sqrt(-np.log(alpha/2)*(1+m1/n)/(2*m1))
 
-    print(f"Statistic is {stat:.04f} compared to {test:.04f}")
-    print(f"p-value is {pval:.04f}")
-    acl = [0,-1/m[2], np.sqrt(2)*np.abs(m[1])-m[2]]
+    #print(f"Statistic is {stat:.04f} compared to {test:.04f}")
+    #print(f"p-value is {pval:.04f}")
+    e = np.exp(1)
+    acl = [0,
+    -(np.log(np.abs((m[0]*e - 1)/(m[1]*e)))/m[2])/m[2], 
+    np.sqrt(2)*np.abs(m[1])-m[2]]
+
     functype = ["null", "eksponentiel", "Gauss"]
+
     print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
 
-    return m
+    fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
+
+    return m, fitctrl
 
 #---------------------------------------------------------------
 
