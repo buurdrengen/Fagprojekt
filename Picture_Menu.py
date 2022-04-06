@@ -155,7 +155,7 @@ while True:
             txtName = fileName + 'txt'
             Matrix[0,0:10] = np.array([blur, top, bottom, left, right, \
                 conversion, threshold, marginY, marginX, yMiddle, xMiddle])
-            savetxt(txtName, Matrix, delimiter=',')
+            np.savetxt(txtName, Matrix, delimiter=',')
         except:
             print('Something was not saved correctly')
     #endregion Save
