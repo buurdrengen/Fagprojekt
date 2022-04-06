@@ -15,10 +15,11 @@ import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 from clipBlur import *
-from autocofunc import *
-from autocolen import *
-from plot_acf import *
+# from autocofunc import *
+# from autocolen import *
+# from plot_acf import *
 from inputFilename import *
+from acf import *
 
 
 
@@ -42,82 +43,78 @@ while True:
     elif (choice == 'Set threshold, blur, margin, etc'):
         
         # First we have to test wether or not the image is defined
-        try:
-            fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.hist(x=image.flatten(), bins=256, range=(0,1))
-            # ax1.title('frequency of grayscale pigments.')
-            # ax1.xlabel('Brightness')
-            ax2.imshow(image, cmap = 'gray')
-            ax2.xtixks(np.arange())
-            fig.set_figheight(5)
-            fig.set_figwidth(11)
-            plt.show(block=False)
-        except:
-            print("You need to load picture first!")
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        ax1.hist(x=image.flatten(), bins=256, range=(0,1))
+        # ax1.title('frequency of grayscale pigments.')
+        # ax1.xlabel('Brightness')
+        ax2.imshow(image, cmap = 'gray')
+        start, end = ax2.get_xlim()
+        ax2.set_xticks(np.arange(start, end, 500))
+        fig.set_figheight(5)
+        fig.set_figwidth(11)
+        plt.show(block=False)
+        
 
         # If the data is defined we can display the statistics
-        else:            
-            while True:
-                try:
-                    blur = float(input('Please type the standard devation of the blur: '))
-                    break
-                except ValueError:
-                    print('You did not input a real number')
-                
-            while True:
-                try:
-                    top = int(input('Please type the top height you want to analyze (in pixels): '))
-                    break
-                except ValueError:
-                    print('You did not input an integer and no value has been saved')
+        while True:
+            try:
+                blur = float(input('Please type the standard devation of the blur: '))
+                break
+            except ValueError:
+                print('You did not input a real number')
             
-            while True:
-                try:
-                    bottom = int(input('Please type the bottom height you want to analyze (in pixels): '))
-                    break
-                except ValueError:
-                    print('You did not input an integer and no value has been saved')
+        while True:
+            try:
+                top = int(input('Please type the top height you want to analyze (in pixels): '))
+                break
+            except ValueError:
+                print('You did not input an integer and no value has been saved')
+        
+        while True:
+            try:
+                bottom = int(input('Please type the bottom height you want to analyze (in pixels): '))
+                break
+            except ValueError:
+                print('You did not input an integer and no value has been saved')
 
-            while True:
-                try: 
-                    left = int(input('Please type the leftmost points height you want to analyze (in pixels): '))
-                    break
-                except ValueError:
-                    print('You did not input an integer and no value has been saved')
-            
-            while True:
-                try:
-                    right = int(input('Please type the rightmost points height you want to analyze (in pixels): '))
-                    break
-                except ValueError:
-                    print('You did not input an integer and no value has been saved')
-            
-            while True:
-                try:
-                    conversion = 9 / float(input('Please type the pixel length of the slab of ice in the horizontal direction: '))
-                    # The conversion is given as 9 mm / pixellength of the horizontal slab of ice
-                    break
-                except ValueError:
-                    print('You did not input a number and no conversion has been saved')
+        while True:
+            try: 
+                left = int(input('Please type the leftmost points height you want to analyze (in pixels): '))
+                break
+            except ValueError:
+                print('You did not input an integer and no value has been saved')
+        
+        while True:
+            try:
+                right = int(input('Please type the rightmost points height you want to analyze (in pixels): '))
+                break
+            except ValueError:
+                print('You did not input an integer and no value has been saved')
+        
+        while True:
+            try:
+                conversion = 90 / float(input('Please type the pixel length of the slab of ice in the horizontal direction: '))
+                # The conversion is given as 90 mm / pixellength of the horizontal slab of ice
+                break
+            except ValueError:
+                print('You did not input a number and no conversion has been saved')
 
-            while True:
-                try:
-                    threshold = float(input('Please type the threshold you would like: '))
-                    break
-                except ValueError:
-                    print('You did not input a number')
-            
-            print('bottom = ', bottom)
-            print('top = ', top)
-            marginY = int((bottom - top) / 2)
-            marginX = int((right - left) / 2)
-            yMiddle = top + marginY
-            xMiddle = left + marginX
-            print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins \
-                to be ({:d},{:d})'.format(xMiddle, yMiddle, marginX, marginY))
+        while True:
+            try:
+                threshold = float(input('Please type the threshold you would like: '))
+                break
+            except ValueError:
+                print('You did not input a number')
+        
+        marginY = int((bottom - top) / 2)
+        marginX = int((right - left) / 2)
+        yMiddle = top + marginY
+        xMiddle = left + marginX
+        print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins \
+            to be ({:d},{:d})'.format(xMiddle, yMiddle, marginX, marginY))
 
-            clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
-            skimage.io.imshow(clip)
+        clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
+        skimage.io.imshow(clip)
     #endregion Display Statistics        
         
     #region Display modified picture
@@ -141,23 +138,22 @@ while True:
         # try:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
-        auflength = acf(clip, lags = marginX, conversion = conversion, plot = True, plotfunc = 1)
-        print(auflength)
+        auflength = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = 1)
+        print(f"ACL er {auflength:0.2} mm")
         # except:
         #     print('You need to load some options before you can get the autocorrelation')
     
 
     #region Save
     elif(choice == 'Save'):
+        filePath = fileName.split("/")
+        filename = filePath[-1].split(".")[0]
         Matrix = np.empty((1,11))
         Matrix[:] = np.NaN
-        try:
-            txtName = fileName + 'txt'
-            Matrix[0,0:10] = np.array([blur, top, bottom, left, right, \
-                conversion, threshold, marginY, marginX, yMiddle, xMiddle])
-            np.savetxt(txtName, Matrix, delimiter=',')
-        except:
-            print('Something was not saved correctly')
+        txtName = filename + '.txt'
+        Matrix[0,0:11] = np.array([blur, top, bottom, left, right, \
+            conversion, threshold, marginY, marginX, yMiddle, xMiddle])
+        np.savetxt(txtName, Matrix, delimiter=',')
     #endregion Save
 
     #region Quit
