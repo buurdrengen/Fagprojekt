@@ -20,7 +20,9 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, filename="
             fname = str(filename[x1+1:x2] + '-f' + str(plt) + '.png')
             plot_acf(M, lags = lags, func = plt, saveas = fname)
 
-    print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
+    #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
+
+    return acl
 
 
 def autoCor(clipBlur, nlags = 1999):
@@ -104,7 +106,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
         fy = func2(m,x)
         plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
 
-    print(m)
+    #print(m)
     plt.figure()
     plt.plot(x,y,'bo',label="ACF")
     plt.plot(x,fy,'k-',label=plotlabel)
