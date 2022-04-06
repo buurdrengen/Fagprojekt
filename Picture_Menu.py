@@ -48,6 +48,7 @@ while True:
             # ax1.title('frequency of grayscale pigments.')
             # ax1.xlabel('Brightness')
             ax2.imshow(image, cmap = 'gray')
+            ax2.xtixks(np.arange())
             fig.set_figheight(5)
             fig.set_figwidth(11)
             plt.show(block=False)
@@ -140,8 +141,7 @@ while True:
         # try:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
-        acf = autoCor(clip, nlags = 2*marginX-1)
-        auflength = autocolen(acf, conversion)
+        auflength = acf(clip, lags = marginX, conversion = conversion, plot = True, plotfunc = 1)
         print(auflength)
         # except:
         #     print('You need to load some options before you can get the autocorrelation')
@@ -155,7 +155,7 @@ while True:
             txtName = fileName + 'txt'
             Matrix[0,0:10] = np.array([blur, top, bottom, left, right, \
                 conversion, threshold, marginY, marginX, yMiddle, xMiddle])
-            savetxt(txtName, Matrix, delimiter=',')
+            np.savetxt(txtName, Matrix, delimiter=',')
         except:
             print('Something was not saved correctly')
     #endregion Save
