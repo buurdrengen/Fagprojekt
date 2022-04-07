@@ -1,9 +1,10 @@
+from matplotlib.colors import Normalize
 import numpy as np
+from numpy.fft import fft2, fftshift, ifft2
 import matplotlib.pyplot as plt
 import scipy
 from statsmodels.tsa.stattools import acf as acff
-from clipBlur import clipBlur
-from numpy.linalg import solve
+from scipy.linalg import pinv
 
 
 def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0):
@@ -63,7 +64,7 @@ def autoCor(clipBlur, nlags = 1999):
         M = M + auto
         # if i %10 == 0: 
             # print(i)
-    M = 1/i*M
+    M = 1/(i+1) * M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes
@@ -117,8 +118,8 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
         m0 = [0.1, 1.1, -1]
     elif func == 2:
         m0 = [0.1,0.5,0.1,0.75]
-        sy = np.hstack([np.flip(sy[1:]),sy[1:]])
-        sx = np.hstack([np.flip(-sx[1:]),sx[1:]])
+        sy = np.hstack([np.flip(sy[1:]),sy])
+        sx = np.hstack([np.flip(-sx[1:]),sx])
 
     m = lsm(sx, sy, m=m0, niter=niter, func=func)
 
@@ -190,27 +191,24 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
     #Itererer
     for i in range(niter): 
         G = df(m=m, x=x, func=func)
-        GT = G.T
+        #GT = G.T
         #print(f"size of G {np.shape(G)}")
         if func == 1:
-            yz = y - func1(m,x)
+            b = y - func1(m,x)
         elif func == 2:
-            yz = y - func2(m,x)
+            b = y - func2(m,x)
         
-        sigma = 1 #Tilret sigma ved lejlighed
+        #sigma = 1 #Tilret sigma ved lejlighed
         #print(f"size of sigma {np.shape(sigma)}")
-        Cobs = np.eye(np.size(x))*sigma
+        #Cobs = np.eye(np.size(x))*sigma
         #print(f"size of cobs {np.shape(Cobs)}")
-        A = GT.dot(G)
         print(f"Iteration {i}:")
-        print(A)
-        print(np.linalg.det(A))
+        A = pinv(G) #Moore-Penrose pseudo-inverse
         print(m)
         #print(A)q
-        b = GT.dot(yz)
         #print(b)
 
-        delta = solve(A,b) #Magic
+        delta = np.dot(A,b)
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
         print(f"Residuals for {i}: {res}")
@@ -267,3 +265,66 @@ def df(m,x,func):
 
 # def df2d3(m,x): #C_1
 #     return func2([0,m[1],m[2],1],x)
+
+
+
+
+def scanclip (clip, lags=100, conversion = 90/2000):   
+
+    n = np.shape(clip)[0]
+    M = np.zeros(n)
+
+    plt.figure()
+    plt.imshow(clip, cmap = 'gray')
+    plt.show(block = False)
+
+    print(f"n is {n}")
+    for idx, i in enumerate(clip):
+        auto = autoCor([i], nlags=lags)
+        acl = autocolen(auto,conversion)
+        M[idx] = acl
+
+    # plt.figure()
+    # plt.plot(np.arange(n)*conversion,M,'b-.')
+    # plt.xlabel('Depth [mm]')
+    # plt.ylabel('ACL')
+    # plt.title('Autocorrelation Length')
+    # plt.show()
+
+    fclip = np.transpose(clip)
+
+    fn = np.shape(fclip)[0]
+    fM = np.zeros(fn)
+
+
+    plt.figure()
+    plt.imshow(fclip, cmap = 'gray')
+    plt.show(block = False)
+
+
+    print(f"fn is {fn}")
+    for idx, i in enumerate(fclip):
+        auto = autoCor([i], nlags=lags)
+        acl = autocolen(auto,conversion)
+        fM[idx] = acl
+
+
+    cm1 = M[:,np.newaxis]
+    cm2 = fM[:,np.newaxis]
+
+    aci = np.sqrt(np.dot(cm1,cm2.T))
+
+    var1 = aci #fftshift(aci)
+    var2 = np.log(np.abs(np.real(fft2(var1))))
+
+    #aci [aci > 0.35] = 1
+    
+    if np.shape(aci) == np.shape(clip):
+        plt.figure()
+        plt.imshow(var2, cmap = 'gray')
+        plt.show(block = True)
+    else:
+        print("Image Mismatic!")
+        print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
+
+    return M
