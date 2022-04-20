@@ -152,7 +152,7 @@ while True:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
         auflength = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
-        print(f"ACL is {auflength:0.2} mm")
+        print("ACL is {:0.2f} mm".format(auflength))
     #endregion Autocorrelation
 
     #region Save
