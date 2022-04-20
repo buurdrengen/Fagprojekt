@@ -24,7 +24,7 @@
 #from clipBlur import clipBlur
 
 from numpy import not_equal
-
+from clipBlur import *
 
 def autoCor(clipBlur, nlags = 1999):
     # Function 
@@ -56,8 +56,8 @@ def autoCor(clipBlur, nlags = 1999):
         if np.size(auto) != np.size(nlags)+1:
             print(f"Vector Mismatch, auto is {np.size(auto)} while clips is {np.size(clips)}")
         M = M + auto
-        # if i %10 == 0: 
-            # print(i)
+        if i %10 == 0: 
+            print(i)
     M = 1/i*M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
@@ -68,7 +68,7 @@ def autoCor(clipBlur, nlags = 1999):
     # tsaplots.plot_acf(M,lags = 100)
     # plt.show()
     return M
-
+print(autoCor(clipBlur('data/img01.jpg',1300,3000,1000,1000)))
 
 
 # x1 = np.arange(0, 100)

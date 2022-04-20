@@ -50,7 +50,7 @@ def autoCor(clipBlur, nlags = 1999):
     # Denne funktion tager det klippede og blurrede billede og bestemmer autocorrelation for alle pixels.
     # Nedenfor er testscript til hvordan autocorrelationsfunktionen fungerer for en enkelt linje. 
 
-    # ## En linje 
+    # En linje 
     # linje = clip[1,:]
     # sm.tsa.acf(linje,nlags = 100)
     # fig = tsaplots.plot_acf(linje,lags = 100)

@@ -10,7 +10,7 @@ import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 
-plt.close('all')
+#plt.close('all')
 print("Dette er en test")
 
 x = 1300
@@ -18,7 +18,7 @@ y = 3000
 margin = 1000
 threshhold = 0.5
 
-image = skimage.io.imread(fname="data/isBillede.jpg")
+image = skimage.io.imread(fname="data/img01.jpg")
 clip = skimage.color.rgb2gray(image[y-margin:y+margin, x-margin:x+margin])
 
 clip[clip > threshhold] = 1
@@ -26,7 +26,7 @@ N = 2*margin
 
 plt.figure(1)
 skimage.io.imshow(clip)   
-
+plt.show()
 clip[clip > threshhold] = 0
 
 
