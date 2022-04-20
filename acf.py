@@ -7,7 +7,7 @@ from statsmodels.tsa.stattools import acf as acff
 from scipy.linalg import pinv
 
 
-def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0):
+def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections = 3):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -273,20 +273,29 @@ def df(m,x,func):
 
 
 
-def scanclip (clip, lags=100, conversion = 90/2000):   
+def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):   
 
     n = np.shape(clip)[0]
     M = np.zeros(n)
-
-    plt.figure()
-    plt.imshow(clip, cmap = 'gray')
-    plt.show(block = False)
 
     print(f"n is {n}")
     for idx, i in enumerate(clip):
         auto = autoCor([i], nlags=lags)
         acl = autocolen(auto,conversion)
         M[idx] = acl
+
+    if sections != 1:
+        blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
+        M2 = np.zeros(sections)
+
+        for idx,_ in enumerate(M2):
+            print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
+            M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
+            print(f"idx is {idx} with sum {M2[idx]:.4f}")
+
+        M = np.copy(M2)
+
+
 
     # plt.figure()
     # plt.plot(np.arange(n)*conversion,M,'b-.')
@@ -295,40 +304,40 @@ def scanclip (clip, lags=100, conversion = 90/2000):
     # plt.title('Autocorrelation Length')
     # plt.show()
 
-    fclip = np.transpose(clip)
+    # fclip = np.transpose(clip)
 
-    fn = np.shape(fclip)[0]
-    fM = np.zeros(fn)
-
-
-    plt.figure()
-    plt.imshow(fclip, cmap = 'gray')
-    plt.show(block = False)
+    # fn = np.shape(fclip)[0]
+    # fM = np.zeros(fn)
 
 
-    print(f"fn is {fn}")
-    for idx, i in enumerate(fclip):
-        auto = autoCor([i], nlags=lags)
-        acl = autocolen(auto,conversion)
-        fM[idx] = acl
+    # plt.figure()
+    # plt.imshow(fclip, cmap = 'gray')
+    # plt.show(block = False)
 
 
-    cm1 = M[:,np.newaxis]
-    cm2 = fM[:,np.newaxis]
+    # print(f"fn is {fn}")
+    # for idx, i in enumerate(fclip):
+    #     auto = autoCor([i], nlags=lags)
+    #     acl = autocolen(auto,conversion)
+    #     fM[idx] = acl
 
-    aci = np.sqrt(np.dot(cm1,cm2.T))
 
-    var1 = aci #fftshift(aci)
-    var2 = np.log(np.abs(np.real(fft2(var1))))
+    # cm1 = M[:,np.newaxis]
+    # cm2 = fM[:,np.newaxis]
+
+    # aci = np.sqrt(np.dot(cm1,cm2.T))
+
+    # var1 = aci #fftshift(aci)
+    # var2 = np.log(np.abs(np.real(fft2(var1))))
 
     #aci [aci > 0.35] = 1
     
-    if np.shape(aci) == np.shape(clip):
-        plt.figure()
-        plt.imshow(var2, cmap = 'gray')
-        plt.show(block = True)
-    else:
-        print("Image Mismatic!")
-        print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
+    # if np.shape(aci) == np.shape(clip):
+    #     plt.figure()
+    #     plt.imshow(var2, cmap = 'gray')
+    #     plt.show(block = True)
+    # else:
+    #     print("Image Mismatic!")
+    #     print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
 
     return M
