@@ -58,7 +58,7 @@ while True:
         # If the data is defined we can display the statistics
         while True:
             try:
-                blur = float(input('Please type the standard devation of the blur: '))
+                blur = float(input('Please type the standard devation of the blur (0.25 or 2): '))
                 break
             except ValueError:
                 print('You did not input a real number')
@@ -110,8 +110,8 @@ while True:
         marginX = int((right - left) / 2)
         yMiddle = top + marginY
         xMiddle = left + marginX
-        print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins \
-            to be ({:d},{:d})'.format(xMiddle, yMiddle, marginX, marginY))
+        print('We have found you coordinates to be (x,y) = ({:d},{:d}) and your margins to be ({:d},{:d})'.format(xMiddle, \
+            yMiddle, marginX, marginY))
 
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         skimage.io.imshow(clip)
@@ -120,13 +120,13 @@ while True:
     elif(choice == 'Set threshold, sigma'):
         while True:
             try:
-                threshold = float(input('Please type the threshold you would like: '))
+                threshold = float(input('Please type the threshold you would like (try 0.65): '))
                 break
             except ValueError:
                 print('You did not input a number')
         while True:
             try:
-                blur = float(input('Please type the standard devation of the blur: '))
+                blur = float(input('Please type the standard devation of the blur (0.25 or 2): '))
                 break
             except ValueError:
                 print('You did not input a real number')
@@ -151,19 +151,22 @@ while True:
     elif(choice == 'Get autocorrelation'):
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
+        auflength  = np.empty(3)
         auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
-        print("ACL is {:0.2f} mm and function type is {}".format(auflength, funcType))
+        print("ACL is {:0.2f} mm, {:0.2f} mm and {:0.2f} mm and function type is {}".format(auflength[0], \
+            auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
 
     #region Save
     elif(choice == 'Save'):
         filePath = fileName.split("/")
         filename = filePath[-1].split(".")[0]
-        Matrix = np.empty(12, dtype = 'object')
-        auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
+        Matrix = np.empty(11, dtype = 'object')
+        auflength  = np.empty(3)
+        auflength,funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
         txtName = 'variables/' + filename + '.txt'
-        Matrix[0:12] = [blur, top, bottom, left, right, \
-            conversion, threshold, marginY, marginX, yMiddle, xMiddle, funcType]
+        Matrix[0:11] = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
+            auflength[1], auflength[2], funcType]
         np.savetxt(txtName, Matrix, delimiter=' ', newline = "\n", fmt = "%s")
     #endregion Save
 
