@@ -40,17 +40,17 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
     bestfitctrl = np.inf
     functype = ["null","Exponetial","Gaussian"]
 
-    if plot:
-        for idx in range(sections):
-            for plt in plotfunc:
-                fname = f"{plotname}-f{plt}.png"
-                m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
-                #print(f"Error for {plt} is {fitctrl:.4e}")
-                if fitctrl < bestfitctrl:
-                    #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-                    bestm = m
-                    bestfunc = plt
-                    bestfitctrl = fitctrl
+    # if plot:
+    #     for idx in range(sections):
+    #         for plt in plotfunc:
+    #             fname = f"{plotname}-f{plt}.png"
+    #             m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
+    #             #print(f"Error for {plt} is {fitctrl:.4e}")
+    #             if fitctrl < bestfitctrl:
+    #                 #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
+    #                 bestm = m
+    #                 bestfunc = plt
+    #                 bestfitctrl = fitctrl
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
