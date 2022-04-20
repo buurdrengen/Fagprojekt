@@ -24,35 +24,35 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
         acl = autocolen(auto,conversion)
         M[idx] = acl
 
-    if sections != 1:
+    if sections != 0:
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
         M2 = np.zeros(sections)
 
         for idx,_ in enumerate(M2):
-            print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
+            # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
             M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
-            print(f"idx is {idx} with sum {M2[idx]:.4f}")
+            # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
 
-    bestm = 0
-    bestfunc = 0
+    bestm = np.zeros(sections)
+    bestfunc = np.zeros(sections)
     bestfitctrl = np.inf
+    functype = ["null","Exponetial","Gaussian"]
 
-    # if plot:
-    #     for plt in plotfunc:
-    #         fname = f"{plotname}-f{plt}.png"
-    #         m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
-    #         #print(f"Error for {plt} is {fitctrl:.4e}")
-    #         if fitctrl < bestfitctrl:
-    #             #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-    #             bestm = m
-    #             bestfunc = plt
-    #             bestfitctrl = fitctrl
+    if plot:
+        for idx in range(sections):
+            for plt in plotfunc:
+                fname = f"{plotname}-f{plt}.png"
+                m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
+                #print(f"Error for {plt} is {fitctrl:.4e}")
+                if fitctrl < bestfitctrl:
+                    #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
+                    bestm = m
+                    bestfunc = plt
+                    bestfitctrl = fitctrl
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
-
-    functype = ["null","Exponetial","Gaussian"]
 
     return M, functype[bestfunc]
 
