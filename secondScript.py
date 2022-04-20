@@ -3,10 +3,11 @@ import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 from clipBlur import *
-from autocofunc import *
-from autocolen import *
+# from autocofunc import *
+# from autocolen import *
 import statsmodels.api as sm
 from statsmodels.graphics import tsaplots
+from acf import *
 
 # Define the variables used to analyze the picture
 x = 1300
@@ -57,19 +58,20 @@ plt.title('modified picture clipout')
 plt.show()
 
 # Make the autocorrelationfunction applying to out picture
-autfct = autoCor(clipMod, plot = False)
+autfct,funcType = acf(clipMod, plot = False)
 
 # Define a displacement vector for the autocorrelation
-Xbar = np.arange(end)
-plt.figure(3)
-plt.plot(Xbar, autfct[0:end])
-plt.xlabel('displacement [pixels]')
-plt.ylabel('autocorrelation')
-plt.title('autocorrelation as a function of displacement')
-plt.show()
+# Xbar = np.arange(end)
+# plt.figure(3)
+# plt.plot(Xbar, autfct[0:end])
+# plt.xlabel('displacement [pixels]')
+# plt.ylabel('autocorrelation')
+# plt.title('autocorrelation as a function of displacement')
+# plt.show()
 
-autLength = autocolen(autfct, conversion)
-print('the autocorrelation length is {:.2f} mm'.format(autLength))
+# autLength = autocolen(autfct, conversion)
+
+print('the autocorrelation length is {:.2f} mm'.format(autfct))
 
 
 

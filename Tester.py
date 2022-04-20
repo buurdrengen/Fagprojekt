@@ -8,21 +8,22 @@ from acf import acf, scanclip
 # import matplotlib.pyplot as plt
 
 
+print(len(np.empty(12)))
 # a = np.empty(12, dtype='object')
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
-clip[blurredClip > 0.65] = 0
+# clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
+# clip[blurredClip > 0.65] = 1
 
 
 # auflength = acf(clip, lags = 1100-1, conversion = 90/2000, plot = False, plotfunc = [1])
 # print(auflength)
 
-M = scanclip(clip)
+# M = scanclip(clip)
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
-print(M)
+#print(f"Autocorrelation length is {len:.3}mm")
 #print(f"The best fit is a {funct} function")
 #acf("thin_slices/firstyearice/southerntransect/20200201_145739.jpg", plot=True, plotfunc=2)
 
