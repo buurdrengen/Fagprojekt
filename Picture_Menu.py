@@ -151,21 +151,22 @@ while True:
     elif(choice == 'Get autocorrelation'):
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
-        auflength = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
-        print("ACL is {:0.2f} mm".format(auflength))
+        auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
+        print("ACL is {:0.2f} mm and function type is {}".format(auflength, funcType))
     #endregion Autocorrelation
 
     #region Save
     elif(choice == 'Save'):
         filePath = fileName.split("/")
         filename = filePath[-1].split(".")[0]
-        Matrix = np.empty((1,11))
-        Matrix[:] = np.NaN
+        Matrix = np.empty(12, dtype = 'object')
+        auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1])
         txtName = 'variables/' + filename + '.txt'
-        Matrix[0,0:11] = np.array([blur, top, bottom, left, right, \
-            conversion, threshold, marginY, marginX, yMiddle, xMiddle])
-        np.savetxt(txtName, Matrix, delimiter=',')
+        Matrix[0:12] = [blur, top, bottom, left, right, \
+            conversion, threshold, marginY, marginX, yMiddle, xMiddle, funcType]
+        np.savetxt(txtName, Matrix, delimiter=' ', newline = "\n", fmt = "%s")
     #endregion Save
+
 
     #region Quit
     elif (choice == 'Quit'):

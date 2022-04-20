@@ -8,11 +8,18 @@ from acf import acf, scanclip
 # import matplotlib.pyplot as plt
 
 
-clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
-clip[blurredClip > 0.65] = 1
+a = np.empty(12, dtype='object')
+a[0:3] = [1,2, "bananas"]
+print(a)
+
+# clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
+# clip[blurredClip > 0.65] = 1
 
 
-M = scanclip(clip)
+# auflength = acf(clip, lags = 1100-1, conversion = 90/2000, plot = False, plotfunc = [1])
+# print(auflength)
+
+# M = scanclip(clip)
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
 #print(f"Autocorrelation length is {len:.3}mm")
