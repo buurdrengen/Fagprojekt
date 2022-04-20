@@ -7,36 +7,54 @@ from statsmodels.tsa.stattools import acf as acff
 from scipy.linalg import pinv
 
 
-def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections = 3):
+def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections=3):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
         plotfunc = [plotfunc]
 
     #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
-    M = autoCor(clip)
-    acl = autocolen(M,conversion)
+
+    n = np.shape(clip)[0]
+    M = np.zeros(n)
+
+    print(f"n is {n}")
+    for idx, i in enumerate(clip):
+        auto = autoCor([i], nlags=lags)
+        acl = autocolen(auto,conversion)
+        M[idx] = acl
+
+    if sections != 1:
+        blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
+        M2 = np.zeros(sections)
+
+        for idx,_ in enumerate(M2):
+            print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
+            M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
+            print(f"idx is {idx} with sum {M2[idx]:.4f}")
+
+        M = np.copy(M2)
 
     bestm = 0
     bestfunc = 0
     bestfitctrl = np.inf
 
-    if plot:
-        for plt in plotfunc:
-            fname = f"{plotname}-f{plt}.png"
-            m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
-            #print(f"Error for {plt} is {fitctrl:.4e}")
-            if fitctrl < bestfitctrl:
-                #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-                bestm = m
-                bestfunc = plt
-                bestfitctrl = fitctrl
+    # if plot:
+    #     for plt in plotfunc:
+    #         fname = f"{plotname}-f{plt}.png"
+    #         m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
+    #         #print(f"Error for {plt} is {fitctrl:.4e}")
+    #         if fitctrl < bestfitctrl:
+    #             #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
+    #             bestm = m
+    #             bestfunc = plt
+    #             bestfitctrl = fitctrl
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
     functype = ["null","Exponetial","Gaussian"]
 
-    return acl, functype[bestfunc]
+    return M, functype[bestfunc]
 
 def autoCor(clipBlur, nlags = 1999):
     # Function 
@@ -275,25 +293,6 @@ def df(m,x,func):
 
 def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):   
 
-    n = np.shape(clip)[0]
-    M = np.zeros(n)
-
-    print(f"n is {n}")
-    for idx, i in enumerate(clip):
-        auto = autoCor([i], nlags=lags)
-        acl = autocolen(auto,conversion)
-        M[idx] = acl
-
-    if sections != 1:
-        blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
-        M2 = np.zeros(sections)
-
-        for idx,_ in enumerate(M2):
-            print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
-            M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
-            print(f"idx is {idx} with sum {M2[idx]:.4f}")
-
-        M = np.copy(M2)
 
 
 
