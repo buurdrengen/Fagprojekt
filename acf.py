@@ -56,12 +56,16 @@ def autoCor(clipBlur, nlags = 1999):
     # fig = tsaplots.plot_acf(linje,lags = 100)
     # plt.show()
 
+    # sizeY = clipBlur.shape[1]
+
+
     ## Et helt billede
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
     for i, clips in enumerate(clipBlur):
         auto = acff(clips,nlags=nlags)
         M = M + auto
+        
         # if i %10 == 0: 
             # print(i)
     M = 1/(i+1) * M
@@ -92,7 +96,7 @@ def autocolen(acf,scale=1):
         dy = acf[n0] - acf[n0-1]
         target = t - acf[n0-1]
         m = target/dy
-        n = n0 + m - 1
+        n = n0-1 + m 
         #print(f"m er {m:.3f}, n er {n}")
         #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
     else:

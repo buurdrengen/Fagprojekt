@@ -8,9 +8,10 @@ from acf import acf, scanclip
 # import matplotlib.pyplot as plt
 
 
-a = np.empty(12, dtype='object')
-a[0:3] = [1,2, "bananas"]
-print(a)
+print(np.zeros(12))
+# a = np.empty(12, dtype='object')
+# a[0:3] = [1,2, "bananas"]
+# print(a)
 
 # clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
 # clip[blurredClip > 0.65] = 1
