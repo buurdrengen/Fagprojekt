@@ -8,7 +8,7 @@ from acf import acf, scanclip
 # import matplotlib.pyplot as plt
 
 
-print(np.zeros(12))
+print(len(np.empty(12)))
 # a = np.empty(12, dtype='object')
 # a[0:3] = [1,2, "bananas"]
 # print(a)
