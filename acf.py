@@ -29,9 +29,9 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
         M2 = np.zeros(sections)
 
         for idx,_ in enumerate(M2):
-            print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
+            # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
             M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
-            print(f"idx is {idx} with sum {M2[idx]:.4f}")
+            # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
 
