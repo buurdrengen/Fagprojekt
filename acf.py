@@ -54,7 +54,7 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return M, functype[bestfunc]
+    return M, bestfunc
 
 def autoCor(clipBlur, nlags = 1999):
     # Function 
@@ -339,4 +339,4 @@ def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):
     #     print("Image Mismatic!")
     #     print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
 
-    return M
+    return 0
