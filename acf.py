@@ -232,6 +232,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
 
     #Itererer
     for i in range(niter): 
+        errorlevel = 0
         G = df(m=m, x=x, func=func)
         #GT = G.T
         #print(f"size of G {np.shape(G)}")
@@ -256,13 +257,11 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
-        
-        
-    if i == niter-1:
-        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
         errorlevel = 1
-    else:
-        errorlevel = 0
+        
+        
+    if errorlevel:
+        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
 
     #print(m)
     return m, errorlevel
