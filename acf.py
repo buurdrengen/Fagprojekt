@@ -120,11 +120,13 @@ def autocolen(acf,scale=1):
     """
     t = np.exp(-1)
     n = np.arange(np.size(acf))[acf <= t]
-    n0 = n[0]
 
     if np.size(n) == 0:
         return 0
-    elif n0 >=1 and n0 <= (np.size(acf)-1):
+    else:
+        n0 = n[0]
+    
+    if n0 >=1 and n0 <= (np.size(acf)-1):
         dx = 1
         dy = acf[n0] - acf[n0-1]
         target = t - acf[n0-1]
