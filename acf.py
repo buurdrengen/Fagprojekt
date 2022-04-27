@@ -1,3 +1,4 @@
+from distutils.log import error
 import string
 from matplotlib.colors import Normalize
 import numpy as np
@@ -157,7 +158,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
         sy = np.hstack([np.flip(sy[1:]),sy])
         sx = np.hstack([np.flip(-sx[1:]),sx])
 
-    m = lsm(sx, sy, m=m0, niter=niter, func=func)
+    m, errorlevel = lsm(sx, sy, m=m0, niter=niter, func=func)
 
     if func == 1:
         fy = func1(m,x)
@@ -204,7 +205,10 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
 
     print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
 
-    fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
+    if errorlevel == 0:
+        fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
+    else:
+        fitctrl = np.inf
 
     return m, fitctrl
 
@@ -255,10 +259,13 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         
         
     if i == niter-1:
-        print("Warning: Solution does not converge sufficiently fast!!!")
+        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
+        errorlevel = 1
+    else:
+        errorlevel = 0
 
     #print(m)
-    return m
+    return m, errorlevel
 
 
 #--------------------------------------------------------------
