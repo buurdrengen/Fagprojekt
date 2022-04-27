@@ -167,7 +167,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
         plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
 
     #print(m)
-    if saveas or plot:
+    if (saveas != None) or plot:
         plt.figure()
         plt.plot(x,y,'bo',label="ACF")
         plt.plot(x,fy,'k-',label=plotlabel)
