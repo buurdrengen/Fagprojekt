@@ -13,9 +13,8 @@ print(len(np.empty(12)))
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
-clip[blurredClip > 0.65] = 1
-
+clip, blurredClip = clipBlur("thin_slices/leadice/20200205/20200206_112710.jpg", x=1800, y=2500, marginX=1400, marginY=1100, sigma=0.25)
+clip[blurredClip > 0.50] = 0
 
 auflength = acf(clip, lags = 50, conversion = 90/2000, plot = False, plotfunc = [1,2])
 print(auflength)

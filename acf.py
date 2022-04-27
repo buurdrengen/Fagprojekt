@@ -120,11 +120,13 @@ def autocolen(acf,scale=1):
     """
     t = np.exp(-1)
     n = np.arange(np.size(acf))[acf <= t]
-    n0 = n[0]
 
     if np.size(n) == 0:
         return 0
-    elif n0 >=1 and n0 <= (np.size(acf)-1):
+    else:
+        n0 = n[0]
+    
+    if n0 >=1 and n0 <= (np.size(acf)-1):
         dx = 1
         dy = acf[n0] - acf[n0-1]
         target = t - acf[n0-1]
@@ -232,6 +234,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
 
     #Itererer
     for i in range(niter): 
+        errorlevel = 0
         G = df(m=m, x=x, func=func)
         #GT = G.T
         #print(f"size of G {np.shape(G)}")
@@ -256,13 +259,11 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
-        
-        
-    if i == niter-1:
-        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
         errorlevel = 1
-    else:
-        errorlevel = 0
+        
+        
+    if errorlevel:
+        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
 
     #print(m)
     return m, errorlevel
