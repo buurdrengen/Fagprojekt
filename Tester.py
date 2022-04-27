@@ -17,7 +17,7 @@ clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100
 clip[blurredClip > 0.65] = 1
 
 
-auflength = acf(clip, lags = 50,conversion = 90/2000, plot = False, plotfunc = [1,2])
+auflength = acf(clip, lags = 50, conversion = 90/2000, plot = False, plotfunc = [1,2])
 print(auflength)
 
 # M = scanclip(clip)
