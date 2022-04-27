@@ -13,14 +13,16 @@ print(len(np.empty(12)))
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-# clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
-# clip[blurredClip > 0.65] = 1
+clip, blurredClip = clipBlur("20200220_221515.jpg", x=1700, y=3000, marginX=1100, marginY=1000, sigma=1)
+clip[blurredClip > 0.65] = 1
 
 
-# auflength = acf(clip, lags = 1100-1, conversion = 90/2000, plot = False, plotfunc = [1])
-# print(auflength)
+auflength = acf(clip, lags = 50,conversion = 90/2000, plot = False, plotfunc = [1,2])
+print(auflength)
 
 # M = scanclip(clip)
+
+l = input("Wait...")
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
 #print(f"Autocorrelation length is {len:.3}mm")

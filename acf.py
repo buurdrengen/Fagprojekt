@@ -1,3 +1,4 @@
+import string
 from matplotlib.colors import Normalize
 import numpy as np
 from numpy.fft import fft2, fftshift, ifft2
@@ -7,7 +8,7 @@ from statsmodels.tsa.stattools import acf as acff
 from scipy.linalg import pinv
 
 
-def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections=3):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections=3):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -17,28 +18,41 @@ def acf(clip, lags=100, conversion = 90/2000, plot=False, plotfunc=1, plotname="
 
     n = np.shape(clip)[0]
     M = np.zeros(n)
+    bestfunc = np.empty(sections, dtype= 'U32')
+    functype = ["null","Exponetial","Gaussian"]
 
-    print(f"n is {n}")
-    for idx, i in enumerate(clip):
-        auto = autoCor([i], nlags=lags)
-        acl = autocolen(auto,conversion)
-        M[idx] = acl
+    #print(f"n is {n}")
 
     if sections != 0:
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
         M2 = np.zeros(sections)
 
         for idx,_ in enumerate(M2):
+            bestfitctrl = np.inf
+            blck = clip[blocks[idx]:blocks[idx + 1]]
+            auto = autoCor(blck, nlags=lags)
+            acl = autocolen(auto, scale=conversion)
+            
+            
+            for plt in plotfunc:
+                _, fitctrl = plot_acf(auto, lags = lags, func = plt, lsmpoints=ip, plot = plot)
+                #print(f"Error for {plt} is {fitctrl:.4e}")
+                if fitctrl < bestfitctrl:
+                    #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
+                    bestfunc[idx] = functype[plt]
+                    bestfitctrl = fitctrl
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
-            M2[idx] = np.sum(M[blocks[idx]:blocks[idx + 1]]) / (blocks[idx + 1] - blocks[idx])
+            
+            M2[idx] = acl
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
+    else:
+        for idx, i in enumerate(clip):
+            auto = autoCor([i], nlags=lags)
+            acl = autocolen(auto,conversion)
+            M[idx] = acl
 
-    bestm = np.zeros(sections)
-    bestfunc = np.zeros(sections)
-    bestfitctrl = np.inf
-    functype = ["null","Exponetial","Gaussian"]
 
     # if plot:
     #     for idx in range(sections):
@@ -124,7 +138,7 @@ def autocolen(acf,scale=1):
     return n*scale
 
 
-def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None, lsmpoints = 0):
+def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, saveas = None, lsmpoints = 0):
 
     #set interp-points
     if lsmpoints == 0: lsmpoints = lags
@@ -160,12 +174,13 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
     plt.xlabel("Længde [mm]")
     plt.ylabel("ACF")
     plt.title("Autokorrelation")
-    plt.ylim([0, 1])
+    plt.ylim([-0.1, 1])
     plt.legend()
     if saveas != None:
         fname = str("plotimg/" + saveas)
         #print(fname)
         plt.savefig(fname,dpi=300,format="png")
+    if plot: 
         plt.show(block=False)
 
     rvs = np.cumsum(y)
@@ -179,7 +194,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, saveas = None
 
     #print(f"Statistic is {stat:.04f} compared to {test:.04f}")
     #print(f"p-value is {pval:.04f}")
-    e = np.exp(1)
+    #e = np.exp(1)
     acl = [0,
     -1/m[2], 
     np.sqrt(2)*np.abs(m[1])-m[2]]
@@ -224,22 +239,22 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
         #print(f"size of sigma {np.shape(sigma)}")
         #Cobs = np.eye(np.size(x))*sigma
         #print(f"size of cobs {np.shape(Cobs)}")
-        print(f"Iteration {i}:")
+        #print(f"Iteration {i}:")
         A = pinv(G) #Moore-Penrose pseudo-inverse
-        print(m)
+        #print(m)
         #print(A)q
         #print(b)
 
         delta = np.dot(A,b)
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        print(f"Residuals for {i}: {res}")
+        #print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         
         
     if i == niter-1:
-        print("Warning: Solution does not converge sufficiently fast!")
+        print("Warning: Solution does not converge sufficiently fast!!!")
 
     #print(m)
     return m
