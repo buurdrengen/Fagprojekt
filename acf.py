@@ -167,21 +167,22 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
         plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
 
     #print(m)
-    plt.figure()
-    plt.plot(x,y,'bo',label="ACF")
-    plt.plot(x,fy,'k-',label=plotlabel)
-    plt.grid(True)
-    plt.xlabel("Længde [mm]")
-    plt.ylabel("ACF")
-    plt.title("Autokorrelation")
-    plt.ylim([-0.1, 1])
-    plt.legend()
-    if saveas != None:
-        fname = str("plotimg/" + saveas)
-        #print(fname)
-        plt.savefig(fname,dpi=300,format="png")
-    if plot: 
-        plt.show(block=False)
+    if saveas or plot:
+        plt.figure()
+        plt.plot(x,y,'bo',label="ACF")
+        plt.plot(x,fy,'k-',label=plotlabel)
+        plt.grid(True)
+        plt.xlabel("Længde [mm]")
+        plt.ylabel("ACF")
+        plt.title("Autokorrelation")
+        plt.ylim([-0.1, 1])
+        plt.legend()
+        if saveas != None:
+            fname = str("plotimg/" + saveas)
+            #print(fname)
+            plt.savefig(fname,dpi=300,format="png")
+        if plot: 
+            plt.show(block=False)
 
     rvs = np.cumsum(y)
     cdf = np.cumsum(fy)
