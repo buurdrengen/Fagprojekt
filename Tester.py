@@ -14,7 +14,7 @@ if __name__ == "__main__":
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-    clip, blurredClip = clipBlur("20200220_221515.jpg", x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
+    clip, blurredClip = clipBlur("thin_slices/meltponds/meltpond_20200211/20200213_110312.jpg", x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
     clip[blurredClip > 0.50] = 0
 
     auflength = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40)

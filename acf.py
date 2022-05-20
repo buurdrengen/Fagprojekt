@@ -209,7 +209,7 @@ def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=
     print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
 
     if errorlevel == 0:
-        fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
+        fitctrl = 1/(lags-1) *np.sum((y-fy)**2) / func
     else:
         fitctrl = np.inf
 
