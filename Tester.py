@@ -7,21 +7,22 @@ from acf import acf, scanclip
 # from plot_acf import func2
 # import matplotlib.pyplot as plt
 
+if __name__ == "__main__":
 
-print(len(np.empty(12)))
+#print(len(np.empty(12)))
 # a = np.empty(12, dtype='object')
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-clip, blurredClip = clipBlur("thin_slices/leadice/20200205/20200206_112710.jpg", x=1800, y=2500, marginX=1400, marginY=1100, sigma=0.25)
-clip[blurredClip > 0.50] = 0
+    clip, blurredClip = clipBlur("20200220_221515.jpg", x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
+    clip[blurredClip > 0.50] = 0
 
-auflength = acf(clip, lags = 50, conversion = 90/2000, plot = False, plotfunc = [1,2])
-print(auflength)
+    auflength = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40)
+    print(auflength)
 
 # M = scanclip(clip)
 
-l = input("Wait...")
+    l = input("Wait...")
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
 #print(f"Autocorrelation length is {len:.3}mm")

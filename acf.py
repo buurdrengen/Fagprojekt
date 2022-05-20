@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import scipy
 from statsmodels.tsa.stattools import acf as acff
 from scipy.linalg import pinv
+from scipy.linalg import solve
 
 
 def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections=3):
@@ -33,10 +34,10 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="P
             blck = clip[blocks[idx]:blocks[idx + 1]]
             auto = autoCor(blck, nlags=lags)
             acl = autocolen(auto, scale=conversion)
-            
+            bestfunc[idx] = functype[0]
             
             for plt in plotfunc:
-                _, fitctrl = plot_acf(auto, lags = lags, func = plt, lsmpoints=ip, plot = plot)
+                _, fitctrl = plot_acf(auto, lags = lags, init_acl=acl, func = plt, lsmpoints=ip, plot = plot)
                 #print(f"Error for {plt} is {fitctrl:.4e}")
                 if fitctrl < bestfitctrl:
                     #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
@@ -141,7 +142,7 @@ def autocolen(acf,scale=1):
     return n*scale
 
 
-def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, saveas = None, lsmpoints = 0):
+def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=1, plot=False, saveas = None, lsmpoints = 0):
 
     #set interp-points
     if lsmpoints == 0: lsmpoints = lags
@@ -160,7 +161,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
         sy = np.hstack([np.flip(sy[1:]),sy])
         sx = np.hstack([np.flip(-sx[1:]),sx])
 
-    m, errorlevel = lsm(sx, sy, m=m0, niter=niter, func=func)
+    m, errorlevel = lsm(sx, sy, m=m0, niter=niter, func=func, guess = init_acl)
 
     if func == 1:
         fy = func1(m,x)
@@ -217,7 +218,7 @@ def plot_acf(acf, lags, n=1, conversion=90/2000, niter=20, func=1, plot=False, s
 #---------------------------------------------------------------
 
 
-def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
+def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
     """
     Least square method
     """
@@ -226,6 +227,10 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
 
     y = y[:,np.newaxis]
     x = x[:,np.newaxis]
+    s2 = (x - guess)**2
+    s2[s2 < 1e-4] = 1e-4
+    sigma = 1/s2
+    Cobs = np.eye(np.size(x))*sigma
     #print(f"size of x {np.shape(x)}")
 
     # plt.figure(10+func)
@@ -236,34 +241,42 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1):
     for i in range(niter): 
         errorlevel = 0
         G = df(m=m, x=x, func=func)
+        GT = np.dot(np.transpose(G),Cobs)
         #GT = G.T
         #print(f"size of G {np.shape(G)}")
         if func == 1:
-            b = y - func1(m,x)
+            dy = y - func1(m,x)
         elif func == 2:
-            b = y - func2(m,x)
+            dy = y - func2(m,x)
         
         #sigma = 1 #Tilret sigma ved lejlighed
         #print(f"size of sigma {np.shape(sigma)}")
-        #Cobs = np.eye(np.size(x))*sigma
+        
+        A = np.dot(GT,G)
+        b = np.dot(GT,dy)
+
         #print(f"size of cobs {np.shape(Cobs)}")
         #print(f"Iteration {i}:")
-        A = pinv(G) #Moore-Penrose pseudo-inverse
+        
+        #Moore-Penrose pseudo-inverse
         #print(m)
         #print(A)q
         #print(b)
-
-        delta = np.dot(A,b)
+        try: 
+            delta = solve(A,b, assume_a='sym')
+        except scipy.linalg.LinAlgError:
+            errorlevel = 2
+            break
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        #print(f"Residuals for {i}: {res}")
+        print(f"Residuals for {i}: {res}")
         if res < 1e-8:
             break
         errorlevel = 1
         
         
     if errorlevel:
-        print("Warning: Solution does not converge sufficiently fast - Solution discarded!!!")
+        print("Warning: Solution does not converge - Solution discarded!!!")
 
     #print(m)
     return m, errorlevel
