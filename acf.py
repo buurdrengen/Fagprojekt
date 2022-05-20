@@ -222,8 +222,6 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
     """
     Least square method
     """
-    # Omdanner til søjlevektorer
-
 
     y = y[:,np.newaxis]
     x = x[:,np.newaxis]
@@ -263,22 +261,25 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
         #print(A)q
         #print(b)
         try: 
-            delta = solve(A,b, assume_a='sym')
+            delta = np.linalg.inv(A).dot(b) #solve(A,b, assume_a='sym')
         except scipy.linalg.LinAlgError:
             errorlevel = 2
             break
+        except ValueError:
+            errorlevel = 3
+            break
         m = m + np.transpose(delta)[0]
         res = np.transpose(delta).dot(delta)[0][0]
-        print(f"Residuals for {i}: {res}")
-        if res < 1e-8:
+        #print(f"Residuals for {i}: {res}")
+        if res < 1e-6:
             break
         errorlevel = 1
         
-        
-    if errorlevel:
-        print("Warning: Solution does not converge - Solution discarded!!!")
+    errortype =  ["Solution converges too slowly","Coefficient matrix is singular","Solution is divergent"]
 
-    #print(m)
+    if errorlevel:
+        print(f"Warning: {errortype[errorlevel - 1]} - Solution discarded!!!")
+
     return m, errorlevel
 
 
