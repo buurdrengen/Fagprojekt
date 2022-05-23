@@ -33,7 +33,7 @@ if __name__ == "__main__":
 # # xx = np.arange(-3,3,0.05)
 # # plt.plot(xx,func2([0,1,0,1],xx),'b-')
 # # plt.show()
-# print(int(6.9))
+print(int(6.9))
 
 
 # fileName = "20200220_221515.jpg"
