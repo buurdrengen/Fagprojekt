@@ -14,15 +14,17 @@ if __name__ == "__main__":
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-    clip, blurredClip = clipBlur("thin_slices/meltponds/meltpond_20200211/20200213_110312.jpg", x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
+    fname = "thin_slices/firstyearice/southerntransect/20200201_145742.jpg"
+
+    clip, blurredClip = clipBlur(fname, x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
     clip[blurredClip > 0.50] = 0
 
-    auflength = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40)
+    auflength = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot", sections=1)
     print(auflength)
 
 # M = scanclip(clip)
 
-    l = input("Wait...")
+    #l = input("Wait...")
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
 #print(f"Autocorrelation length is {len:.3}mm")
@@ -33,7 +35,7 @@ if __name__ == "__main__":
 # # xx = np.arange(-3,3,0.05)
 # # plt.plot(xx,func2([0,1,0,1],xx),'b-')
 # # plt.show()
-print(int(6.9))
+#print(int(6.9))
 
 
 # fileName = "20200220_221515.jpg"

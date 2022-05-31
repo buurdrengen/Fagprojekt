@@ -2,15 +2,13 @@ from distutils.log import error
 import string
 from matplotlib.colors import Normalize
 import numpy as np
-from numpy.fft import fft2, fftshift, ifft2
+#from numpy.fft import fft2, fftshift, ifft2
 import matplotlib.pyplot as plt
-import scipy
 from statsmodels.tsa.stattools import acf as acff
-from scipy.linalg import pinv
-from scipy.linalg import solve
+from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="Plot", ip=0, sections=3):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="", ip=0, sections=3):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -34,18 +32,63 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="P
             blck = clip[blocks[idx]:blocks[idx + 1]]
             auto = autoCor(blck, nlags=lags)
             acl = autocolen(auto, scale=conversion)
+            print("-"*30)
+            print(f"Estimeret Autokorrelationslængde: {acl:.04f}mm")
             bestfunc[idx] = functype[0]
             
-            for plt in plotfunc:
-                _, fitctrl = plot_acf(auto, lags = lags, init_acl=acl, func = plt, lsmpoints=ip, plot = plot)
+            for pf in plotfunc:
+                x = np.arange(lags)
+                y = auto[x]
+                x = x*conversion
+                c = np.hstack([0,lsm2(x,y,pf)])
+                #print(c)
+                if pf == 1:
+                    fy = func1(c,x)
+                    plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
+                    acl = 1/c[2]
+                elif pf == 2:
+                    fy = func2(c,x)
+                    plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
+                    acl = np.sqrt(2)*c[1]-c[2]
+
+
+                if (plotname != "") or plot:
+                    plt.figure()
+                    plt.plot(x,y,'bo',label="ACF")
+                    plt.plot(x,fy,'k-',label=plotlabel)
+                    plt.grid(True)
+                    plt.xlabel("Længde [mm]")
+                    plt.ylabel("ACF")
+                    plt.title("Autokorrelation")
+                    plt.ylim([-0.1, 1])
+                    plt.legend()
+                    if plotname != None:
+                        fname = str(f"plotimg/{plotname}{idx+1}-{pf}.png")
+                        #print(fname)
+                        plt.savefig(fname,dpi=300,format="png")
+                    if plot: 
+                        plt.show()
+                    plt.close()
+
+
+                print(f"Autokorrelationslængde fra {functype[pf]} lsm: {acl:.04f}mm")
+
+                if (np.abs(c[2]) > 1 or (c[3]/c[1]) > 7) and pf == 2: # Gaussain sanity check
+                        fy = fy*np.inf
+                        print("Gaussian solution discarded")
+
+                fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
+
+                
+                #_, fitctrl = plot_acf(auto, lags = lags, init_acl=acl, func = plt, lsmpoints=ip, plot = plot)
                 #print(f"Error for {plt} is {fitctrl:.4e}")
                 if fitctrl < bestfitctrl:
                     #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-                    bestfunc[idx] = functype[plt]
+                    bestfunc[idx] = functype[pf]
                     bestfitctrl = fitctrl
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
             
-            M2[idx] = acl
+                    M2[idx] = acl
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
@@ -186,7 +229,8 @@ def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=
             #print(fname)
             plt.savefig(fname,dpi=300,format="png")
         if plot: 
-            plt.show(block=False)
+            plt.show()
+        plt.close()
 
     rvs = np.cumsum(y)
     cdf = np.cumsum(fy)
@@ -286,7 +330,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
 #--------------------------------------------------------------
 
 def func1(m,x):
-    return m[0] + m[1]*np.exp(m[2]*x)
+    return m[0] + m[1]*np.exp(-m[2]*x)
 
 def func2(m,x):
     return m[0] + (m[3]/(m[1]*np.sqrt(2*np.pi))) * np.exp(-0.5 * ((x-m[2])**2) / (m[1]**2))
@@ -378,3 +422,49 @@ def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):
     #     print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
 
     return 0
+
+
+
+
+def lsm2(x,y, func=1, limit = 0.2):
+    """
+    Least square method
+    """
+
+    idx = y>limit
+    i = np.where(idx == False)[0][0]
+
+    y = y[:i,np.newaxis]
+    x = x[:i,np.newaxis]
+
+    ly = np.log(y)
+
+    A = np.hstack([np.ones(np.shape(x)),x])
+    if func == 2:
+        A = np.hstack([np.ones(np.shape(x)),x, x**2])
+        print(np.shape(A))
+
+    ATA = np.transpose(A) @ A
+    b = np.transpose(A) @ ly
+
+
+    m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+
+    #print(m)
+
+    if func == 1:
+        a = m[0][0]; b = m[1][0]
+
+        a1 = np.exp(a)
+        k = -b
+        return np.array([a1,k,0])
+
+    if func == 2:
+        a = m[0][0]; b = m[1][0]; c = m[2][0]
+        a2 = np.exp(c - b**2 / (4*a)) * np.sqrt(-np.pi/a) #a2
+        mu = -b / (2*a) #mu
+        sigma = np.sqrt(-1/(2*a)) #sigma
+        return np.array([sigma,mu,a2])
+
+    return [0,0,0]
+ 
