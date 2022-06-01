@@ -438,7 +438,7 @@ def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):
 
 
 
-def lsm2(x,y, func=1, limit = 0.2):
+def lsm2(x,y, func=1, limit = np.exp(-2)):
     """
     Least square method
     """
@@ -482,13 +482,15 @@ def lsm2(x,y, func=1, limit = 0.2):
  
 
 
-def lsm3(x,y, func=1, limit = np.exp(-1)):
+def lsm3(x,y, func=1, limit = np.exp(-2)):
     """
     Least square method
     """
 
     idx = y>limit
     i = np.where(idx == False)[0][0]
+
+    Cobs = np.diag(1/(abs(y[:i] - np.exp(-1))**2 + 1))
 
     y = y[:i,np.newaxis]
     x = x[:i,np.newaxis]
@@ -500,8 +502,8 @@ def lsm3(x,y, func=1, limit = np.exp(-1)):
         A = np.hstack([x**2])
         #print(np.shape(A))
 
-    ATA = np.transpose(A) @ A
-    b = np.transpose(A) @ ly
+    ATA = np.transpose(A) @ Cobs @ A
+    b = np.transpose(A) @ Cobs @ ly
 
 
     m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
@@ -551,7 +553,7 @@ def plot_acf2(auflength, funcType, plotdata, xmax = 5):
     #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
     fig.set_figwidth(12)
-    plt.show(block=False)
+    plt.show()
 
 
 
