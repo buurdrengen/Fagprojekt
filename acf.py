@@ -1,12 +1,12 @@
-from asyncio.windows_events import NULL
-from distutils.log import error
-import string
-from matplotlib.colors import Normalize
+#from asyncio.windows_events import NULL
+#from distutils.log import error
+#import string
+#from matplotlib.colors import Normalize
 import numpy as np
 #from numpy.fft import fft2, fftshift, ifft2
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf as acff
-from numpy.linalg import solve
+#from numpy.linalg import solve
 
 
 def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3):
@@ -44,7 +44,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             plotdata = np.vstack([plotdata,x,y])
             
             for pf in plotfunc:
-                c = np.hstack([0,lsm2(x,y,pf)])
+                c = np.hstack([0,lsm3(x,y,pf)])
                 #print(c)
                 if pf == 1:
                     fy = func1(c,x)
@@ -94,8 +94,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                     bestfunc[idx] = functype[pf]
                     bestfitctrl = fitctrl
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
-                
-                    if abs(acl/acl_est - 1) > 0.25:
+
+                    #Error tolerance
+                    if abs(acl/acl_est - 1) > 0.05:
                         acl = acl_est
                         print('Linear approximation used due to too large deviation..')
 
@@ -453,7 +454,7 @@ def lsm2(x,y, func=1, limit = 0.2):
     A = np.hstack([np.ones(np.shape(x)),x])
     if func == 2:
         A = np.hstack([np.ones(np.shape(x)),x, x**2])
-        print(np.shape(A))
+        #print(np.shape(A))
 
     ATA = np.transpose(A) @ A
     b = np.transpose(A) @ ly
@@ -481,10 +482,49 @@ def lsm2(x,y, func=1, limit = 0.2):
  
 
 
+def lsm3(x,y, func=1, limit = np.exp(-1)):
+    """
+    Least square method
+    """
+
+    idx = y>limit
+    i = np.where(idx == False)[0][0]
+
+    y = y[:i,np.newaxis]
+    x = x[:i,np.newaxis]
+
+    ly = np.log(y)
+
+    A = np.hstack([x])
+    if func == 2:
+        A = np.hstack([x**2])
+        #print(np.shape(A))
+
+    ATA = np.transpose(A) @ A
+    b = np.transpose(A) @ ly
+
+
+    m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+
+    #print(m)
+
+    if func == 1:
+        a = m[0][0]
+
+        k = -a
+        return np.array([1,k,0])
+
+    if func == 2:
+        a = m[0][0]
+        sigma = np.sqrt(-1/(2*a)) #sigma
+        return np.array([sigma,0,sigma*np.sqrt(2*np.pi)])
+
+    return [0,0,0]
+
 def plot_acf2(auflength, funcType, plotdata, xmax = 5):
 
     plotlabel = {0: 'Null', 
-    NULL: 'NULL',
+    np.nan: 'NULL',
     'Exponential': r'$c_1 \exp(k_1 x) + c_0$',
     'Gaussian': r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'}
 
@@ -509,8 +549,8 @@ def plot_acf2(auflength, funcType, plotdata, xmax = 5):
         ax.set_xlim([-0.02*xmax, xmax])
         ax.legend()
     #ax2.set_title("Autocorrelation Length")
-    fig.set_figheight(5)
-    fig.set_figwidth(15)
+    fig.set_figheight(4)
+    fig.set_figwidth(12)
     plt.show(block=False)
 
 

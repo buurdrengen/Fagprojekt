@@ -18,14 +18,14 @@ if __name__ == "__main__":
 
 
     clip, blurredClip = clipBlur(fname, x=1750, y=2500, marginX=1000, marginY=1500, sigma=2)
-    clip[blurredClip > 0.50] = 0
+    #clip[blurredClip > 0.50] = 0
+    #clip[blurredClip <= 0.50] = 1
 
     auflength, functype, plotdata = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot")
     print(auflength)
     plot_acf2(auflength, functype, plotdata)
 
 # M = scanclip(clip)
-
     l = input("Wait...")
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)

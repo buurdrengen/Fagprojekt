@@ -152,6 +152,7 @@ while True:
             fig.set_figwidth(11)
             plt.show(block=False)
             clip[blurredClip > threshold] = 0
+            clip[blurredClip < threshold] = 1
         except:
             print("You need to load picture first!")
     #endregion Display modified picture
