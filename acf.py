@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from distutils.log import error
 import string
 from matplotlib.colors import Normalize
@@ -8,7 +9,7 @@ from statsmodels.tsa.stattools import acf as acff
 from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname="", ip=0, sections=3):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -19,9 +20,11 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname=""
     n = np.shape(clip)[0]
     M = np.zeros(n)
     bestfunc = np.empty(sections, dtype= 'U32')
-    functype = ["null","Exponetial","Gaussian"]
+    functype = ["null","Exponential","Gaussian"]
 
     #print(f"n is {n}")
+
+    plotdata = np.empty(lags)
 
     if sections != 0:
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
@@ -31,15 +34,16 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname=""
             bestfitctrl = np.inf
             blck = clip[blocks[idx]:blocks[idx + 1]]
             auto = autoCor(blck, nlags=lags)
-            acl = autocolen(auto, scale=conversion)
+            acl_est = autocolen(auto, scale=conversion)
             print("-"*30)
-            print(f"Estimeret Autokorrelationslængde: {acl:.04f}mm")
+            print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
             bestfunc[idx] = functype[0]
+            x = np.arange(lags)
+            y = auto[x]
+            x = x*conversion
+            plotdata = np.vstack([plotdata,x,y])
             
             for pf in plotfunc:
-                x = np.arange(lags)
-                y = auto[x]
-                x = x*conversion
                 c = np.hstack([0,lsm2(x,y,pf)])
                 #print(c)
                 if pf == 1:
@@ -50,32 +54,35 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname=""
                     fy = func2(c,x)
                     plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
                     acl = np.sqrt(2)*c[1]-c[2]
+                #print(f"size of x: {np.shape(x)}")
+                #print(f"size of fy: {np.shape(fy)}")
+
+                plotdata = np.vstack([plotdata,fy])
+
+                # if (plotname != "") or plot:
+                #     plt.figure()
+                #     plt.plot(x,y,'bo',label="ACF")
+                #     plt.plot(x,fy,'k-',label=plotlabel)
+                #     plt.grid(True)
+                #     plt.xlabel("Længde [mm]")
+                #     plt.ylabel("ACF")
+                #     plt.title("Autokorrelation")
+                #     plt.ylim([-0.1, 1])
+                #     plt.legend()
+                #     if plotname != None:
+                #         fname = str(f"plotimg/{plotname}{idx+1}-{pf}.png")
+                #         #print(fname)
+                #         plt.savefig(fname,dpi=300,format="png")
+                #     if plot: 
+                #         plt.show()
+                #     plt.close()
 
 
-                if (plotname != "") or plot:
-                    plt.figure()
-                    plt.plot(x,y,'bo',label="ACF")
-                    plt.plot(x,fy,'k-',label=plotlabel)
-                    plt.grid(True)
-                    plt.xlabel("Længde [mm]")
-                    plt.ylabel("ACF")
-                    plt.title("Autokorrelation")
-                    plt.ylim([-0.1, 1])
-                    plt.legend()
-                    if plotname != None:
-                        fname = str(f"plotimg/{plotname}{idx+1}-{pf}.png")
-                        #print(fname)
-                        plt.savefig(fname,dpi=300,format="png")
-                    if plot: 
-                        plt.show()
-                    plt.close()
-
-
-                print(f"Autokorrelationslængde fra {functype[pf]} lsm: {acl:.04f}mm")
+                print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
 
                 if (np.abs(c[2]) > 1 or (c[3]/c[1]) > 7) and pf == 2: # Gaussain sanity check
-                        fy = fy*np.inf
-                        print("Gaussian solution discarded")
+                    fy = fy*np.inf
+                    print("Gaussian solution discarded")
 
                 fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
 
@@ -87,7 +94,11 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname=""
                     bestfunc[idx] = functype[pf]
                     bestfitctrl = fitctrl
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
-            
+                
+                    if abs(acl/acl_est - 1) > 0.25:
+                        acl = acl_est
+                        print('Linear approximation used due to too large deviation..')
+
                     M2[idx] = acl
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
@@ -113,7 +124,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=1, plotname=""
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return M, bestfunc
+    return M, bestfunc, plotdata[1:]
 
 def autoCor(clipBlur, nlags = 1999):
     # Function 
@@ -468,3 +479,40 @@ def lsm2(x,y, func=1, limit = 0.2):
 
     return [0,0,0]
  
+
+
+def plot_acf2(auflength, funcType, plotdata, xmax = 5):
+
+    plotlabel = {0: 'Null', 
+    NULL: 'NULL',
+    'Exponential': r'$c_1 \exp(k_1 x) + c_0$',
+    'Gaussian': r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'}
+
+    #print(np.shape(plotdata))
+
+    fig, [ax1, ax2, ax3] = plt.subplots(1, 3)
+    axx = [ax1,ax2,ax3]
+    for i in range(3):
+        x = plotdata[4*i]
+        y = plotdata[4*i + 1]
+        fyexp = plotdata[4*i + 2]
+        fygauss = plotdata[4*i + 3]
+        ax = axx[i]
+        ax.plot(x, y, 'k.', label="ACF")
+        ax.plot(x, fyexp ,'r--', label='Exponential')
+        ax.plot(x, fygauss ,'b--', label='Gaussian')
+        ax.grid(True)
+        ax.set_xlabel("Length [mm]")
+        ax.set_ylabel("ACF")
+        ax.set_title(f"Section {i+1}")
+        ax.set_ylim([-0.02, 1])
+        ax.set_xlim([-0.02*xmax, xmax])
+        ax.legend()
+    #ax2.set_title("Autocorrelation Length")
+    fig.set_figheight(5)
+    fig.set_figwidth(15)
+    plt.show(block=False)
+
+
+
+

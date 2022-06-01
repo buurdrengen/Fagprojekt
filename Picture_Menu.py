@@ -9,6 +9,7 @@ Created on Mon Jan 17 08:43:04 2022
 @author: Bruger
 """
 
+from asyncio.windows_events import NULL
 from inputNumber import inputNumber
 from displayMenu import displayMenu
 import numpy as np
@@ -25,7 +26,7 @@ from acf import *
 
 # Create the options for the menus that are to be used later.
 options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Set threshold, sigma', 'Display modified picture', \
-    'Get autocorrelation', 'Save', 'Quit'])
+    'Get autocorrelation', 'Plot autocorrelation', 'Save', 'Quit'])
 # optionsSettings = np.array(['Set blur', 'Set clipoutrange and pixel to mm conversionrate', 'Set threshold',\
 #      'Set picture length', 'Display clipout', 'Done'])
 
@@ -33,12 +34,16 @@ options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Set thr
 while True:
     choice = displayMenu(options)
     
+    #----------------------------------------------------------
+
     #region Load Data
     if (choice == 'Load picture'):
         fileName = inputFilename()
         image = skimage.io.imread(fname=fileName, as_gray=True)
     #endregion Load Data
     
+    #----------------------------------------------------------
+
     #region Dislay statistics
     elif (choice == 'Set threshold, blur, margin, etc'):
         
@@ -117,6 +122,8 @@ while True:
         skimage.io.imshow(clip)
     #endregion Display Statistics        
 
+    #----------------------------------------------------------
+
     elif(choice == 'Set threshold, sigma'):
         while True:
             try:
@@ -131,6 +138,8 @@ while True:
             except ValueError:
                 print('You did not input a real number')
     
+    #----------------------------------------------------------
+
     #region Display modified picture
     elif(choice == 'Display modified picture'):
         try:
@@ -147,15 +156,24 @@ while True:
             print("You need to load picture first!")
     #endregion Display modified picture
     
+    #----------------------------------------------------------
+
     #region Autocorrelation
     elif(choice == 'Get autocorrelation'):
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
         auflength  = np.empty(3)
-        auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
+        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
         print("ACL is {:0.2f} mm, {:0.2f} mm and {:0.2f} mm and function type is {}".format(auflength[0], \
             auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
+
+
+    elif(choice == 'Plot autocorrelation'):
+        xmax = inputNumber('Select length of plot in [mm]: ')
+        plot_acf2(auflength, funcType, plotdata, xmax = xmax)
+
+    #----------------------------------------------------------
 
     #region Save
     elif(choice == 'Save'):
@@ -170,10 +188,12 @@ while True:
         np.savetxt(txtName, Matrix, delimiter=' ', newline = "\n", fmt = "%s")
     #endregion Save
 
+    #----------------------------------------------------------
 
     #region Quit
     elif (choice == 'Quit'):
         break
     #endregion Quit
 
+    #----------------------------------------------------------
 
