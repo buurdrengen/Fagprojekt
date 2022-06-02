@@ -2,7 +2,7 @@ import numpy as np
 # from autocolen import autocolen
 from clipBlur import clipBlur
 # from autocofunc import autoCor
-from acf import acf, scanclip
+from acf import acf, plot_acf2
 # #from string import rfind
 # from plot_acf import func2
 # import matplotlib.pyplot as plt
@@ -14,17 +14,19 @@ if __name__ == "__main__":
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-    fname = "thin_slices/firstyearice/southerntransect/20200201_145742.jpg"
+    fname = "thin_slices/hummocks/hummock2/20200122_171410.jpg"
 
-    clip, blurredClip = clipBlur(fname, x=1800, y=2550, marginX=1400, marginY=1050, sigma=0.25)
+
+    clip, blurredClip = clipBlur(fname, x=1750, y=2500, marginX=1000, marginY=1500, sigma=2)
     clip[blurredClip > 0.50] = 0
+    #clip[blurredClip <= 0.50] = 1
 
-    auflength = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot", sections=1)
+    auflength, functype, plotdata = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot")
     print(auflength)
+    plot_acf2(auflength, functype, plotdata)
 
 # M = scanclip(clip)
-
-    #l = input("Wait...")
+   # l = input("Wait...")
 
 #len,funct = acf(clip, plotname="Name", plot = True, plotfunc = [1, 2], lags=50, ip=40)
 #print(f"Autocorrelation length is {len:.3}mm")
