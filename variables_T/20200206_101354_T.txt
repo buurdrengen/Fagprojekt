@@ -6,6 +6,6 @@
 0.25
 0.55
 0.1186233425428791
-0.14104334117558723
+0.14071304215563205
 0.15443592510080045
-['Exponential' 'Exponential' 'Exponential']
+['Exp Root' 'Exp Root' 'Exp Root']
