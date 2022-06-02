@@ -36,6 +36,14 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             auto = autoCor(blck, nlags=lags)
             acl_est = autocolen(auto, scale=conversion)
             print("-"*30)
+            print(f"auto = {np.size(auto)}")
+
+            if any(auto < -1) or any(auto > 1):
+                print("Warning[acf]: Autocorrelation contains invalid values!")
+            if any(np.isnan(auto)):
+                print("Warning[acf]: Warning: Autocorrelation contains NaN entries!")
+
+
             print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
             bestfunc[idx] = functype[0]
             x = np.arange(lags)
@@ -152,7 +160,18 @@ def autoCor(clipBlur, nlags = 1999):
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
     for i, clips in enumerate(clipBlur):
-        auto = acff(clips,nlags=nlags)
+        if all(clips == 0):
+            auto = np.ones(np.size(nlags))
+        else:
+            auto = acff(clips,nlags=nlags)
+
+
+        if any(np.isnan(auto)):
+            print(f"Warning[autoCor]: NaN number in line {i}!")
+            if any(np.isnan(clips)):
+                print(f"    This is due to erroneous input!!")
+
+
         M = M + auto
         
         # if i %10 == 0: 
@@ -208,6 +227,7 @@ def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=
 
     sx = x#[0:lsmpoints+1]
     sy = y#[0:lsmpoints+1]
+
 
     if func == 1:
         m0 = [0.1, 1.1, -1]
@@ -489,7 +509,11 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     """
 
     idx = y>limit
-    i = np.where(idx == False)[0][0]
+    if all(idx):
+        i = np.size(idx)
+    else:
+        i = np.where(idx == False)[0][0]
+        
 
     Cobs = np.diag(1/(abs(y[:i] - np.exp(-1))**2 + 1))
 
@@ -510,7 +534,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
     except np.linalg.LinAlgError:
         print(f"Unable to compute function {func}: Singular Matrix")
-        m = [0,0,1]
+        m = [[0]]
 
     #print(m)
 
@@ -527,7 +551,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     return [0,0,0]
 
-def plot_acf2(auflength, funcType, plotdata, xmax = 5):
+def plot_acf2(auflength, funcType, plotdata, xmax = 5, block = False):
 
     plotlabel = {0: 'Null', 
     np.nan: 'NULL',
@@ -557,7 +581,7 @@ def plot_acf2(auflength, funcType, plotdata, xmax = 5):
     #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
     fig.set_figwidth(12)
-    plt.show()
+    plt.show(block = block)
 
 
 

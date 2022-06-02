@@ -14,16 +14,17 @@ if __name__ == "__main__":
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-    fname = "thin_slices/hummocks/hummock2/20200122_171410.jpg"
+    fname = "thin_slices/meltponds/meltpond_ssmi/meltpond_ssmi_7cm_bot.jpg"
 
 
-    clip, blurredClip = clipBlur(fname, x=1750, y=2500, marginX=1000, marginY=1500, sigma=2)
-    clip[blurredClip > 0.50] = 0
-    #clip[blurredClip <= 0.50] = 1
+    clip, blurredClip = clipBlur(fname, x=1695, y=2300, marginX=1155, marginY=1900, sigma=2)
+    threshold = 0.5
+    clip[blurredClip > threshold] = 0
+    #clip[blurredClip <= threshold] = 1
 
     auflength, functype, plotdata = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot")
     print(auflength)
-    plot_acf2(auflength, functype, plotdata)
+    plot_acf2(auflength, functype, plotdata, block = True)
 
 # M = scanclip(clip)
    # l = input("Wait...")
