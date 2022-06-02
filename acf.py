@@ -462,6 +462,7 @@ def lsm2(x,y, func=1, limit = np.exp(-2)):
 
     m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
 
+
     #print(m)
 
     if func == 1:
@@ -505,8 +506,11 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     ATA = np.transpose(A) @ Cobs @ A
     b = np.transpose(A) @ Cobs @ ly
 
-
-    m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+    try:
+        m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+    except np.linalg.LinAlgError:
+        print(f"Unable to compute function {func}: Singular Matrix")
+        m = [0,0,1]
 
     #print(m)
 
@@ -518,7 +522,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     if func == 2:
         a = m[0][0]
-        sigma = np.sqrt(-1/(2*a)) #sigma
+        sigma = np.sqrt(np.divide(-1,2*a)) #sigma
         return np.array([sigma,0,sigma*np.sqrt(2*np.pi)])
 
     return [0,0,0]
