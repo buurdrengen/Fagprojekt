@@ -36,7 +36,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             auto = autoCor(blck, nlags=lags)
             acl_est = autocolen(auto, scale=conversion)
             print("-"*30)
-            print(f"auto = {np.size(auto)}")
+            #print(f"auto = {np.size(auto)}")
 
             if any(auto < -1) or any(auto > 1):
                 print("Warning[acf]: Autocorrelation contains invalid values!")
