@@ -14,15 +14,18 @@ print(files)
 print(images)
 print(' ')
 
-[yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength, funcType] = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 
-variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
-    auflength[1], auflength[2], funcType]
+# The variables vector was defined as having the following positions
+# variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
+#     auflength[1], auflength[2], funcType]
+
+variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 
 
 for filename in os.listdir(files):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
         # print(np.arange(len(variables)))
+        print(filename)
         
         for i in np.arange(len(variables)):
             variables[i] = f.readline()
@@ -31,6 +34,7 @@ for filename in os.listdir(files):
 
     # Now I find the fileplacement of the files 
     filenameM = images + '\\' + filename[0:-4] + '.jpg'
+    filenameSave = 'variables_T\\' + filename[0:-4] + '_T.txt'
 
 
     # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
@@ -44,14 +48,21 @@ for filename in os.listdir(files):
     image = skimage.io.imread(fname=filenameM, as_gray=True)
     # Transpose the image so we get the autocorrelation on horizontally.
     image = image.T
-
+    print('')
     print(filename)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
     auflength  = np.empty(3)
-    auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
+    auflength, funcType, j = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
     
+    variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
+    auflength[1], auflength[2], funcType]
+
+    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
+
+
+
 
 
     
