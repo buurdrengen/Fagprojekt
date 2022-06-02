@@ -162,15 +162,22 @@ def autoCor(clipBlur, nlags = 1999):
     ## Et helt billede
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
+    err = 0
     for i, clips in enumerate(clipBlur):
+
+        if i == 731:
+            plt.plot(np.arange(np.size(clips)),abs(clips))
+
         if all(clips == 0):
             auto = np.ones(np.size(nlags))
         else:
-            auto = acff(clips,nlags=nlags)
+            auto = acff(clips, nlags=nlags, missing='drop')
 
 
         if any(np.isnan(auto)):
-            print(f"Warning[autoCor]: NaN number in line {i}!")
+            print(f"Warning[autoCor]: NaN number in line {i}! - dropping line..")
+            auto = np.zeros(np.size(nlags))
+            err += 1
             if any(np.isnan(clips)):
                 print(f"    This is due to erroneous input!!")
 
@@ -179,7 +186,7 @@ def autoCor(clipBlur, nlags = 1999):
         
         # if i %10 == 0: 
             # print(i)
-    M = 1/(i+1) * M
+    M = 1/(i+1-err) * M
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes
