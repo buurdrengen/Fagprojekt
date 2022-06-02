@@ -14,6 +14,9 @@ print(files)
 print(images)
 print(' ')
 
+fTypes = np.array(['null','Exponential','Gaussian','Exp Root'])
+fit = np.array([1,2,3])
+
 
 # The variables vector was defined as having the following positions
 # variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -54,7 +57,8 @@ for filename in os.listdir(files):
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
     auflength  = np.empty(3)
-    auflength, funcType, j = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
+    auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = True, plotfunc = [1,2,3])
+    plot_acf2(auflength, fTypes[fit], plotdata, xmax = 4, block='True')
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
     auflength[1], auflength[2], funcType]
