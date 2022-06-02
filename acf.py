@@ -2,6 +2,7 @@
 #from distutils.log import error
 #import string
 #from matplotlib.colors import Normalize
+from ast import NotEq
 import numpy as np
 #from numpy.fft import fft2, fftshift, ifft2
 import matplotlib.pyplot as plt
@@ -65,6 +66,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 elif pf == 3:
                     fy = func3(c,x)
                     acl = 1/(c[2]**2)
+                elif pf == 0:
+                    fy = y
+                    acl = acl_est
                 #print(f"size of x: {np.shape(x)}")
                 #print(f"size of fy: {np.shape(fy)}")
 
@@ -107,9 +111,10 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
 
                     #Error tolerance
-                    if abs(acl/acl_est - 1) > 0.05:
-                        acl = acl_est
-                        print('Linear approximation used due to too large deviation..')
+                    if  np.not_equal(acl_est,0):
+                        if abs(acl/acl_est - 1) > 0.05:
+                            acl = acl_est
+                            print('Linear approximation used due to too large deviation..')
 
                     M2[idx] = acl
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
@@ -165,8 +170,8 @@ def autoCor(clipBlur, nlags = 1999):
     err = 0
     for i, clips in enumerate(clipBlur):
 
-        if i == 731:
-            plt.plot(np.arange(np.size(clips)),abs(clips))
+        # if i == 731:
+        #     plt.plot(np.arange(np.size(clips)),abs(clips))
 
         if all(clips == 0):
             auto = np.ones(np.size(nlags))
@@ -582,6 +587,7 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False):
 
     #print(np.shape(plotdata))
 
+    plt.figure(1)
     fig, [ax1, ax2, ax3] = plt.subplots(1, 3)
     axx = [ax1,ax2,ax3]
 

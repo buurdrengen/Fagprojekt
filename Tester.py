@@ -33,34 +33,43 @@ if __name__ == "__main__":
 
 #---------------------------------------------------------
 
-    fname = "images/20200206_103511.jpg"
+    fname = "rasmusbogbilleder/20200206_101354_3.jpg"
     fTypes = np.array(['null','Exponential','Gaussian','New Function'])
-    fit = np.array([1,2,3])
+    fit = np.array([0])
 
-    s1 = np.array([0])
-    s2 = np.array([0])
-    s3 = np.array([0])
-    clip, blurredClip = clipBlur(fname, y=2800, x=1825, marginY=1100, marginX=1175, sigma=0.25)
 
-    x = np.arange(0.4,1,0.2)
-    for blr in x:
+    clip, blurredClip = clipBlur(fname, x=1850, y=2650, marginX=1250, marginY=1350, sigma=0.25)
+
+    x = np.arange(1,0.05,-0.005)
+    s1 = np.zeros(np.size(x))
+    s2 = np.zeros(np.size(x))
+    s3 = np.zeros(np.size(x))
+    for idx, blr in enumerate(x):
         clip[blurredClip > blr] = 0
 
         auflength, functype, plotdata = acf(clip.T, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
-        s1 = np.hstack([s1,auflength[0]])
-        s2 = np.hstack([s2,auflength[1]])
-        s3 = np.hstack([s3,auflength[2]])
+        s1[idx] = auflength[0]
+        s2[idx] = auflength[1]
+        s3[idx] = auflength[2]
+        print(auflength)
 
-    plt.plot()
+    plt.figure(2)
+    s1[s1 == 0] = 100
+    s2[s2 == 0] = 100
+    s2[s2 == 0] = 100
+
     #plt.grid(True)
-    plt.plot(x,s1[1:],'r-.',label='Section 1')
-    plt.plot(x,s2[1:],'b-.',label='Section 2')
-    plt.plot(x,s3[1:],'k-.',label='Section 3')
+    plt.plot(x,s1,'r-',label='Section 1')
+    plt.plot(x,s2,'b-',label='Section 2')
+    plt.plot(x,s3,'k-',label='Section 3')
     plt.xlabel("Threshold")
     plt.ylabel("ACL")
     plt.title(f"Autocorrelation Length")
     plt.legend()
-    plt.show()
+    plt.xlim([-0.02,1.02])
+    plt.ylim([-0.04,2.04])
+    plt.show(block = True)
+    plt.close(2)
 
 #---------------------------------------------------------
 # M = scanclip(clip)
