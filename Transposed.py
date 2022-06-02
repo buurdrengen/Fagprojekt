@@ -1,6 +1,10 @@
 
 import os
 import numpy as np
+import skimage.io
+import matplotlib.pyplot as plt
+from clipBlur import *
+from acf import *
 
 files = os.getcwd() + '\\variables'
 images = os.getcwd() + '\\images'
@@ -24,9 +28,33 @@ for filename in os.listdir(files):
             variables[i] = f.readline()
             variables[i] = variables[i][0:-1]
     
-    # with open(os.path.join(images, filename), 'r') as g:
-    #     print(g)
+
+    # Now I find the fileplacement of the files 
+    filenameM = images + '\\' + filename[0:-4] + '.jpg'
 
 
-print(os.listdir(files))
+    # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
+    xMiddle = int(variables[0])
+    yMiddle = int(variables[1])
+    marginX = int(variables[2])
+    marginY = int(variables[3])
+    [conversion, blur, threshold] = np.float64(variables[4:7])
+
+    ## Get the autocorrelation lengths.
+    image = skimage.io.imread(fname=filenameM, as_gray=True)
+    # Transpose the image so we get the autocorrelation on horizontally.
+    image = image.T
+
+    print(filename)
+
+    clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
+    clip[blurredClip > threshold] = 0
+    auflength  = np.empty(3)
+    auflength, funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
+    
+
+
+    
+
+
         
