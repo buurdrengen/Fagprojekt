@@ -1,79 +1,56 @@
 
+import os
 import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 from clipBlur import *
-# from autocofunc import *
-# from autocolen import *
-import statsmodels.api as sm
-from statsmodels.graphics import tsaplots
 from acf import *
 
-# Define the variables used to analyze the picture
-x = 1300
-y = 3000
-margin = 1000
-threshold = 0.6
-sigma = 5.0
-filename = 'thin_slices/leadice/20200205/20200206_110750.jpg'
+files = os.getcwd() + '\\variables'
+images = os.getcwd() + '\\images'
 
+print('')
+print(files)
+print(images)
+print(' ')
 
+[yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength, funcType] = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 
-# the variable that decides how many pixels we want to see the autocorrelation for. (length of displacement from 0 to end.) 
-# Maximum is marginX
-end = 500
+variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
+    auflength[1], auflength[2], funcType]
 
-# conversion variable is the distance (in mm) per pixel in the picture.
-conversion = 90/2000
+print(len(variables))
 
-# Get a clipout of the picture (clip) and a clipout of the picture after it has been blurred (blurredClip)
-clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
+filename = "20200213_170702.txt"
 
-# Define the modified clip that will be used in the autocorrelation function
-clipMod = np.copy(clip)
-clipMod[blurredClip > threshold] = 0
+with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
+# print(np.arange(len(variables)))
 
-# Define a modified clipout of the picture that will be used to visualize the thresholding.
-clipShow = np.copy(clip)
-clipShow[blurredClip > threshold] = 1
+    for i in np.arange(len(variables)):
+        variables[i] = f.readline()
+        variables[i] = variables[i][0:-1]
 
-# Make a greyscale histogram to show at which brightness there are peaks.
-plt.figure(0)
-plt.hist(x=blurredClip.flatten(), bins=256, range=(0,1))
-plt.title('frequency of grayscale pigments.')
-plt.xlabel('Brightness')
-plt.show()
+    # Now I find the fileplacement of the files 
+    filenameM = images + '\\' + filename[0:-4] + '.jpg'
 
-# show the clipout before it was modified
-plt.figure(1)
-skimage.io.imshow(clip)
-plt.title('Clipout of image in grayscale, untreated')
+    # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
+    xMiddle = int(variables[0])
+    yMiddle = int(variables[1])
+    marginX = int(variables[2])
+    marginY = int(variables[3])
+    [conversion, blur, threshold] = np.float64(variables[4:7])
 
-# Show the clipout after it was modified.
-plt.figure(2)
-skimage.io.imshow(clipShow)
-plt.title('modified picture clipout')
+    ## Get the autocorrelation lengths.
+    image = skimage.io.imread(fname=filenameM, as_gray=True)
+    # Transpose the image so we get the autocorrelation on horizontally.
+    image = image.T
+    print('')
+    print(filename)
 
-# Print all the figures created
-plt.show()
-
-# Make the autocorrelationfunction applying to out picture
-autfct,funcType = acf(clipMod, plot = False)
-
-# Define a displacement vector for the autocorrelation
-# Xbar = np.arange(end)
-# plt.figure(3)
-# plt.plot(Xbar, autfct[0:end])
-# plt.xlabel('displacement [pixels]')
-# plt.ylabel('autocorrelation')
-# plt.title('autocorrelation as a function of displacement')
-# plt.show()
-
-# autLength = autocolen(autfct, conversion)
-
-print('the autocorrelation length is {:.2f} mm'.format(autfct))
-
-
+    clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
+    clip[blurredClip > threshold] = 0
+    auflength  = np.empty(3)
+    auflength, funcType, j = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
 
 
 
