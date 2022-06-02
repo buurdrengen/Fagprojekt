@@ -20,7 +20,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
     n = np.shape(clip)[0]
     M = np.zeros(n)
     bestfunc = np.empty(sections, dtype= 'U32')
-    functype = ["null","Exponential","Gaussian"]
+    functype = ["null","Exponential","Gaussian","Exp Root"]
 
     #print(f"n is {n}")
 
@@ -36,6 +36,14 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             auto = autoCor(blck, nlags=lags)
             acl_est = autocolen(auto, scale=conversion)
             print("-"*30)
+            #print(f"auto = {np.size(auto)}")
+
+            if any(auto < -1) or any(auto > 1):
+                print("Warning[acf]: Autocorrelation contains invalid values!")
+            if any(np.isnan(auto)):
+                print("Warning[acf]: Warning: Autocorrelation contains NaN entries!")
+
+
             print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
             bestfunc[idx] = functype[0]
             x = np.arange(lags)
@@ -48,12 +56,15 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 #print(c)
                 if pf == 1:
                     fy = func1(c,x)
-                    plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
+                    #plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
                     acl = 1/c[2]
                 elif pf == 2:
                     fy = func2(c,x)
-                    plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
+                    #plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
                     acl = np.sqrt(2)*c[1]-c[2]
+                elif pf == 3:
+                    fy = func3(c,x)
+                    acl = 1/(c[2]**2)
                 #print(f"size of x: {np.shape(x)}")
                 #print(f"size of fy: {np.shape(fy)}")
 
@@ -152,7 +163,18 @@ def autoCor(clipBlur, nlags = 1999):
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
     for i, clips in enumerate(clipBlur):
-        auto = acff(clips,nlags=nlags)
+        if all(clips == 0):
+            auto = np.ones(np.size(nlags))
+        else:
+            auto = acff(clips,nlags=nlags)
+
+
+        if any(np.isnan(auto)):
+            print(f"Warning[autoCor]: NaN number in line {i}!")
+            if any(np.isnan(clips)):
+                print(f"    This is due to erroneous input!!")
+
+
         M = M + auto
         
         # if i %10 == 0: 
@@ -209,6 +231,7 @@ def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=
     sx = x#[0:lsmpoints+1]
     sy = y#[0:lsmpoints+1]
 
+
     if func == 1:
         m0 = [0.1, 1.1, -1]
     elif func == 2:
@@ -258,9 +281,10 @@ def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=
     #e = np.exp(1)
     acl = [0,
     -1/m[2], 
-    np.sqrt(2)*np.abs(m[1])-m[2]]
+    np.sqrt(2)*np.abs(m[1])-m[2]
+    -1/(m[2]**2)]
 
-    functype = ["null", "eksponentiel", "Gauss"]
+    functype = ["null", "eksponentiel", "Gauss","22"]
 
     print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
 
@@ -318,7 +342,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
         #print(b)
         try: 
             delta = np.linalg.inv(A).dot(b) #solve(A,b, assume_a='sym')
-        except scipy.linalg.LinAlgError:
+        except np.linalg.LinAlgError:
             errorlevel = 2
             break
         except ValueError:
@@ -346,6 +370,9 @@ def func1(m,x):
 
 def func2(m,x):
     return m[0] + (m[3]/(m[1]*np.sqrt(2*np.pi))) * np.exp(-0.5 * ((x-m[2])**2) / (m[1]**2))
+
+def func3(m,x):
+    return m[0] + m[1]*np.exp(-m[2]*np.sqrt(x))
 
 #--------------------------------------------------------------
 
@@ -489,9 +516,13 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     """
 
     idx = y>limit
-    i = np.where(idx == False)[0][0]
+    if all(idx):
+        i = np.size(idx)
+    else:
+        i = np.where(idx == False)[0][0]
+        
 
-    Cobs = np.diag(1/(abs(y[:i] - np.exp(-1))**2 + 1))
+    Cobs = np.diag(1/((abs(y[:i] - np.exp(-1))**2)+1))
 
     y = y[:i,np.newaxis]
     x = x[:i,np.newaxis]
@@ -502,6 +533,8 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     if func == 2:
         A = np.hstack([x**2])
         #print(np.shape(A))
+    if func == 3:
+        A = np.hstack([np.sqrt(abs(x))])
 
     ATA = np.transpose(A) @ Cobs @ A
     b = np.transpose(A) @ Cobs @ ly
@@ -510,7 +543,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
     except np.linalg.LinAlgError:
         print(f"Unable to compute function {func}: Singular Matrix")
-        m = [0,0,1]
+        m = [[0]]
 
     #print(m)
 
@@ -525,9 +558,15 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         sigma = np.sqrt(np.divide(-1,2*a)) #sigma
         return np.array([sigma,0,sigma*np.sqrt(2*np.pi)])
 
+    if func == 3:
+        a = m[0][0]
+        k = -a
+        return np.array([1,k,0])
+
+
     return [0,0,0]
 
-def plot_acf2(auflength, funcType, plotdata, xmax = 5):
+def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False):
 
     plotlabel = {0: 'Null', 
     np.nan: 'NULL',
@@ -538,15 +577,19 @@ def plot_acf2(auflength, funcType, plotdata, xmax = 5):
 
     fig, [ax1, ax2, ax3] = plt.subplots(1, 3)
     axx = [ax1,ax2,ax3]
+
+    kx = np.size(funcTypes) + 2
+
+    colscheme = ['r--','b--','m--']
     for i in range(3):
-        x = plotdata[4*i]
-        y = plotdata[4*i + 1]
-        fyexp = plotdata[4*i + 2]
-        fygauss = plotdata[4*i + 3]
+        x = plotdata[kx*i]
+        y = plotdata[kx*i + 1]
         ax = axx[i]
         ax.plot(x, y, 'k.', label="ACF")
-        ax.plot(x, fyexp ,'r--', label='Exponential')
-        ax.plot(x, fygauss ,'b--', label='Gaussian')
+        for j, fnc in enumerate(funcTypes):
+            fy = plotdata[kx*i + j + 2]
+            ax.plot(x, fy ,colscheme[j], label=fnc)
+        
         ax.grid(True)
         ax.set_xlabel("Length [mm]")
         ax.set_ylabel("ACF")
@@ -557,7 +600,7 @@ def plot_acf2(auflength, funcType, plotdata, xmax = 5):
     #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
     fig.set_figwidth(12)
-    plt.show()
+    plt.show(block = block)
 
 
 
