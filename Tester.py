@@ -14,17 +14,18 @@ if __name__ == "__main__":
 # a[0:3] = [1,2, "bananas"]
 # print(a)
 
-    fname = "thin_slices/meltponds/meltpond_ssmi/meltpond_ssmi_7cm_bot.jpg"
+    fname = "images/20200206_103511.jpg"
+    fTypes = np.array(['null','Exponential','Gaussian','New Function'])
+    fit = np.array([1,3])
 
-
-    clip, blurredClip = clipBlur(fname, x=1695, y=2300, marginX=1155, marginY=1900, sigma=2)
+    clip, blurredClip = clipBlur(fname, y=2800, x=1825, marginY=1100, marginX=1175, sigma=0.25)
     threshold = 0.5
     clip[blurredClip > threshold] = 0
     #clip[blurredClip <= threshold] = 1
 
-    auflength, functype, plotdata = acf(clip, lags = 200, conversion = 90/2000, plot = False, plotfunc = [1,2], ip=40, plotname="Testplot")
+    auflength, functype, plotdata = acf(clip.T, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
     print(auflength)
-    plot_acf2(auflength, functype, plotdata, block = True)
+    plot_acf2(auflength, fTypes[fit], plotdata, block = True)
 
 # M = scanclip(clip)
    # l = input("Wait...")
