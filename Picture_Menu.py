@@ -30,7 +30,7 @@ options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Set thr
 # optionsSettings = np.array(['Set blur', 'Set clipoutrange and pixel to mm conversionrate', 'Set threshold',\
 #      'Set picture length', 'Display clipout', 'Done'])
 
-fTypes = np.array(['null','Exponential','Gaussian','Exp Root'])
+fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
 fit = np.array([1,2,3])
 
 
