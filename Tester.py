@@ -56,7 +56,7 @@ if __name__ == "__main__":
     plt.figure(2)
     s1[s1 == 0] = 100
     s2[s2 == 0] = 100
-    s2[s2 == 0] = 100
+    s3[s3 == 0] = 100
 
     #plt.grid(True)
     plt.plot(x,s1,'r-',label='Section 1')
