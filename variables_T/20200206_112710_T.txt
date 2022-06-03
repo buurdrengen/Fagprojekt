@@ -6,6 +6,6 @@
 0.25
 0.5
 3.551141096847628
-0.2585342456625435
+0.28380251101081705
 0.38196404203282536
-['Empirical' 'Empirical' 'Empirical']
+['Empirical' 'Exp Root' 'Empirical']

@@ -48,7 +48,6 @@ for filename in os.listdir(files):
     ## Get the autocorrelation lengths.
     image = skimage.io.imread(fname=filenameM, as_gray=True)
     print('')
-    print(filenameSave)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
@@ -57,6 +56,8 @@ for filename in os.listdir(files):
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
+
+    print(funcType)
 
     np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
