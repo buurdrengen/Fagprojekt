@@ -173,6 +173,7 @@ while True:
             auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
 
+    #----------------------------------------------------------
 
     elif(choice == 'Plot autocorrelation'):
         auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)

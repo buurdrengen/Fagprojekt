@@ -6,12 +6,12 @@ from clipBlur import clipBlur
 
 
 if __name__ == "__main__":
-    fname = "thin_slices/meltponds/meltpond_20200211/20200213_110428.jpg"
+    fname = "thin_slices/meltponds/meltpond_kuka/meltpond_kuka_9cm_bottom.jpg"
     fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname, x=1725, y=2700, marginX=1225, marginY=1100, sigma=0.25)
+    clip, blurredClip = clipBlur(fname, x=1800, y=2150, marginX=1500, marginY=1150, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     for idx, i in enumerate(x):
         clip[blurredClip > i] = 0
 
-        auflength, functype, plotdata = acf(clip, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
+        auflength, functype, plotdata = acf(clip, lags = 200, conversion = 0.028125, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
         s1[idx] = auflength[0]
         s2[idx] = auflength[1]
         s3[idx] = auflength[2]
