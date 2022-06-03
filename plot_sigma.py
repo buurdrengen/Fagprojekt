@@ -6,25 +6,25 @@ from clipBlur import clipBlur
 
 
 if __name__ == "__main__":
-    fname = "thin_slices/meltponds/meltpond_kuka/20200122_231339.jpg"
+    fname = "thin_slices/meltponds/meltpond_20200211/20200213_110428.jpg"
     fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname, x=1825, y=2150, marginX=1475, marginY=1150, sigma=0.25)
+    clip, blurredClip = clipBlur(fname,  x=1650, y=3100, marginX=1350, marginY=1200, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')
     plt.show()
     plt.close()
-    threshold = 0.6
+    threshold = 0.5
 
     x = np.arange(0.1,4.05,0.05)
     s1 = np.zeros(np.size(x))
     s2 = np.zeros(np.size(x))
     s3 = np.zeros(np.size(x))
     for idx, i in enumerate(x):
-        clip, blurredClip = clipBlur(fname, x=1825, y=2150, marginX=1475, marginY=1150, sigma=i)
+        clip, blurredClip = clipBlur(fname,  x=1650, y=3100, marginX=1350, marginY=1200, sigma=i)
         clip[blurredClip > threshold] = 0
 
         auflength, functype, plotdata = acf(clip, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")

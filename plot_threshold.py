@@ -6,12 +6,12 @@ from clipBlur import clipBlur
 
 
 if __name__ == "__main__":
-    fname = "thin_slices/meltponds/meltpond_kuka/20200122_231339.jpg"
+    fname = "thin_slices/meltponds/meltpond_20200211/20200213_110428.jpg"
     fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname, x=1825, y=2150, marginX=1475, marginY=1150, sigma=0.25)
+    clip, blurredClip = clipBlur(fname, x=1650, y=3100, marginX=1350, marginY=1200, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')
