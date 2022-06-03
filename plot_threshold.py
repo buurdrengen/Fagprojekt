@@ -6,19 +6,19 @@ from clipBlur import clipBlur
 
 
 if __name__ == "__main__":
-    fname = "rasmusbogbilleder/20200206_101354_3.jpg"
-    fTypes = np.array(['null','Exponential','Gaussian','New Function'])
+    fname = "thin_slices/meltponds/meltpond_kuka/Meltpond_kuka_9cm_top.jpg"
+    fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname, x=1850, y=2650, marginX=1250, marginY=1350, sigma=0.25)
+    clip, blurredClip = clipBlur(fname, x=1800, y=2350, marginX=1350, marginY=1250, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')
     plt.show()
     plt.close()
 
-    x = np.arange(1,0.05,-0.005)
+    x = np.arange(1,0.005,-0.005)
     s1 = np.zeros(np.size(x))
     s2 = np.zeros(np.size(x))
     s3 = np.zeros(np.size(x))
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     plt.plot(x,s1,'r-',label='Section 1')
     plt.plot(x,s2,'b-',label='Section 2')
     plt.plot(x,s3,'k-',label='Section 3')
-    plt.xlabel("Threshold [bit-value]")
+    plt.xlabel("Brightness Threshold [8-bit value]")
     plt.ylabel("ACL [mm]")
     plt.title("Autocorrelation Length")
     plt.legend()
