@@ -30,7 +30,7 @@ options = np.array(['Load picture', 'Set threshold, blur, margin, etc', 'Set thr
 # optionsSettings = np.array(['Set blur', 'Set clipoutrange and pixel to mm conversionrate', 'Set threshold',\
 #      'Set picture length', 'Display clipout', 'Done'])
 
-fTypes = np.array(['null','Exponential','Gaussian','Exp Root'])
+fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
 fit = np.array([1,2,3])
 
 
@@ -149,7 +149,6 @@ while True:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 1
             fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.imshow(clip, cmap = 'gray')
             ax2.imshow(image, cmap = 'gray')
             fig.set_figheight(5)
             fig.set_figwidth(11)
