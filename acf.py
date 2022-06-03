@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import acf as acff
 #from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3, errorlimit = 0.1):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -36,7 +36,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             blck = clip[blocks[idx]:blocks[idx + 1]]
             auto = autoCor(blck, nlags=lags)
             acl_est = autocolen(auto, scale=conversion)
-            print("-"*30)
+            #print("-"*30)
             #print(f"auto = {np.size(auto)}")
 
             if any(auto < -1) or any(auto > 1):
@@ -45,7 +45,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 print("Warning[acf]: Warning: Autocorrelation contains NaN entries!")
 
 
-            print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
+            #print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
             bestfunc[idx] = functype[0]
             x = np.arange(lags)
             y = auto[x]
@@ -93,7 +93,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 #     plt.close()
 
 
-                print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
+                # print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
 
                 if (np.abs(c[2]) > 1 or (c[3]/c[1]) > 7) and pf == 2: # Gaussain sanity check
                     fy = fy*np.inf
@@ -111,9 +111,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
                     #Error tolerance
                     if  np.not_equal(acl_est,0):
-                        if abs(acl/acl_est - 1) > 0.05:
+                        if abs(acl/acl_est - 1) > errorlimit:
                             acl = acl_est
-                            print('Linear approximation used due to too large deviation..')
+                            #print('Linear approximation used due to too large deviation..')
                         else:
                             bestfunc[idx] = functype[pf]
                             bestfitctrl = fitctrl
