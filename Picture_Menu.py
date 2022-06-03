@@ -149,7 +149,6 @@ while True:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 1
             fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.imshow(clip, cmap = 'gray')
             ax2.imshow(image, cmap = 'gray')
             fig.set_figheight(5)
             fig.set_figwidth(11)

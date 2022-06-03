@@ -21,7 +21,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
     n = np.shape(clip)[0]
     M = np.zeros(n)
     bestfunc = np.empty(sections, dtype= 'U32')
-    functype = ["null","Exponential","Gaussian","Exp Root"]
+    functype = ["Empirical","Exponential","Gaussian","Exp Root"]
 
     #print(f"n is {n}")
 
@@ -106,8 +106,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 #print(f"Error for {plt} is {fitctrl:.4e}")
                 if fitctrl < bestfitctrl:
                     #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-                    bestfunc[idx] = functype[pf]
-                    bestfitctrl = fitctrl
+                    
             # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
 
                     #Error tolerance
@@ -115,6 +114,10 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                         if abs(acl/acl_est - 1) > 0.05:
                             acl = acl_est
                             print('Linear approximation used due to too large deviation..')
+                        else:
+                            bestfunc[idx] = functype[pf]
+                            bestfitctrl = fitctrl
+
 
                     M2[idx] = acl
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
@@ -578,23 +581,17 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     return [0,0,0]
 
-def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False):
-
-    plotlabel = {0: 'Null', 
-    np.nan: 'NULL',
-    'Exponential': r'$c_1 \exp(k_1 x) + c_0$',
-    'Gaussian': r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'}
+def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors = 3):
 
     #print(np.shape(plotdata))
 
-    plt.figure(1)
-    fig, [ax1, ax2, ax3] = plt.subplots(1, 3)
-    axx = [ax1,ax2,ax3]
+    plt.figure()
+    fig, axx = plt.subplots(1, sectors)
 
     kx = np.size(funcTypes) + 2
 
     colscheme = ['r--','b--','m--']
-    for i in range(3):
+    for i in range(sectors):
         x = plotdata[kx*i]
         y = plotdata[kx*i + 1]
         ax = axx[i]
@@ -612,7 +609,7 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False):
         ax.legend()
     #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
-    fig.set_figwidth(12)
+    fig.set_figwidth(4*sectors)
     plt.show(block = block)
 
 
