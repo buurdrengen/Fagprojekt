@@ -25,4 +25,7 @@ print(blurredImage[:,5])
 
 
 
+print('Mille siger hej fra Spyder!')
+
+
 
