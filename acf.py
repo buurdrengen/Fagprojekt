@@ -585,7 +585,7 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors =
 
     #print(np.shape(plotdata))
 
-    plt.figure()
+    #plt.figure()
     fig, axx = plt.subplots(1, sectors)
 
     kx = np.size(funcTypes) + 2

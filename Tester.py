@@ -24,6 +24,10 @@ if __name__ == "__main__":
     clip, blurredClip = clipBlur(fname, x=1800, y=2350, marginX=1350, marginY=1250, sigma=0.25)
     threshold = 0.55
     clip[blurredClip > threshold] = 0
+
+    plt.imshow(clip, cmap='gray')
+    plt.show()
+
     #clip[blurredClip <= threshold] = 1
 
     auflength, functype, plotdata = acf(clip.T, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
