@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import acf as acff
 #from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3, errorlimit = 0.1):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -111,7 +111,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
                     #Error tolerance
                     if  np.not_equal(acl_est,0):
-                        if abs(acl/acl_est - 1) > 0.05:
+                        if abs(acl/acl_est - 1) > errorlimit:
                             acl = acl_est
                             #print('Linear approximation used due to too large deviation..')
                         else:
