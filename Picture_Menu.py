@@ -9,18 +9,20 @@ Created on Mon Jan 17 08:43:04 2022
 @author: Bruger
 """
 
-from asyncio.windows_events import NULL
+#from asyncio.windows_events import NULL
 from inputNumber import inputNumber
 from displayMenu import displayMenu
 import numpy as np
 import skimage.io
+import matplotlib
 import matplotlib.pyplot as plt
-from clipBlur import *
+from clipBlur import clipBlur
 # from autocofunc import *
 # from autocolen import *
 # from plot_acf import *
 from inputFilename import *
 from acf import *
+matplotlib.use('tkagg')
 
 
 
@@ -149,7 +151,7 @@ while True:
             clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
             clip[blurredClip > threshold] = 1
             fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.imshow(clip,cmap='gray')
+            ax1.imshow(clip, cmap = 'gray')
             ax2.imshow(image, cmap = 'gray')
             fig.set_figheight(5)
             fig.set_figwidth(11)
@@ -171,6 +173,7 @@ while True:
             auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
 
+    #----------------------------------------------------------
 
     elif(choice == 'Plot autocorrelation'):
         auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
