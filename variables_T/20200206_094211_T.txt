@@ -8,4 +8,4 @@
 2.4725237983342097
 0.2552146453767632
 0.16521838487270754
-['Exponential' 'Exp Root' 'Exp Root']
+['Empirical' 'Empirical' 'Empirical']

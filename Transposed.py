@@ -64,7 +64,7 @@ for filename in os.listdir(files):
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
 
-    # np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
+    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
 
 
