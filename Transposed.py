@@ -27,8 +27,7 @@ variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 
 for filename in os.listdir(files):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
-        # print(np.arange(len(variables)))
-        print(filename)
+    
         
         for i in np.arange(len(variables)):
             variables[i] = f.readline()
@@ -52,7 +51,6 @@ for filename in os.listdir(files):
     # Transpose the image so we get the autocorrelation on horizontally.
     image = image.T
     print('')
-    print(filename)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
