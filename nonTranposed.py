@@ -35,6 +35,7 @@ for filename in os.listdir(files):
 
     # Now I find the fileplacement of the files 
     filenameM = images + '\\' + filename[0:-4] + '.jpg'
+    filenameSave = 'variables_nonT\\' + filename
 
 
     # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
@@ -47,7 +48,7 @@ for filename in os.listdir(files):
     ## Get the autocorrelation lengths.
     image = skimage.io.imread(fname=filenameM, as_gray=True)
     print('')
-    print(filename)
+    print(filenameSave)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
@@ -55,8 +56,9 @@ for filename in os.listdir(files):
     auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
-    auflength[1], auflength[2], funcType]
+        auflength[1], auflength[2], funcType]
 
+    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
 
 

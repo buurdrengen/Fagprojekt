@@ -58,12 +58,13 @@ for filename in os.listdir(files):
     clip[blurredClip > threshold] = 0
     auflength  = np.empty(3)
     auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = True, plotfunc = [1,2,3])
-    plot_acf2(auflength, fTypes[fit], plotdata, xmax = 4, block='True')
+    # plot_acf2(auflength, fTypes[fit], plotdata, xmax = 4, block='True')
+    print(funcType)
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
-    auflength[1], auflength[2], funcType]
+        auflength[1], auflength[2], funcType]
 
-    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
+    # np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
 
 
