@@ -16,7 +16,7 @@ import numpy as np
 import skimage.io
 import matplotlib
 import matplotlib.pyplot as plt
-from clipBlur import *
+from clipBlur import clipBlur
 # from autocofunc import *
 # from autocolen import *
 # from plot_acf import *

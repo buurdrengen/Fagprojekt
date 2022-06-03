@@ -11,7 +11,7 @@ if __name__ == "__main__":
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname, x=1650, y=3100, marginX=1350, marginY=1200, sigma=0.25)
+    clip, blurredClip = clipBlur(fname, x=1725, y=2700, marginX=1225, marginY=1100, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')

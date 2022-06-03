@@ -11,20 +11,20 @@ if __name__ == "__main__":
     fit = np.array([0])
 
 
-    clip, blurredClip = clipBlur(fname,  x=1650, y=3100, marginX=1350, marginY=1200, sigma=0.25)
+    clip, blurredClip = clipBlur(fname,  x=1725, y=2700, marginX=1225, marginY=1100, sigma=0.25)
 
     plt.figure()
     plt.imshow(clip, cmap = 'gray')
     plt.show()
     plt.close()
-    threshold = 0.5
+    threshold = 0.53
 
     x = np.arange(0.1,4.05,0.05)
     s1 = np.zeros(np.size(x))
     s2 = np.zeros(np.size(x))
     s3 = np.zeros(np.size(x))
     for idx, i in enumerate(x):
-        clip, blurredClip = clipBlur(fname,  x=1650, y=3100, marginX=1350, marginY=1200, sigma=i)
+        clip, blurredClip = clipBlur(fname,  x=1725, y=2700, marginX=1225, marginY=1100, sigma=i)
         clip[blurredClip > threshold] = 0
 
         auflength, functype, plotdata = acf(clip, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
