@@ -173,6 +173,7 @@ while True:
 
 
     elif(choice == 'Plot autocorrelation'):
+        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
         xmax = inputNumber('Select length of plot in [mm]: ')
         plot_acf2(auflength, fTypes[fit], plotdata, xmax = xmax)
 
@@ -184,7 +185,7 @@ while True:
         filename = filePath[-1].split(".")[0]
         Matrix = np.empty(11, dtype = 'object')
         auflength  = np.empty(3, dtype = 'U56')
-        auflength,funcType = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
+        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
         txtName = 'variables/' + filename + '.txt'
         Matrix[0:11] = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
             auflength[1], auflength[2], funcType]
