@@ -32,6 +32,7 @@ for filename in os.listdir(files):
     # Now I find the fileplacement of the files 
     filenameM = images + '\\' + filename[0:-4] + '.jpg'
     filenameSave = 'variables_nonT\\' + filename
+    imageSave = 'mod_image\\' + filename[0:-4] + '_mod.jpg'
 
 
     # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
@@ -56,9 +57,13 @@ for filename in os.listdir(files):
 
     np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
+
     clip[blurredClip > threshold] = 1
-    plt.imshow(clip, cmap='gray')
-    plt.show()
+    clip = np.uint8(clip*255)
+    skimage.io.imsave(imageSave, clip)
+    
+
+    
 
     
 

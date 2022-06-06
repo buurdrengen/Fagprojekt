@@ -33,13 +33,12 @@ for filename in os.listdir(files):
     # Now I find the fileplacement of the files 
     filenameM = images + '\\' + filename[0:-4] + '.jpg'
     filenameSave = 'variables_T\\' + filename[0:-4] + '_T.txt'
-    imageSave = 'mod_image\\' + filename[0:-4] + '.jpg'
+    imageSave = 'mod_image\\' + filename[0:-4] + '_mod.jpg'
 
-    print('')
-    print(filename)
-    print(filenameM)
+    # print('')
+    # print(filename)
+    # print(imageSave)
 
-    # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
     yMiddle = int(variables[0])
     xMiddle = int(variables[1])
     marginY = int(variables[2])
@@ -47,15 +46,16 @@ for filename in os.listdir(files):
     [conversion, blur, threshold] = np.float64(variables[4:7])
 
     ## Get the autocorrelation lengths.
-    image = skimage.io.imread(fname=filenameM, as_gray=True)
+    # image = skimage.io.imread(fname=filenameM, as_gray=True)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
-    # Transpose the image so we get the autocorrelation on horizontally.
+    # Transpose the image so we get the autocorrelation on horizontally. image
     clip = clip.T
     blurredClip = blurredClip.T
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
+    # auflength, uncertainty, funcType, plotdata = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     auflength, funcType, plotdata = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     # plot_acf2(auflength, fTypes[fit], plotdata, xmax = 4, block='True')
     print(funcType)
@@ -67,10 +67,12 @@ for filename in os.listdir(files):
 
     np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
+    print('')
+    print('top')
     clip[blurredClip > threshold] = 1
-    plt.imshow(clip, cmap='gray')
-    plt.show()
-
+    clip = np.uint8(clip*255)
+    skimage.io.imsave(imageSave, clip)
+    print('bot')
 
 
 
