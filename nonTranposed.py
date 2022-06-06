@@ -11,10 +11,6 @@ from acf import *
 files = os.getcwd() + '\\variables'
 images = os.getcwd() + '\\images'
 
-print('')
-print(files)
-print(images)
-print(' ')
 
 
 # The variables vector was defined as having the following positions
@@ -47,7 +43,6 @@ for filename in os.listdir(files):
 
     ## Get the autocorrelation lengths.
     image = skimage.io.imread(fname=filenameM, as_gray=True)
-    print('')
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
@@ -61,7 +56,9 @@ for filename in os.listdir(files):
 
     np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
-
+    clip[blurredClip > threshold] = 1
+    plt.imshow(clip, cmap='gray')
+    plt.show()
 
     
 
