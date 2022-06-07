@@ -37,7 +37,7 @@ if __name__ == "__main__":
     print(fitness)
     print(kvalue)
     print(xvalue)
-    plot_acf2(auflength, fTypes[fit], plotdata, block = True)
+    plot_acf2(auflength, fTypes[fit], plotdata, block = True, xmax = 2)
 
 
 #---------------------------------------------------------
