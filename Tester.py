@@ -17,12 +17,13 @@ if __name__ == "__main__":
 
 #---------------------------------------------------------
 
-    fname = "thin_slices/meltponds/meltpond_kuka/Meltpond_kuka_9cm_top.jpg"
+    fname = "images/20200220_221521.jpg"
     fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root',"x-Power","x-Exponential"])
     fit = np.array([1,2,4,5])
 
-    clip, blurredClip = clipBlur(fname, x=1800, y=2350, marginX=1350, marginY=1250, sigma=0.25)
-    threshold = 0.55
+    clip, blurredClip = clipBlur(fname, x=1650, y=3000, marginX=1150, marginY=1000, sigma=0.25)
+    threshold = 0.65
+    conversion = 0.03461538461538462
     clip[blurredClip > threshold] = 0
 
     #plt.imshow(clip, cmap='gray')
@@ -30,7 +31,7 @@ if __name__ == "__main__":
 
     #clip[blurredClip <= threshold] = 1
 
-    auflength, confint, functype, plotdata, fitness, kvalue, xvalue = acf(clip, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=np.exp(-2), plotname="Testplot",)
+    auflength, confint, functype, plotdata, fitness, kvalue, xvalue = acf(clip, lags = 200, conversion = conversion, plot = False, plotfunc = fit, ip=np.exp(-2), plotname="Testplot",)
     print(auflength)
     print(confint)
     print(functype)

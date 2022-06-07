@@ -108,7 +108,8 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
                 # print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
 
-                fitctrl = 1/(lags-1) *np.sum((y[:iidx]-fy[:iidx])**2)
+                fitctrl = 1/(iidx) *np.sum((y[:iidx]-fy[:iidx])**2)
+                #print(f"iidx = {iidx}")
                 fitness[idx,jdx] = fitctrl
 
 
