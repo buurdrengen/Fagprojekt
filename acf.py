@@ -671,7 +671,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     return np.array([0,0,0]), i
 
 
-def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors = 3, saveas = None, plotshow = True):
+def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = True, sectors = 3, saveas = None, plotshow = True):
 
     #print(np.shape(plotdata))
 
@@ -705,6 +705,8 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors =
         plt.savefig(savename,dpi=300,format="png")
     if plotshow:
         plt.show(block = block)
+    else:
+        plt.close()
 
 
 

@@ -22,7 +22,7 @@ def plot_sigma(clip, threshold, conversion, saveas = None, plotshow = True):
         s1[idx] = auflength[0]
         s2[idx] = auflength[1]
         s3[idx] = auflength[2]
-        print(auflength)
+        #print(auflength)
 
     yscale = np.max([np.max(s1),np.max(s2),np.max(s3)])*1.5
 

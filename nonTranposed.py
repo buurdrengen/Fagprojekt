@@ -38,13 +38,6 @@ for filename in os.listdir(files):
     filenameSave = 'variables_nonT/' + filename
     imageSave = 'mod_image/' + filename[0:-4] + '_mod.jpg'
 
-    #------------------------------------------------------------------
-    # Plot - Kan udkommenteres ->
-    plotnameM = 'plotimg/' + filename[0:-4] + '.jpg'
-    thresholdnameM = 'threshold_images/' + filename[0:-4] + '.jpg'
-    sigmanameM = 'sigma_images/' + filename[0:-4] + '.jpg'
-    #------------------------------------------------------------------
-
 
     yMiddle = int(variables[0])
     xMiddle = int(variables[1])
@@ -70,11 +63,11 @@ for filename in os.listdir(files):
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
     funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print('     Plotdata...')
+    print(' -> Plotdata...')
     plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print('     Threshold...')
-    plot_threshold(clip=rawclip, blurredClip=blurredClip, conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print('     Sigma...')
+    print(' -> Threshold...')
+    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    print(' -> Sigma...')
     plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
     #-----------------------------------------------------------------
     
