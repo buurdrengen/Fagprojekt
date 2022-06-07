@@ -5,19 +5,8 @@ from acf import acf
 from clipBlur import clipBlur
 
 
-if __name__ == "__main__":
-    fname = "thin_slices/meltponds/meltpond_kuka/meltpond_kuka_9cm_bottom.jpg"
-    fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
+def plot_threshold(clip, blurredClip, conversion, saveas = None, plotshow = True):
     fit = np.array([0])
-
-
-    clip, blurredClip = clipBlur(fname, x=1800, y=2150, marginX=1500, marginY=1150, sigma=0.25)
-
-    plt.figure()
-    plt.imshow(clip, cmap = 'gray')
-    plt.show()
-    plt.close()
-
     x = np.arange(1,0.005,-0.005)
     s1 = np.zeros(np.size(x))
     s2 = np.zeros(np.size(x))
@@ -25,11 +14,11 @@ if __name__ == "__main__":
     for idx, i in enumerate(x):
         clip[blurredClip > i] = 0
 
-        auflength, functype, plotdata = acf(clip, lags = 200, conversion = 0.028125, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
+        auflength, _, _, _, _, _, _  = acf(clip, lags = 200, conversion = conversion, plotfunc = fit, ip=np.exp(-2))
         s1[idx] = auflength[0]
         s2[idx] = auflength[1]
         s3[idx] = auflength[2]
-        print(auflength)
+        #print(auflength)
 
     plt.figure()
     s1[s1 == 0] = 10
@@ -45,11 +34,25 @@ if __name__ == "__main__":
     plt.title("Autocorrelation Length")
     plt.legend()
     plt.xlim([-0.02,1.02])
-    plt.ylim([-0.04,2.04])
+    plt.ylim([-0.04,2])
 
-    saveas = fname.split('/')[-1].split('.')[0]
-    savename = str("threshold_images/" + saveas + ".png")
+    
     #print(fname)
-    plt.savefig(savename,dpi=300,format="png")
-    plt.show(block = True)
+    if saveas != None:
+        savename = str("threshold_images/" + saveas + ".png")
+        plt.savefig(savename,dpi=300,format="png")
+    if plotshow:
+        plt.show(block = True)
     plt.close()
+
+
+
+if __name__ == "__main__":
+    fname = "thin_slices/meltponds/meltpond_kuka/meltpond_kuka_9cm_bottom.jpg"
+    fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root'])
+
+
+    clip, blurredClip = clipBlur(fname, x=1800, y=2150, marginX=1500, marginY=1150, sigma=0.25)
+    conversion = 0.03
+
+    plot_threshold(clip, blurredClip, conversion, saveas = None, plotshow = True)
