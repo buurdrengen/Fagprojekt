@@ -21,7 +21,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
     n = np.shape(clip)[0]
     M = np.zeros(n)
     bestfunc = np.empty(sections, dtype= 'U32')
-    functype = ["Empirical","Exponential","Gaussian","Exp Root"]
+    functype = ["Empirical","Exponential","Gaussian","Exp Root", "x-Power", "x-Exponential"]
 
     #print(f"n is {n}")
 
@@ -31,6 +31,8 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
         M2 = np.zeros(sections)
         N2 = np.zeros(sections)
+        kval = np.zeros(sections)
+        xval = np.zeros(sections)
         fitness = np.zeros([sections,np.size(plotfunc)])
 
         for idx,_ in enumerate(M2):
@@ -69,6 +71,14 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 elif pf == 3:
                     fy = func3(c,x)
                     acl = 1/(c[2]**2)
+                elif pf == 4:
+                    fy = func4(c,x)
+                    acl = 1/(c[2])
+                    xval[idx] = c[3]
+                elif pf == 5:
+                    fy = func5(c,x)
+                    acl = 1/(c[2])
+                    kval[idx] = c[3]
                 elif pf == 0:
                     fy = y
                     acl = acl_est
@@ -147,7 +157,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return M, N2, bestfunc, plotdata[1:], fitness
+    return M, N2, bestfunc, plotdata[1:], fitness, kval, xval
 
 def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
     # Function 
@@ -404,6 +414,12 @@ def func2(m,x):
 def func3(m,x):
     return m[0] + m[1]*np.exp(-m[2]*np.sqrt(x))
 
+def func4(m,x):
+    return m[0] + m[1]*np.power(1 + (m[2]*x)**2,-m[3])
+
+def func5(m,x):
+    return m[0] + m[1]*np.exp(-np.power(m[2]*x,m[3]))
+
 #--------------------------------------------------------------
 
 def df(m,x,func):
@@ -566,8 +582,13 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     if func == 3:
         A = np.hstack([np.sqrt(abs(x))])
 
-    ATA = np.transpose(A) @ Cobs @ A
-    b = np.transpose(A) @ Cobs @ ly
+    if func == 5:
+        ly = np.log(-ly[1:])
+        A = np.hstack([np.log(x[1:]), np.ones(np.shape(x[1:]))])
+
+
+    ATA = np.transpose(A) @ A
+    b = np.transpose(A) @ ly
 
     try:
         m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
@@ -593,8 +614,40 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         k = -a
         return np.array([1,k,0]), i
 
+    if func == 4:
+        a = m[0][0]
+        k = -a
+        #print(f"k = {k}")
+        if k<1:
+            print("Warning: x in function 4 is less than 1!!")
+        A = np.hstack([x**2])
+        ATA = np.transpose(A) @ Cobs @ A
+        ly = np.power(y,-1/k) - 1
+        b = np.transpose(A) @ Cobs @ ly
+
+        try:
+            m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+        except np.linalg.LinAlgError:
+            print(f"Unable to compute function {func}: Singular Matrix")
+            m = [[1]]
+
+        L1 = np.sqrt(m[0][0])
+        #print(f"L = {1/L1}")
+
+        return np.array([1,L1,k]), i
+
+    if func == 5:
+        b = m[1][0]
+        a = m[0][0]
+
+        k = a; print(f"k = {k}")
+        L1 = np.exp(b/a); print(f"L = {1/L1}")
+
+        return np.array([1,L1,k]), i
+
 
     return np.array([0,0,0]), i
+
 
 def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors = 3):
 
@@ -605,7 +658,7 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors =
 
     kx = np.size(funcTypes) + 2
 
-    colscheme = ['r--','b--','m--']
+    colscheme = ['r-','b-','m-','c-','y-']
     for i in range(sectors):
         x = plotdata[kx*i]
         y = plotdata[kx*i + 1]
@@ -613,7 +666,7 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors =
         ax.plot(x, y, 'k.', label="ACF")
         for j, fnc in enumerate(funcTypes):
             fy = plotdata[kx*i + j + 2]
-            ax.plot(x, fy ,colscheme[j], label=fnc)
+            ax.plot(x, fy ,colscheme[j], label=fnc, lw = 0.75)
         
         ax.grid(True)
         ax.set_xlabel("Length [mm]")
