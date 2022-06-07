@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import acf as acff
 #from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=np.exp(-1.5), sections=3, errorlimit = np.inf, alpha =0.05):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=np.exp(-2), sections=3, errorlimit = np.inf, alpha =0.05):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
