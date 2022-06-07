@@ -168,7 +168,7 @@ while True:
         clip, blurredClip = clipBlur(fileName, xMiddle, yMiddle, marginX, marginY, sigma = blur)
         clip[blurredClip > threshold] = 0
         auflength  = np.empty(3)
-        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
+        auflength, confint, funcType, plotdata, fitness = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
         print("ACL is {:0.2f} mm, {:0.2f} mm and {:0.2f} mm and function type is {}".format(auflength[0], \
             auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
@@ -176,7 +176,7 @@ while True:
     #----------------------------------------------------------
 
     elif(choice == 'Plot autocorrelation'):
-        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
+        auflength, confint, funcType, plotdata, fitness = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
         xmax = inputNumber('Select length of plot in [mm]: ')
         plot_acf2(auflength, fTypes[fit], plotdata, xmax = xmax)
 
@@ -188,7 +188,7 @@ while True:
         filename = filePath[-1].split(".")[0]
         Matrix = np.empty(11, dtype = 'object')
         auflength  = np.empty(3, dtype = 'U56')
-        auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
+        auflength, confint, funcType, plotdata, fitness = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
         txtName = 'variables/' + filename + '.txt'
         Matrix[0:11] = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
             auflength[1], auflength[2], funcType]

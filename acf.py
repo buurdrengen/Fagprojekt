@@ -338,7 +338,7 @@ def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
     s2 = (x - guess)**2
     s2[s2 < 1e-4] = 1e-4
     sigma = 1/s2
-    Cobs = np.eye(np.size(x))*sigma
+    Cobs = np.eye(np.size(x))
     #print(f"size of x {np.shape(x)}")
 
     # plt.figure(10+func)
