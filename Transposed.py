@@ -60,7 +60,8 @@ for filename in os.listdir(files):
     kvalue = np.empty(1)
     xvalue = np.empty(1)
 
-    # RMSE is the root mean square error of 
+    # RMSE is the root mean square error of Exponential, Gaussian, x-Power, X-exponential
+    #
     auflength, confint, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     print(funcType)
     

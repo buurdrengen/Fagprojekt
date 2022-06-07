@@ -5,7 +5,7 @@
 0.03
 0.25
 0.55
-0.2895693691282827
-0.27255514987227014
+0.26951852858455655
+0.26465989565580766
 0.3755411952594636
-['Exponential' 'Exponential' 'Empirical']
+['x-Exponential' 'x-Exponential' 'x-Exponential']
