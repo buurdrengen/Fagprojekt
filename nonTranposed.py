@@ -67,9 +67,9 @@ for filename in os.listdir(files):
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
 
-    # clip[blurredClip > threshold] = 1
-    # clip = np.uint8(clip*255)
-    # skimage.io.imsave(imageSave, clip)
+    clip[blurredClip > threshold] = 1
+    clip = np.uint8(clip*255)
+    skimage.io.imsave(imageSave, clip)
     
 
     
