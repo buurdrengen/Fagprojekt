@@ -10,8 +10,8 @@ files = os.getcwd() + '\\variables'
 images = os.getcwd() + '\\images'
 
 
-fTypes = np.array(['null','Exponential','Gaussian','Exp Root'])
-fit = np.array([1,2,3])
+fTypes = np.array(['null','Exponential','Gaussian','Exp Root', 'x Power', 'x Exponential'])
+fit = np.array([1,2,4,5])
 
 
 # The variables vector was defined as having the following positions
@@ -55,9 +55,13 @@ for filename in os.listdir(files):
     blurredClip = blurredClip.T
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
-    # auflength, uncertainty, funcType, plotdata = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
-    auflength, funcType, plotdata = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
-    # plot_acf2(auflength, fTypes[fit], plotdata, xmax = 4, block='True')
+    confint = np.empty(3)
+    RMSE = np.empty([3,4])
+    kvalue = np.empty(1)
+    xvalue = np.empty(1)
+
+    # RMSE is the root mean square error of 
+    auflength, confint, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     print(funcType)
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -67,18 +71,16 @@ for filename in os.listdir(files):
 
     np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
 
-    print('')
-    print('top')
     clip[blurredClip > threshold] = 1
     clip = np.uint8(clip*255)
     skimage.io.imsave(imageSave, clip)
-    print('bot')
 
 
 
 
 
     
+
 
 
         
