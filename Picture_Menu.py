@@ -9,18 +9,20 @@ Created on Mon Jan 17 08:43:04 2022
 @author: Bruger
 """
 
-from asyncio.windows_events import NULL
+#from asyncio.windows_events import NULL
 from inputNumber import inputNumber
 from displayMenu import displayMenu
 import numpy as np
 import skimage.io
+import matplotlib
 import matplotlib.pyplot as plt
-from clipBlur import *
+from clipBlur import clipBlur
 # from autocofunc import *
 # from autocolen import *
 # from plot_acf import *
 from inputFilename import *
 from acf import *
+matplotlib.use('tkagg')
 
 
 
@@ -171,6 +173,7 @@ while True:
             auflength[1], auflength[2], funcType))
     #endregion Autocorrelation
 
+    #----------------------------------------------------------
 
     elif(choice == 'Plot autocorrelation'):
         auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)

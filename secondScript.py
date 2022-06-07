@@ -14,10 +14,18 @@ from inputFilename import *
 from acf import *
 
 
+image = np.zeros([18,9])
+image[8,4]=1
+print(image)
 
-blurredImage = gaussian(image, sigma=sigma, truncate=3.5)
+
+blurredImage = skimage.filters.gaussian(image, sigma=2, truncate=3.5)
+blurredImage = np.round(blurredImage*100, 2)
+print(blurredImage[:,5])
 
 
+
+print('Mille siger hej fra Spyder!')
 
 
 
