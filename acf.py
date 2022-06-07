@@ -645,8 +645,8 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         b = m[1][0]
         a = m[0][0]
 
-        k = a; print(f"k = {k}")
-        L1 = np.exp(b/a); print(f"L = {1/L1}")
+        k = a#; print(f"k = {k}")
+        L1 = np.exp(b/a)#; print(f"L = {1/L1}")
 
         return np.array([1,L1,k]), i
 
