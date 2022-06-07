@@ -25,13 +25,14 @@ if __name__ == "__main__":
     threshold = 0.55
     clip[blurredClip > threshold] = 0
 
-    plt.imshow(clip, cmap='gray')
-    plt.show()
+    #plt.imshow(clip, cmap='gray')
+    #plt.show()
 
     #clip[blurredClip <= threshold] = 1
 
-    auflength, functype, plotdata = acf(clip.T, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
+    auflength, confint, functype, plotdata = acf(clip.T, lags = 200, conversion = 0.03214285714285714, plot = False, plotfunc = fit, ip=40, plotname="Testplot")
     print(auflength)
+    print(confint)
     print(functype)
     plot_acf2(auflength, fTypes[fit], plotdata, block = True)
 

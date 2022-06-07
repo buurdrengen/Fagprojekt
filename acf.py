@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import acf as acff
 #from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3, errorlimit = 0.1):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3, errorlimit = np.inf, alpha =0.05):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -30,12 +30,13 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
     if sections != 0:
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
         M2 = np.zeros(sections)
+        N2 = np.zeros(sections)
 
         for idx,_ in enumerate(M2):
             bestfitctrl = np.inf
             blck = clip[blocks[idx]:blocks[idx + 1]]
-            auto = autoCor(blck, nlags=lags)
-            acl_est = autocolen(auto, scale=conversion)
+            auto, confint = autoCor(blck, nlags=lags, alpha = alpha)
+            acl_est, std_est = autocolen(auto, confint=confint, scale=conversion)
             #print("-"*30)
             #print(f"auto = {np.size(auto)}")
 
@@ -119,7 +120,8 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                             bestfitctrl = fitctrl
 
 
-                    M2[idx] = acl
+                    M2[idx] = acl_est
+                    N2[idx] = std_est
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
@@ -144,9 +146,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return M, bestfunc, plotdata[1:]
+    return M, N2, bestfunc, plotdata[1:]
 
-def autoCor(clipBlur, nlags = 1999):
+def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
     # Function 
     # Viser autocorrelation mellem alle pixels i det clipped/blurred billede. 
 
@@ -170,6 +172,7 @@ def autoCor(clipBlur, nlags = 1999):
     ## Et helt billede
     # nlags bestemmer hvor mange pixels der medtages, 0 regnes ikke med og der er 1999 lig 2000. 
     M = np.zeros(nlags+1)
+    N = np.zeros(nlags+1)
     err = 0
     for i, clips in enumerate(clipBlur):
 
@@ -179,7 +182,10 @@ def autoCor(clipBlur, nlags = 1999):
         if all(clips == 0):
             auto = np.ones(np.size(nlags))
         else:
-            auto = acff(clips, nlags=nlags, missing='drop')
+            auto, confint = acff(clips, nlags=nlags, missing='drop', alpha= alpha)
+            cn0 = confint[:,0] - auto
+            cn1 = confint[:,1] - auto
+            confint = (cn1 - cn0)*0.5
 
 
         if any(np.isnan(auto)):
@@ -191,10 +197,12 @@ def autoCor(clipBlur, nlags = 1999):
 
 
         M = M + auto
+        N = N + confint**2
         
         # if i %10 == 0: 
             # print(i)
     M = 1/(i+1-err) * M
+    N = 1/(i+1-err) * np.sqrt(N)
     #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
     # lags bestemmer hvor mange punkter der plottes
@@ -203,9 +211,9 @@ def autoCor(clipBlur, nlags = 1999):
     # plt.figure(1)   
     # tsaplots.plot_acf(M,lags = 100)
     # plt.show()
-    return M
+    return M, N
 
-def autocolen(acf,scale=1):
+def autocolen(acf,confint,scale=1):
     """
     Beregner Autokorrelationslængden
     acf er en beregnet vektor af Auto korrelations funktionen
@@ -220,18 +228,24 @@ def autocolen(acf,scale=1):
         n0 = n[0]
     
     if n0 >=1 and n0 <= (np.size(acf)-1):
-        dx = 1
-        dy = acf[n0] - acf[n0-1]
-        target = t - acf[n0-1]
+        y1 = acf[n0]; y2 = acf[n0-1]
+        dy = y1 - y2
+        target = t - y2
         m = target/dy
-        n = n0-1 + m 
+        n = n0-1 + m
+        
+        sy1 = confint[n0]
+        sy2 = confint[n0-1]
+
+        ss = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
+        sigma = np.sqrt(ss)
+
         #print(f"m er {m:.3f}, n er {n}")
         #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
     else:
         print("")
         #print(f"n er {n}")
-
-    return n*scale
+    return n*scale, sigma*scale
 
 
 def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=1, plot=False, saveas = None, lsmpoints = 0):
