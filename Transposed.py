@@ -19,6 +19,7 @@ fit = np.array([1,2,4,5])
 #     auflength[1], auflength[2], funcType]
 
 variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
+saveFile = [[1.0,1.0,1.0], 1.0, [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0, 1.0, 1.0], 1.0, 1.0]
 
 
 for filename in os.listdir(files):
@@ -61,20 +62,21 @@ for filename in os.listdir(files):
     xvalue = np.empty(1)
 
     # RMSE is the root mean square error of Exponential, Gaussian, x-Power, X-exponential
-    #
+    
     auflength, confint, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     print(funcType)
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
     
+    saveFile = [auflength, confint, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
 
 
-    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
+    np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
-    clip[blurredClip > threshold] = 1
-    clip = np.uint8(clip*255)
-    skimage.io.imsave(imageSave, clip)
+    # clip[blurredClip > threshold] = 1
+    # clip = np.uint8(clip*255)
+    # skimage.io.imsave(imageSave, clip)
 
 
 
