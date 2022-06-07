@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import acf as acff
 #from numpy.linalg import solve
 
 
-def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=0, sections=3, errorlimit = np.inf, alpha =0.05):
+def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=np.exp(-1.5), sections=3, errorlimit = np.inf, alpha =0.05):
 
     #Set plotfunc as iterable
     if type(plotfunc) == int:
@@ -31,6 +31,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
         blocks = np.int32(np.round(np.linspace(0, n, sections + 1)))
         M2 = np.zeros(sections)
         N2 = np.zeros(sections)
+        fitness = np.zeros([sections,np.size(plotfunc)])
 
         for idx,_ in enumerate(M2):
             bestfitctrl = np.inf
@@ -53,8 +54,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             x = x*conversion
             plotdata = np.vstack([plotdata,x,y])
             
-            for pf in plotfunc:
-                c = np.hstack([0,lsm3(x,y,pf)])
+            for jdx, pf in enumerate(plotfunc):
+                coeffs, iidx = lsm3(x,y,pf, limit=ip)
+                c = np.hstack([0,coeffs])
                 #print(c)
                 if pf == 1:
                     fy = func1(c,x)
@@ -96,11 +98,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
                 # print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
 
-                if (np.abs(c[2]) > 1 or (c[3]/c[1]) > 7) and pf == 2: # Gaussain sanity check
-                    fy = fy*np.inf
-                    print("Gaussian solution discarded")
+                fitctrl = 1/(lags-1) *np.sum((y[:iidx]-fy[:iidx])**2)
+                fitness[idx,jdx] = fitctrl
 
-                fitctrl = 1/(lags-1) *np.sum((y-fy)**2)
 
                 
                 #_, fitctrl = plot_acf(auto, lags = lags, init_acl=acl, func = plt, lsmpoints=ip, plot = plot)
@@ -122,6 +122,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
                     M2[idx] = acl_est
                     N2[idx] = std_est
+
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
@@ -146,7 +147,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
     #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
 
-    return M, N2, bestfunc, plotdata[1:]
+    return M, N2, bestfunc, plotdata[1:], fitness
 
 def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
     # Function 
@@ -580,20 +581,20 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
         a = m[0][0]
 
         k = -a
-        return np.array([1,k,0])
+        return np.array([1,k,0]), i
 
     if func == 2:
         a = m[0][0]
         sigma = np.sqrt(np.divide(-1,2*a)) #sigma
-        return np.array([sigma,0,sigma*np.sqrt(2*np.pi)])
+        return np.array([sigma,0,sigma*np.sqrt(2*np.pi)]), i
 
     if func == 3:
         a = m[0][0]
         k = -a
-        return np.array([1,k,0])
+        return np.array([1,k,0]), i
 
 
-    return [0,0,0]
+    return np.array([0,0,0]), i
 
 def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors = 3):
 
