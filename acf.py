@@ -587,6 +587,10 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     if func == 3:
         A = np.hstack([np.sqrt(abs(x))])
 
+    if func == 4:
+        ly = np.log(y[1:])
+        A = np.hstack([np.log(x[1:])])
+
     if func == 5:
         ly = np.log(-ly[1:])
         A = np.hstack([np.log(x[1:]), np.ones(np.shape(x[1:]))])
@@ -621,22 +625,21 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     if func == 4:
         a = m[0][0]
-        k = -a
+        k = a
         #print(f"k = {k}")
-        if k<1:
-            print("Warning: x in function 4 is less than 1!!")
-        A = np.hstack([x**2])
-        ATA = np.transpose(A) @ Cobs @ A
-        ly = np.power(y,-1/k) - 1
-        b = np.transpose(A) @ Cobs @ ly
+        A = np.hstack([x[1:]**2])
+        ATA = np.transpose(A) @ A
+        ly = np.power(y[1:],-1/k) - 1
+        b = np.transpose(A) @ ly
 
         try:
-            m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
+            n = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
         except np.linalg.LinAlgError:
             print(f"Unable to compute function {func}: Singular Matrix")
-            m = [[1]]
-
-        L1 = np.sqrt(m[0][0])
+            n = [[1]]
+        
+        #print(n)
+        L1 = np.sqrt(n[0][0])
         #print(f"L = {1/L1}")
 
         return np.array([1,L1,k]), i
