@@ -9,8 +9,6 @@ from acf import *
 files = os.getcwd() + '\\variables'
 images = os.getcwd() + '\\images'
 
-
-fTypes = np.array(['null','Exponential','Gaussian','Exp Root', 'x Power', 'x Exponential'])
 fit = np.array([1,2,4,5])
 
 
@@ -56,20 +54,19 @@ for filename in os.listdir(files):
     blurredClip = blurredClip.T
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
-    confint = np.empty(3)
     RMSE = np.empty([3,4])
-    kvalue = np.empty(1)
-    xvalue = np.empty(1)
+    kvalue = np.empty(3)
+    xvalue = np.empty(3)
 
     # RMSE is the root mean square error of Exponential, Gaussian, x-Power, X-exponential
     
-    auflength, confint, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
+    auflength, uncertainty, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginY-1, conversion = conversion, plot = False, plotfunc = fit)
     print(funcType)
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
     
-    saveFile = [auflength, confint, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
+    saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
 
 
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")

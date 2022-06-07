@@ -11,6 +11,7 @@ from acf import *
 files = os.getcwd() + '\\variables'
 images = os.getcwd() + '\\images'
 
+fit = np.array([1,2,4,5])
 
 
 # The variables vector was defined as having the following positions
@@ -18,6 +19,7 @@ images = os.getcwd() + '\\images'
 #     auflength[1], auflength[2], funcType]
 
 variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
+saveFile = [[1.0,1.0,1.0], 1.0, [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0, 1.0, 1.0], 1.0, 1.0]
 
 
 for filename in os.listdir(files):
@@ -35,7 +37,6 @@ for filename in os.listdir(files):
     imageSave = 'mod_image\\' + filename[0:-4] + '_mod.jpg'
 
 
-    # Here i swap the ymiddle and xmiddle as well as the marginY and marginX because the picture will be transposed later on.
     yMiddle = int(variables[0])
     xMiddle = int(variables[1])
     marginY = int(variables[2])
@@ -48,14 +49,22 @@ for filename in os.listdir(files):
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     clip[blurredClip > threshold] = 0
     auflength  = np.empty(3)
-    auflength, funcType, plotdata = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = [1,2])
+    uncertainty = np.empty(3)
+    RMSE = np.empty([3,4])
+    kvalue = np.empty(3)
+    xvalue = np.empty(3)
+    auflength, uncertainty, funcType, plotdata, fitness, kvalue, xvalue = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
+    
+    saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
 
-    print(funcType)
+    print(kvalue)
+    print(xvalue)
+    print('')
 
-    np.savetxt(filenameSave, variables, delimiter=' ', newline = "\n", fmt = "%s")
+    np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
 
     clip[blurredClip > threshold] = 1
