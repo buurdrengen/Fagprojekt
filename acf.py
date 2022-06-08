@@ -258,12 +258,12 @@ def autocolen(acf,confint,scale=1):
         sy2 = confint[n0-1]
 
 
-        sf1 = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
-        sa = sy1**2 + sy2**2
+        #sf1 = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
+        sa = np.sqrt(sy1**2 + sy2**2)
 
-        sf2 = np.exp(-2)*sa /dy**4
+        #sf2 = np.exp(-2)*sa /dy**4
 
-        sigma = np.sqrt(sf1 + sf2)
+        sigma = np.sqrt( np.exp(-2) * sa/dy**2  + np.sqrt(sy1**2 * y2**2 + sy2**2 * y1**2)/np.power(y1 - y2,2) )
 
         #print(f"m er {m:.3f}, n er {n}")
         #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
