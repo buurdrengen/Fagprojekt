@@ -74,10 +74,10 @@ for filename in os.listdir(files):
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
     
-    saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
+    saveFile = [np.round(auflength,3), np.round(uncertainty,3), np.round(RMSE[:,0]*10**4,3), np.round(RMSE[:,1]*10**2,3), np.round(RMSE[:,2]*10**3,3), np.round(RMSE[:,3]*10**5,3), np.round(kvalue,3), np.round(xvalue,3)]
 
-    # print(RMSE)
-    # print('')
+    print(RMSE)
+    #print('')
 
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
