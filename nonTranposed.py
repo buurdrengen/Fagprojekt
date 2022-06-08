@@ -50,9 +50,17 @@ for filename in os.listdir(files):
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
     rawclip = np.copy(clip)
-
-
     clip[blurredClip > threshold] = 0
+
+    num_pix = blurredClip < threshold
+    n = np.shape(num_pix)[0]
+    blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
+    rho = np.empty(3)
+    for i in range(3):
+        section = num_pix[blox[i]:blox[i+1],:]
+        rho[i] = np.sum(section) / np.size(section)
+    # print(rho)
+    
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
     RMSE = np.empty([3,4])
@@ -74,7 +82,7 @@ for filename in os.listdir(files):
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
     
-    saveFile = [np.round(auflength,3), np.round(uncertainty,3), np.round(RMSE[:,0]*10**4,3), np.round(RMSE[:,1]*10**2,3), np.round(RMSE[:,2]*10**3,3), np.round(RMSE[:,3]*10**5,3), np.round(kvalue,3), np.round(xvalue,3)]
+    saveFile = [np.round(auflength,3), np.round(uncertainty,3), np.round(RMSE[:,0]*10**4,3), np.round(RMSE[:,1]*10**2,3), np.round(RMSE[:,2]*10**3,3), np.round(RMSE[:,3]*10**5,3), np.round(kvalue,3), np.round(xvalue,3), np.round(rho, 3)]
 
     print(RMSE)
     #print('')
