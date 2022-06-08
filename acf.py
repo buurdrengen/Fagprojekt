@@ -40,6 +40,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             blck = clip[blocks[idx]:blocks[idx + 1]]
             auto, confint = autoCor(blck, nlags=lags, alpha = alpha)
             acl_est, std_est = autocolen(auto, confint=confint, scale=conversion)
+            M2[idx] = acl_est
+            N2[idx] = std_est
+
             #print("-"*30)
             #print(f"auto = {np.size(auto)}")
 
@@ -131,8 +134,8 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                             bestfitctrl = fitctrl
 
 
-                    M2[idx] = acl_est
-                    N2[idx] = std_est
+                    # M2[idx] = acl_est
+                    # N2[idx] = std_est
 
             # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
@@ -141,7 +144,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
         for idx, i in enumerate(clip):
             auto = autoCor([i], nlags=lags)
             acl = autocolen(auto,conversion)
-            M[idx] = acl
+            M[idx] = acl_est
 
 
     # if plot:
@@ -193,6 +196,8 @@ def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
 
         if all(clips == 0):
             auto = np.ones(np.size(nlags))
+            confint = np.zeros(np.size(nlags))
+
         else:
             auto, confint = acff(clips, nlags=nlags, missing='drop', alpha= alpha)
             cn0 = confint[:,0] - auto
@@ -234,10 +239,13 @@ def autocolen(acf,confint,scale=1):
     t = np.exp(-1)
     n = np.arange(np.size(acf))[acf <= t]
 
-    if np.size(n) == 0:
-        return 0
+    if np.size(n) < 2:
+        return 0,0
     else:
         n0 = n[0]
+
+    if np.size(confint) < 2:
+        confint = np.zeros(np.shape(acf))
     
     if n0 >=1 and n0 <= (np.size(acf)-1):
         y1 = acf[n0]; y2 = acf[n0-1]
@@ -250,12 +258,12 @@ def autocolen(acf,confint,scale=1):
         sy2 = confint[n0-1]
 
 
-        sf1 = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
-        sa = sy1**2 + sy2**2
+        #sf1 = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
+        sa = np.sqrt(sy1**2 + sy2**2)
 
-        sf2 = np.exp(-2)*sa /dy**4
+        #sf2 = np.exp(-2)*sa /dy**4
 
-        sigma = np.sqrt(sf1 + sf2)
+        sigma = np.sqrt( np.exp(-2) * sa/dy**2  + np.sqrt(sy1**2 * y2**2 + sy2**2 * y1**2)/np.power(y1 - y2,2) )
 
         #print(f"m er {m:.3f}, n er {n}")
         #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
@@ -566,7 +574,8 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     """
     Least square method
     """
-
+    if func == 0:
+        return [0,0,0],1
     idx = y>limit
     if all(idx):
         i = np.size(idx)
@@ -640,6 +649,10 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
             n = [[1]]
         
         #print(n)
+        if n[0][0] < 0:
+            print('Warning: Fixed negative exponent!')
+            n[0][0] = -n[0][0]
+
         L1 = np.sqrt(n[0][0])
         #print(f"L = {1/L1}")
 
@@ -658,7 +671,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
     return np.array([0,0,0]), i
 
 
-def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors = 3):
+def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = True, sectors = 3, saveas = None, plotshow = True):
 
     #print(np.shape(plotdata))
 
@@ -687,7 +700,13 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = False, sectors =
     #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
     fig.set_figwidth(4*sectors)
-    plt.show(block = block)
+    if saveas != None:
+        savename = str("plotimg/" + saveas + ".png")
+        plt.savefig(savename,dpi=300,format="png")
+    if plotshow:
+        plt.show(block = block)
+    else:
+        plt.close()
 
 
 
