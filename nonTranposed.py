@@ -53,38 +53,38 @@ for filename in os.listdir(files):
 
 
     clip[blurredClip > threshold] = 0
-    # auflength  = np.empty(3)
-    # uncertainty = np.empty(3)
-    # RMSE = np.empty([3,4])
-    # kvalue = np.empty(3)
-    # xvalue = np.empty(3)
+    auflength  = np.empty(3)
+    uncertainty = np.empty(3)
+    RMSE = np.empty([3,4])
+    kvalue = np.empty(3)
+    xvalue = np.empty(3)
     auflength, uncertainty, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
 
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
     funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Threshold...')
-    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Sigma...')
-    plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Plotdata...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Threshold...')
+    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Sigma...')
+    # plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
     #-----------------------------------------------------------------
     
-    # variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
-    #     auflength[1], auflength[2], funcType]
+    variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
+        auflength[1], auflength[2], funcType]
     
-    # saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
+    saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
 
     # print(RMSE)
     # print('')
 
-    # np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
+    np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
 
-    # clip[blurredClip > threshold] = 1
-    # clip = np.uint8(clip*255)
-    # skimage.io.imsave(imageSave, clip)
+    clip[blurredClip > threshold] = 1
+    clip = np.uint8(clip*255)
+    skimage.io.imsave(imageSave, clip)
     
 
     
