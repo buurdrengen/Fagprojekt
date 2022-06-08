@@ -48,6 +48,16 @@ for filename in os.listdir(files):
     # image = skimage.io.imread(fname=filenameM, as_gray=True)
 
     clip, blurredClip = clipBlur(filenameM, xMiddle, yMiddle, marginX, marginY, sigma = blur)
+    num_pix = blurredClip < threshold
+
+    n = np.shape(num_pix)[0]
+    blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
+    rho = np.empty(3)
+    for i in range(3):
+        section = num_pix[blox[i]:blox[i+1],:]
+        rho[i] = np.sum(section) / np.size(section)
+    print(rho)
+
     clip[blurredClip > threshold] = 0
     # Transpose the image so we get the autocorrelation on horizontally. image
     clip = clip.T
@@ -66,8 +76,12 @@ for filename in os.listdir(files):
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
         auflength[1], auflength[2], funcType]
     
-    saveFile = [auflength, uncertainty, RMSE[:,0], RMSE[:,1], RMSE[:,2], RMSE[:,3], kvalue, xvalue]
+    saveFile = [np.round(auflength,3), np.round(uncertainty,3), \
+        np.round(RMSE[:,0]*10**3,3), np.round(RMSE[:,1]*10**2,3), \
+            np.round(RMSE[:,2]*10**4,3), np.round(RMSE[:,3]*10**5, 3),\
+                kvalue, xvalue, np.round(rho,3)]
 
+    print(RMSE)
 
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
