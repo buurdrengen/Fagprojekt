@@ -43,6 +43,9 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             M2[idx] = acl_est
             N2[idx] = std_est
 
+
+
+
             #print("-"*30)
             #print(f"auto = {np.size(auto)}")
 
@@ -147,20 +150,6 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             M[idx] = acl_est
 
 
-    # if plot:
-    #     for idx in range(sections):
-    #         for plt in plotfunc:
-    #             fname = f"{plotname}-f{plt}.png"
-    #             m,fitctrl = plot_acf(M, lags = lags, func = plt, saveas = fname, lsmpoints=ip)
-    #             #print(f"Error for {plt} is {fitctrl:.4e}")
-    #             if fitctrl < bestfitctrl:
-    #                 #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-    #                 bestm = m
-    #                 bestfunc = plt
-    #                 bestfitctrl = fitctrl
-
-    #print(f"Autokorrelationslængden (Lineær) er {acl:.4f}mm")
-
     return M, N2, bestfunc, plotdata[1:], fitness, kval, xval
 
 def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
@@ -195,7 +184,7 @@ def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
         #     plt.plot(np.arange(np.size(clips)),abs(clips))
 
         if all(clips == 0):
-            auto = np.ones(np.size(nlags))
+            auto = np.zeros(np.size(nlags))
             confint = np.zeros(np.size(nlags))
 
         else:
