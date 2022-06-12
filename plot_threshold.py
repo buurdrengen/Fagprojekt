@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib
+matplotlib.use('tkagg')
+
 import matplotlib.pyplot as plt
 
 from acf import acf
@@ -12,6 +15,7 @@ def plot_threshold(clip, blurredClip, conversion, saveas = None, plotshow = True
     s2 = np.zeros(np.size(x))
     s3 = np.zeros(np.size(x))
     for idx, i in enumerate(x):
+        print(f"Progress: {(idx/1.99):0.0f}%", end="\r")
         clip[blurredClip > i] = 0
 
         auflength, _, _, _, _, _, _  = acf(clip, lags = 200, conversion = conversion, plotfunc = fit, ip=np.exp(-2))
@@ -21,9 +25,9 @@ def plot_threshold(clip, blurredClip, conversion, saveas = None, plotshow = True
         #print(auflength)
 
     plt.figure()
-    s1[s1 == 0] = 10
-    s2[s2 == 0] = 10
-    s3[s3 == 0] = 10
+    s1[s1 == 0] = 0
+    s2[s2 == 0] = 0
+    s3[s3 == 0] = 0
     x = x
     plt.grid(True)
     plt.plot(x,s1,'r-',label='Section 1')
