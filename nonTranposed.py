@@ -320,11 +320,16 @@ for filename in os.listdir(files_nonT):
 fig.savefig('errorDepth')
 
 
+print(np.min(RMSE_xexp_all))
+print(np.max(RMSE_gauss_all))
+
 plt.close()
 fig = plt.figure(1)
-plt.title('RMSE horizontal')
-plt.hist([RMSE_exp_all, RMSE_gauss_all, RMSE_xpow_all, RMSE_xexp_all], stacked = True, bins=20, range=(0,0.07), density=True)
-plt.legend(['exp', 'gauss', 'xpow', 'xexp'])
+plt.title('RMSE Horizontal')
+logbins = np.logspace(np.log10(10**(-6)), np.log10(10), 13)
+plt.hist([RMSE_exp_all, RMSE_gauss_all, RMSE_xpow_all, RMSE_xexp_all], stacked = True, bins=logbins)
+plt.legend(['Exponential', 'Gaussian', 'x-power', 'x-exponential'])
+plt.xscale('log')
 fig.savefig('RMSE')
 plt.close()
 
