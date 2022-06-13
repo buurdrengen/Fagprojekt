@@ -70,13 +70,13 @@ for filename in os.listdir(files):
 
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Threshold...')
-    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Sigma...')
-    plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    # print(' -> Plotdata...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Threshold...')
+    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Sigma...')
+    # plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
