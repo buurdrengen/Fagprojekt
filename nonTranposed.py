@@ -117,6 +117,8 @@ RMSE_exp_all = np.array([])
 RMSE_gauss_all = np.array([])
 RMSE_xpow_all = np.array([])
 RMSE_xexp_all = np.array([])
+kval_all = np.array([])
+xval_all = np.array([])
 
 for filename in os.listdir(files_nonT):
     with open(os.path.join(files_nonT, filename), 'r') as f: # open in readonly mode
@@ -142,6 +144,8 @@ for filename in os.listdir(files_nonT):
     RMSE_gauss_all = np.append(RMSE_gauss_all, RMSE_gauss)
     RMSE_xpow_all = np.append(RMSE_xpow_all, RMSE_xpow)
     RMSE_xexp_all = np.append(RMSE_xexp_all, RMSE_xexp)
+    xval_all = np.append(xval_all, xval)
+    kval_all = np.append(kval_all, kval)
 
 
     if filename[0:-4] == "20200220_221521":
@@ -333,11 +337,24 @@ fig = plt.figure(1)
 plt.title('RMSE Horizontal')
 logbins = np.logspace(np.log10(10**(-6)), np.log10(10), 13)
 plt.hist([RMSE_exp_all, RMSE_gauss_all, RMSE_xpow_all, RMSE_xexp_all], stacked = True, bins=logbins)
-plt.legend(['Exponential', 'Gaussian', 'x-power', 'x-exponential'])
+plt.legend(['Exponential', 'Gaussian', 'k-power', 'k-exponential'])
 plt.xscale('log')
 fig.savefig('RMSE')
 plt.close()
 
+plt.close()
+fig = plt.figure(1)
+plt.title('k value for k-exponential horizontally')
+plt.hist(kval_all, bins=13, color = "orange")
+fig.savefig('kval_horizontally')
+plt.close()
+
+plt.close()
+fig = plt.figure(1)
+plt.title('k value for k-power horizontally')
+plt.hist(xval_all, bins=13, color = "skyblue")
+fig.savefig('xval_horizontally')
+plt.close()
 
 
 #-----------------------------------------------------------------
