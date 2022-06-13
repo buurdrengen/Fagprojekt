@@ -14,6 +14,7 @@ def plot_sigma(clip, threshold, conversion, saveas = None, plotshow = True):
     s3 = np.zeros(np.size(x))
 
     for idx, i in enumerate(x):
+        print(f"Progress: {(idx/0.79):0.0f}%", end="\r")
         sclip = np.copy(clip)
         blurredClip = skimage.filters.gaussian(sclip, sigma=i, truncate=3.5)
         sclip[blurredClip > threshold] = 0

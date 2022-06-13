@@ -229,14 +229,14 @@ def autocolen(acf,confint,scale=1):
     n = np.arange(np.size(acf))[acf <= t]
 
     if np.size(n) < 2:
-        return 0,0
+        n0 = np.size(acf) - 1
     else:
         n0 = n[0]
 
     if np.size(confint) < 2:
         confint = np.zeros(np.shape(acf))
     
-    if n0 >=1 and n0 <= (np.size(acf)-1):
+    if n0 >= 1:
         y1 = acf[n0]; y2 = acf[n0-1]
         dy = y1 - y2
         target = t - y2
@@ -257,7 +257,7 @@ def autocolen(acf,confint,scale=1):
         #print(f"m er {m:.3f}, n er {n}")
         #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
     else:
-        print("")
+        n = 0; sigma = 0
         #print(f"n er {n}")
     return n*scale, sigma*scale
 

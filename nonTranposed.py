@@ -106,7 +106,12 @@ plt.close()
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharey = True, sharex=True)
 fig.suptitle('FYI error')
 fig.supylabel('Autocorrelation [mm]')
-fig.supxlabel('depth from surface [mm]')
+fig.supxlabel('Depth from surface [mm]')
+
+ax1.grid()
+ax2.grid()
+ax3.grid()
+ax4.grid()
 
 RMSE_exp_all = np.array([])
 RMSE_gauss_all = np.array([])
