@@ -69,21 +69,23 @@ for nfo, filename in enumerate(os.listdir(files)):
     RMSE = np.empty([3,4])
     kvalue = np.empty(3)
     xvalue = np.empty(3)
-    auflength, uncertainty, funcType, plotdata, RMSE, kvalue, xvalue = acf(clip, lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
-
+    auflength, uncertainty, funcType, plotdata, RMSE, kvalue, xvalue = acf(np.copy(clip), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
+    auflengthT, uncertaintyT, funcTypeT, plotdataT, RMSET, kvalueT, xvalueT = acf(np.copy(clip.T), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
     funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Threshold H...')
-    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Threshold V...')
-    plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
-    print(' -> Sigma H...')
-    plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Sigma V...')
-    plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Plotdata H...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Plotdata V...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    # print(' -> Threshold H...')
+    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Threshold V...')
+    # plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Sigma H...')
+    # plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Sigma V...')
+    # plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -105,6 +107,7 @@ for nfo, filename in enumerate(os.listdir(files)):
 
 #-----------------------------------------------------------------
 # L compared to depth - Kan udkommenteres ->
+print('Postprocessing...')
 files_nonT = os.getcwd() + '/variables_nonT'
 variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0]]
 N = len(os.listdir(files_nonT))
