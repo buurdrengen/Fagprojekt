@@ -32,7 +32,7 @@ def Density_plot(compdata,splitter,texts):
         sigmaV = np.reshape(setH[:,15:18],[sz])
         splBack = spl
 
-        plt.errorbar(rhoH, LH, sigmaH, ls = 'none', c='k', fmt='.', capsize=6, elinewidth=0.7, lw = 0.5)
+        plt.errorbar(rhoH*100, LH, sigmaH, ls = 'none', c='m',ecolor='k', fmt='s', capsize=6, elinewidth=0.7, lw = 0.5)
         plt.xlabel('Inclusion Density [%]')
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Horizontal')
@@ -41,7 +41,7 @@ def Density_plot(compdata,splitter,texts):
         #plt.show(block='True')
         plt.close()
 
-        plt.errorbar(rhoV, LV, sigmaV, ls = 'none', c='k', fmt='.', capsize=6, elinewidth=0.7, lw = 0.5)
+        plt.errorbar(rhoV*100, LV, sigmaV, ls = 'none', c='m',  ecolor='k', fmt='o', capsize=6, elinewidth=0.7, lw = 0.5)
         plt.xlabel('Inclusion Density [%]')
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Vertical')
@@ -50,3 +50,12 @@ def Density_plot(compdata,splitter,texts):
         #plt.show(block='True')
         plt.close()
 
+
+
+if __name__ == "__main__":
+
+    compdata = np.loadtxt('rhoplotdata.txt',delimiter=',')
+    splitter = [14,20,27,29,36]
+    funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
+
+    Density_plot(compdata=compdata,splitter=splitter,texts=funcnames)

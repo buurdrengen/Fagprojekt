@@ -17,17 +17,17 @@ if __name__ == "__main__":
 
 #---------------------------------------------------------
 
-    fname = "images/20200220_221521.jpg"
+    fname = "images/hummock1_bot_7cm_1.jpg"
     fTypes = np.array(['Empirical','Exponential','Gaussian','Exp Root',"x-Power","x-Exponential"])
     fit = np.array([1,2,4,5])
 
-    clip, blurredClip = clipBlur(fname, x=1650, y=3000, marginX=1150, marginY=1000, sigma=0.25)
+    clip, blurredClip = clipBlur(fname, x=1800, y=2400, marginX=1400, marginY=1400, sigma=2)
     threshold = 0.65
-    conversion = 0.03461538461538462
+    conversion = 0.03857
     clip[blurredClip > threshold] = 0
 
-    #plt.imshow(clip, cmap='gray')
-    #plt.show()
+    plt.imshow(clip, cmap='gray')
+    plt.show(block=True)
 
     #clip[blurredClip <= threshold] = 1
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     print(auflength)
     print(confint)
     print(functype)
-    print(fitness)
+    print(np.round_(-np.log(fitness),decimals=2))
     print(kvalue)
     print(xvalue)
     plot_acf2(auflength, fTypes[fit], plotdata, block = True, xmax = 2)

@@ -161,7 +161,7 @@ for nfo, filename in enumerate(os.listdir(files)):
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
     except KeyError:
-        print(f"{filename[0:-4]} is not a member of test..")
+        print(f"    {filename[0:-4]} is not a member of test set..")
         pass
 
     #print(RMSE)
