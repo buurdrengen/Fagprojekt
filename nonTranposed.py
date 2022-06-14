@@ -6,6 +6,7 @@ import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 import time
+from DensityPlot import Density_plot
 from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
@@ -174,17 +175,19 @@ for nfo, filename in enumerate(os.listdir(files)):
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
 
-    if nfo == 5:
-        break
     
 
 #-----------------------------------------------------------------
 # L compared to depth - Kan udkommenteres ->
 print('Postprocessing...')
 
+splitter = [14,20,27,29,36]
+funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
+
 compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
+Density_plot(compset,splitter=splitter,texts=funcnames)
 
 files_nonT = os.getcwd() + '/variables_nonT'
 variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0]]
