@@ -24,7 +24,50 @@ mastertic = time.perf_counter()
 
 variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 saveFile = [[1.0,1.0,1.0], 1.0, [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0, 1.0, 1.0], 1.0, 1.0]
-
+filesas = ["20200220_221521", #The files in numerical order...
+    "20200220_223734",
+    "20200220_225515",
+    "20200220_231318",
+    "20200206_094159",
+    "20200206_101354",
+    "20200206_103511",
+    "20200122_215146",
+    "20200122_221025",
+    "20200122_222713",
+    "20200219_135306",
+    "20200219_141939",
+    "20200219_143636",
+    "20200201_145742",
+    "20200121_231857",
+    "20200121_231937",
+    "20200129_205841_T",
+    "20200212_202537",
+    "20200212_202637",
+    "20200212_204509",
+    "hummock1_top_7cm_1",
+    "hummock1_bot_7cm_1",
+    "20200122_171409",
+    "20200122_172102",
+    "20200213_161609",
+    "20200213_163440",
+    "20200213_170702",
+    "20200206_110750",
+    "20200206_112710",
+    "20200213_102626",
+    "20200213_104615",
+    "20200213_110428",
+    "20200122_225922",
+    "20200122_231339",
+    "meltpond_ssmi_7cm_top",
+    "meltpond_ssmi_7cm_bot_1"]
+fileset = dict(zip(np.array(filesas),np.arange(np.size(filesas))))
+filesize = np.size(filesas)
+rhoset = np.zeros([filesize,3])
+lset = np.zeros([filesize,3])
+sigmaset = np.zeros([filesize,3])
+rhoset_t = np.zeros([filesize,3])
+lset_t = np.zeros([filesize,3])
+sigmaset_t = np.zeros([filesize,3])
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -55,15 +98,30 @@ for nfo, filename in enumerate(os.listdir(files)):
     rawclip = np.copy(clip)
     clip[blurredClip > threshold] = 0
 
+
+#--------------
     num_pix = blurredClip < threshold
     n = np.shape(num_pix)[0]
     blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
     rho = np.empty(3)
+
     for i in range(3):
         section = num_pix[blox[i]:blox[i+1],:]
         rho[i] = np.sum(section) / np.size(section)
     # print(rho)
+
+
+    num_pix_T = blurredClip.T < threshold.T
+    n_T = np.shape(num_pix_T)[0]
+    blox_T = np.int32(np.round(np.linspace(0,2*marginX,4)))
+    rho_T = np.empty(3)
+
+    for i in range(3):
+        section_T = num_pix_T[blox_T[i]:blox_T[i+1],:]
+        rho_T[i] = np.sum(section_T) / np.size(section_T)
+    # print(rho)
     
+#------------------
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
     RMSE = np.empty([3,4])
@@ -93,6 +151,18 @@ for nfo, filename in enumerate(os.listdir(files)):
     
     saveFile = [np.round(auflength,3), np.round(uncertainty,3), np.round(RMSE[:,0]*10**4,3), np.round(RMSE[:,1]*10**2,3), np.round(RMSE[:,2]*10**3,3), np.round(RMSE[:,3]*10**5,3), np.round(kvalue,3), np.round(xvalue,3), np.round(rho, 3)]
 
+    try:
+        fileidx = fileset[filename[0:-4]]
+        rhoset[fileidx] = rho
+        lset[fileidx] = auflength
+        sigmaset[fileidx] = uncertainty
+        rhoset_t[fileidx] = rho_T
+        lset_t[fileidx] = auflengthT
+        sigmaset_t[fileidx] = uncertaintyT
+    except KeyError:
+        print(f"{filename[0:-4]} is not a member of test..")
+        pass
+
     #print(RMSE)
 
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
@@ -103,11 +173,19 @@ for nfo, filename in enumerate(os.listdir(files)):
     skimage.io.imsave(imageSave, clip)
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
+
+    if nfo == 5:
+        break
     
 
 #-----------------------------------------------------------------
 # L compared to depth - Kan udkommenteres ->
 print('Postprocessing...')
+
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
+print(f"Shape of compset = {np.shape(compset)}")
+np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
+
 files_nonT = os.getcwd() + '/variables_nonT'
 variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0]]
 N = len(os.listdir(files_nonT))
