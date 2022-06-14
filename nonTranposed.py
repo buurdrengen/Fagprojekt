@@ -131,11 +131,11 @@ for nfo, filename in enumerate(os.listdir(files)):
     auflengthT, uncertaintyT, funcTypeT, plotdataT, RMSET, kvalueT, xvalueT = acf(np.copy(clip.T), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata H...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Plotdata V...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    # print(' -> Plotdata H...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Plotdata V...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
     # print(' -> Threshold H...')
     # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
     # print(' -> Threshold V...')
@@ -173,9 +173,6 @@ for nfo, filename in enumerate(os.listdir(files)):
     skimage.io.imsave(imageSave, clip)
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
-
-    if nfo == 5:
-        break
     
 
 #-----------------------------------------------------------------
