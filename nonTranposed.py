@@ -5,6 +5,7 @@ import os
 import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
+import time
 from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
@@ -14,6 +15,7 @@ files = os.getcwd() + '/variables'
 images = os.getcwd() + '/images'
 
 fit = np.array([1,2,4,5])
+mastertic = time.perf_counter()
 
 
 # The variables vector was defined as having the following positions
@@ -24,7 +26,7 @@ variables = [1,1,1,1,1,1,1,[1,1,1],['','','']]
 saveFile = [[1.0,1.0,1.0], 1.0, [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0,1.0,1.0], [1.0, 1.0, 1.0], 1.0, 1.0]
 
 
-for filename in os.listdir(files):
+for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
         # print(np.arange(len(variables)))
         
@@ -32,7 +34,8 @@ for filename in os.listdir(files):
             variables[i] = f.readline()
             variables[i] = variables[i][0:-1]
     
-    print('Processing file ' + filename[0:-4] + '...')
+    print(f'Processing file {nfo+1}: {filename[0:-4]}...')
+    tic = time.perf_counter()
     # Now I find the fileplacement of the files 
     filenameM = images + '/' + filename[0:-4] + '.jpg'
     filenameSave = 'variables_nonT/' + filename
@@ -70,13 +73,17 @@ for filename in os.listdir(files):
 
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    # print(' -> Plotdata...')
-    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    # print(' -> Threshold...')
-    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    # print(' -> Sigma...')
-    # plot_sigma(clip=rawclip, threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    print(' -> Plotdata...')
+    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    print(' -> Threshold H...')
+    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    print(' -> Threshold V...')
+    plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    print(' -> Sigma H...')
+    plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    print(' -> Sigma V...')
+    plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -84,8 +91,7 @@ for filename in os.listdir(files):
     
     saveFile = [np.round(auflength,3), np.round(uncertainty,3), np.round(RMSE[:,0]*10**4,3), np.round(RMSE[:,1]*10**2,3), np.round(RMSE[:,2]*10**3,3), np.round(RMSE[:,3]*10**5,3), np.round(kvalue,3), np.round(xvalue,3), np.round(rho, 3)]
 
-    print(RMSE)
-    #print('')
+    #print(RMSE)
 
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
@@ -93,6 +99,8 @@ for filename in os.listdir(files):
     clip[blurredClip > threshold] = 1
     clip = np.uint8(clip*255)
     skimage.io.imsave(imageSave, clip)
+    toc = time.perf_counter()
+    print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
     
 
 #-----------------------------------------------------------------
@@ -355,7 +363,8 @@ plt.title('k value for k-power horizontally')
 plt.hist(xval_all, bins=13, color = "skyblue")
 fig.savefig('xval_horizontally')
 plt.close()
-
+mastertoc = time.perf_counter()
+print(f"Workload completed in {time.strftime( '%H:%M:%S', time.gmtime(mastertoc - mastertic))}!")
 
 #-----------------------------------------------------------------
 

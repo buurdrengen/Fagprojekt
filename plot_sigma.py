@@ -28,9 +28,9 @@ def plot_sigma(clip, threshold, conversion, saveas = None, plotshow = True):
     yscale = np.max([np.max(s1),np.max(s2),np.max(s3)])*1.5
 
     plt.figure()
-    s1[s1 == 0] = 10
-    s2[s2 == 0] = 10
-    s3[s3 == 0] = 10
+    s1[s1 == 0] = 0
+    s2[s2 == 0] = 0
+    s3[s3 == 0] = 0
     plt.grid(True)
     plt.plot(x,s1,'r-',label='Section 1')
     plt.plot(x,s2,'b-',label='Section 2')
