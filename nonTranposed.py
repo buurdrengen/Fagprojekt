@@ -2,6 +2,8 @@
 
 
 import os
+from token import NEWLINE
+from tracemalloc import stop
 import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
@@ -11,6 +13,7 @@ from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
 from plot_sigma import plot_sigma
+from tabulate import tabulate
 
 files = os.getcwd() + '/variables'
 images = os.getcwd() + '/images'
@@ -69,6 +72,8 @@ sigmaset = np.zeros([filesize,3])
 rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
+Table = np.empty(filesize*3, dtype = 'U256')
+TableT = np.empty(filesize*3, dtype = 'U256')
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -133,18 +138,18 @@ for nfo, filename in enumerate(os.listdir(files)):
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
     funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata H...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Plotdata V...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
-    print(' -> Threshold H...')
-    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Threshold V...')
-    plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
-    print(' -> Sigma H...')
-    plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Sigma V...')
-    plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Plotdata H...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Plotdata V...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    # print(' -> Threshold H...')
+    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Threshold V...')
+    # plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Sigma H...')
+    # plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Sigma V...')
+    # plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -160,6 +165,13 @@ for nfo, filename in enumerate(os.listdir(files)):
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
+        ts = " & "
+        pRMSET = -np.log10(np.copy(RMSET))
+        TableT[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}\\n" , ts , f"{auflengthT[0]:0.3f}" , " \\pm " , f"{uncertaintyT[0]:0.3f}" , ts , f"{pRMSET[0,0]:0.2f}" , ts , f"{pRMSET[0,1]:0.2f}" , ts ,  f"{pRMSET[0,2]:0.2f}" , ts ,  f"{pRMSET[0,3]:0.2f}" , ts ,  f"{kvalueT[0]:0.3f}" , ts,  f"{xvalueT[0]:0.3f}" , ts,  f"{rho_T[0]:0.3f}" , " \\\\\\n"])
+        TableT[3*fileidx + 1] = "".join(["\\cline{2-9}\\n" , f"{(fileidx + 1):0.0f}" , ts , f"{auflengthT[1]:0.3f}" , " \\pm " , f"{uncertaintyT[1]:0.3f}" , ts , f"{pRMSET[1,0]:0.2f}" , ts , f"{pRMSET[1,1]:0.2f}" , ts ,  f"{pRMSET[1,2]:0.2f}" , ts ,  f"{pRMSET[1,3]:0.2f}" , ts ,  f"{kvalueT[1]:0.3f}" , ts,  f"{xvalueT[1]:0.3f}" , ts,  f"{rho_T[1]:0.3f}" , " \\\\\\n"])
+        TableT[3*fileidx + 2] =  "".join(["\\cline{2-9}\\n" , ts , f"{auflengthT[2]:0.3f}" , " \\pm " , f"{uncertaintyT[2]:0.3f}" , ts , f"{pRMSET[2,0]:0.2f}" , ts , f"{pRMSET[2,1]:0.2f}" , ts ,  f"{pRMSET[2,2]:0.2f}" , ts ,  f"{pRMSET[2,3]:0.2f}" , ts ,  f"{kvalueT[2]:0.3f}" , ts,  f"{xvalueT[2]:0.3f}" , ts,  f"{rho_T[2]:0.3f}" , " \\\\\\n"])
+
+
     except KeyError:
         print(f"    {filename[0:-4]} is not a member of test set..")
         pass
@@ -180,6 +192,8 @@ for nfo, filename in enumerate(os.listdir(files)):
 #-----------------------------------------------------------------
 # L compared to depth - Kan udkommenteres ->
 print('Postprocessing...')
+
+np.savetxt("table_H.txt",tabulate(TableT), delimiter='', newline='\n')
 
 splitter = [14,20,27,29,36]
 funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
