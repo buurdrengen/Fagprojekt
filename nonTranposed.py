@@ -160,7 +160,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
         ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200220_223734":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -173,7 +173,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 100
         ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200220_225515":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -186,7 +186,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 200
         ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200220_231318":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -199,7 +199,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 300
         ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax1.set_title('No. 1, 2, 3 and 4')
 
     if filename[0:-4] == "20200206_094159":
@@ -214,7 +214,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
         ax2.scatter(sections, L, c = 'k')
-        ax2.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200206_101354":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -227,7 +227,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 100
         ax2.scatter(sections, L, c = 'k')
-        ax2.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200206_103511":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -240,7 +240,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 200
         ax2.scatter(sections, L, c = 'k')
-        ax2.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax2.set_title('No. 5,6 and 7')
 
     if filename[0:-4] == "20200122_215146":
@@ -255,7 +255,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
         ax3.scatter(sections, L, c = 'k')
-        ax3.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200122_221025":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -268,7 +268,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 130
         ax3.scatter(sections, L, c = 'k')
-        ax3.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200122_222713":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -281,7 +281,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 225
         ax3.scatter(sections, L, c = 'k')
-        ax3.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax3.set_title('No. 8, 9 and 10')
         
     if filename[0:-4] == "20200219_135306":
@@ -296,7 +296,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
         ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200219_141939":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -309,7 +309,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 130
         ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
     if filename[0:-4] == "20200219_143636":
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
@@ -322,7 +322,7 @@ for filename in os.listdir(files_nonT):
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion + 225
         ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k')
+        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax4.set_title('No. 11, 12 and 13')
 
 
