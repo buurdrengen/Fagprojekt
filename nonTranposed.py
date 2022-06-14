@@ -2,13 +2,10 @@
 
 
 import os
-from token import NEWLINE
-from tracemalloc import stop
 import numpy as np
 import skimage.io
 import matplotlib.pyplot as plt
 import time
-from DensityPlot import Density_plot
 from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
@@ -137,7 +134,7 @@ for nfo, filename in enumerate(os.listdir(files)):
     auflengthT, uncertaintyT, funcTypeT, plotdataT, RMSET, kvalueT, xvalueT = acf(np.copy(clip.T), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
     # print(' -> Plotdata H...')
     # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
     # print(' -> Plotdata V...')
@@ -180,7 +177,7 @@ for nfo, filename in enumerate(os.listdir(files)):
 
 
     except KeyError:
-        print(f"    {filename[0:-4]} is not a member of test set..")
+        print(f"{filename[0:-4]} is not a member of test..")
         pass
 
     #print(RMSE)
@@ -193,7 +190,6 @@ for nfo, filename in enumerate(os.listdir(files)):
     skimage.io.imsave(imageSave, clip)
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
-
     
 
 #-----------------------------------------------------------------
@@ -211,7 +207,6 @@ funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Pond
 compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
-Density_plot(compset,splitter=splitter,texts=funcnames)
 
 files_nonT = os.getcwd() + '/variables_nonT'
 variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0]]
