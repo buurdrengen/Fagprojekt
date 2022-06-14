@@ -1,13 +1,6 @@
-#from asyncio.windows_events import NULL
-#from distutils.log import error
-#import string
-#from matplotlib.colors import Normalize
-from ast import NotEq
 import numpy as np
-#from numpy.fft import fft2, fftshift, ifft2
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf as acff
-#from numpy.linalg import solve
 
 
 def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotname="", ip=np.exp(-2), sections=3, errorlimit = np.inf, alpha =0.05):
@@ -16,14 +9,10 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
     if type(plotfunc) == int:
         plotfunc = [plotfunc]
 
-    #clip, blurredClip = clipBlur(filename, x, y, margin, margin, sigma)
-
     n = np.shape(clip)[0]
     M = np.zeros(n)
     bestfunc = np.empty(sections, dtype= 'U32')
     functype = ["Empirical","Exponential","Gaussian","Exp Root", "x-Power", "x-Exponential"]
-
-    #print(f"n is {n}")
 
     plotdata = np.empty(lags)
 
@@ -43,19 +32,13 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             M2[idx] = acl_est
             N2[idx] = std_est
 
-
-
-
-            #print("-"*30)
-            #print(f"auto = {np.size(auto)}")
-
             if any(auto < -1) or any(auto > 1):
                 print("Warning[acf]: Autocorrelation contains invalid values!")
             if any(np.isnan(auto)):
                 print("Warning[acf]: Warning: Autocorrelation contains NaN entries!")
 
-
             #print(f"Estimated Autocorrelation Length: {acl_est:.04f}mm")
+
             bestfunc[idx] = functype[0]
             x = np.arange(lags)
             y = auto[x]
@@ -65,7 +48,6 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             for jdx, pf in enumerate(plotfunc):
                 coeffs, iidx = lsm3(x,y,pf, limit=ip,L=acl_est)
                 c = np.hstack([0,coeffs])
-                #print(c)
                 if pf == 1:
                     fy = func1(c,x)
                     #plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
@@ -88,45 +70,15 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                 elif pf == 0:
                     fy = y
                     acl = acl_est
-                #print(f"size of x: {np.shape(x)}")
-                #print(f"size of fy: {np.shape(fy)}")
 
                 plotdata = np.vstack([plotdata,fy])
-
-                # if (plotname != "") or plot:
-                #     plt.figure()
-                #     plt.plot(x,y,'bo',label="ACF")
-                #     plt.plot(x,fy,'k-',label=plotlabel)
-                #     plt.grid(True)
-                #     plt.xlabel("Længde [mm]")
-                #     plt.ylabel("ACF")
-                #     plt.title("Autokorrelation")
-                #     plt.ylim([-0.1, 1])
-                #     plt.legend()
-                #     if plotname != None:
-                #         fname = str(f"plotimg/{plotname}{idx+1}-{pf}.png")
-                #         #print(fname)
-                #         plt.savefig(fname,dpi=300,format="png")
-                #     if plot: 
-                #         plt.show()
-                #     plt.close()
-
 
                 # print(f"Autocorrelation legth from {functype[pf]} lsm: {acl:.04f}mm")
 
                 fitctrl = 1/(iidx) *np.sum((y[:iidx]-fy[:iidx])**2)
-                #print(f"iidx = {iidx}")
                 fitness[idx,jdx] = fitctrl
 
-
-                
-                #_, fitctrl = plot_acf(auto, lags = lags, init_acl=acl, func = plt, lsmpoints=ip, plot = plot)
-                #print(f"Error for {plt} is {fitctrl:.4e}")
                 if fitctrl < bestfitctrl:
-                    #print(f"{fitctrl:.2e} is less than {bestfitctrl:.2e}")
-                    
-            # print(f"Summing block {blocks[idx]} to {blocks[idx + 1]}")
-
                     #Error tolerance
                     if  np.not_equal(acl_est,0):
                         if abs(acl/acl_est - 1) > errorlimit:
@@ -135,12 +87,6 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
                         else:
                             bestfunc[idx] = functype[pf]
                             bestfitctrl = fitctrl
-
-
-                    # M2[idx] = acl_est
-                    # N2[idx] = std_est
-
-            # print(f"idx is {idx} with sum {M2[idx]:.4f}")
 
         M = np.copy(M2)
     else:
@@ -151,6 +97,8 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
 
 
     return M, N2, bestfunc, plotdata[1:], fitness, kval, xval
+
+#-----------------------------------------------------------------------------
 
 def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
     # Function 
@@ -179,10 +127,6 @@ def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
     N = np.zeros(nlags+1)
     err = 0
     for i, clips in enumerate(clipBlur):
-
-        # if i == 731:
-        #     plt.plot(np.arange(np.size(clips)),abs(clips))
-
         if all(clips == 0):
             auto = np.zeros(np.size(nlags))
             confint = np.zeros(np.size(nlags))
@@ -201,23 +145,15 @@ def autoCor(clipBlur, nlags = 1999, alpha = 0.05):
             if any(np.isnan(clips)):
                 print(f"    This is due to erroneous input!!")
 
-
         M = M + auto
         N = N + confint**2
-        
-        # if i %10 == 0: 
-            # print(i)
+
     M = 1/(i+1-err) * M
     N = 1/(i+1-err) * np.sqrt(N)
-    #C = 1/np.sqrt(2000)*C #Hacked konfidensinterval, check metoden 
 
-    # lags bestemmer hvor mange punkter der plottes
-
-    # # lags bestemmer hvor mange punkter der plottes 
-    # plt.figure(1)   
-    # tsaplots.plot_acf(M,lags = 100)
-    # plt.show()
     return M, N
+
+#-----------------------------------------------------------------------------
 
 def autocolen(acf,confint,scale=1):
     """
@@ -245,168 +181,15 @@ def autocolen(acf,confint,scale=1):
         
         sy1 = confint[n0]
         sy2 = confint[n0-1]
-
-
-        #sf1 = (1/((1-y1/y2)**2 * y2))**2 * sy1**2 + (y1/((1-y1/y2)**2 * y2))**2 * sy2**2
         sa = np.sqrt(sy1**2 + sy2**2)
 
-        #sf2 = np.exp(-2)*sa /dy**4
-
         sigma = np.sqrt( np.exp(-2) * sa/dy**2  + np.sqrt(sy1**2 * y2**2 + sy2**2 * y1**2)/np.power(y1 - y2,2) )
-
-        #print(f"m er {m:.3f}, n er {n}")
-        #print(f"Test: p1: {acf[n0-1]}, p2: {acf[n0]}")
     else:
         n = 0; sigma = 0
         #print(f"n er {n}")
     return n*scale, sigma*scale
 
-
-def plot_acf(acf, lags, init_acl = 0.5, n=1, conversion=90/2000, niter=20, func=1, plot=False, saveas = None, lsmpoints = 0):
-
-    #set interp-points
-    if lsmpoints == 0: lsmpoints = lags
-
-    x = np.arange(lags)
-    y = acf[x]
-    x = x*conversion
-
-    sx = x#[0:lsmpoints+1]
-    sy = y#[0:lsmpoints+1]
-
-
-    if func == 1:
-        m0 = [0.1, 1.1, -1]
-    elif func == 2:
-        m0 = [0.1,0.5,0.1,0.75]
-        sy = np.hstack([np.flip(sy[1:]),sy])
-        sx = np.hstack([np.flip(-sx[1:]),sx])
-
-    m, errorlevel = lsm(sx, sy, m=m0, niter=niter, func=func, guess = init_acl)
-
-    if func == 1:
-        fy = func1(m,x)
-        plotlabel = r'$c_1 \exp(k_1 x) + c_0$'
-    elif func == 2:
-        fy = func2(m,x)
-        plotlabel = r'$\frac{c_1}{\sqrt{2 \pi \sigma^2}} \cdot \exp\left(-\frac{\left(x - \mu \right)^2}{2 \sigma^2}\right) + c_0$'
-
-    #print(m)
-    if (saveas != None) or plot:
-        plt.figure()
-        plt.plot(x,y,'bo',label="ACF")
-        plt.plot(x,fy,'k-',label=plotlabel)
-        plt.grid(True)
-        plt.xlabel("Længde [mm]")
-        plt.ylabel("ACF")
-        plt.title("Autokorrelation")
-        plt.ylim([-0.1, 1])
-        plt.legend()
-        if saveas != None:
-            fname = str("plotimg/" + saveas)
-            #print(fname)
-            plt.savefig(fname,dpi=300,format="png")
-        if plot: 
-            plt.show()
-        plt.close()
-
-    rvs = np.cumsum(y)
-    cdf = np.cumsum(fy)
-
-    [stat,pval] = scipy.stats.kstest(rvs,cdf)
-    alpha = 0.01
-    n = len(y)
-    m1 = len(fy)
-    test = np.sqrt(-np.log(alpha/2)*(1+m1/n)/(2*m1))
-
-    #print(f"Statistic is {stat:.04f} compared to {test:.04f}")
-    #print(f"p-value is {pval:.04f}")
-    #e = np.exp(1)
-    acl = [0,
-    -1/m[2], 
-    np.sqrt(2)*np.abs(m[1])-m[2]
-    -1/(m[2]**2)]
-
-    functype = ["null", "eksponentiel", "Gauss","22"]
-
-    print(f"Autokorrelationslængde fra {functype[func]} lsm: {acl[func]:.04f}mm")
-
-    if errorlevel == 0:
-        fitctrl = 1/(lags-1) *np.sum((y-fy)**2) / func
-    else:
-        fitctrl = np.inf
-
-    return m, fitctrl
-
-#---------------------------------------------------------------
-
-
-def lsm(x,y, m=[0.1, 1.1, -1], niter=50, func=1, guess = 0.5):
-    """
-    Least square method
-    """
-
-    y = y[:,np.newaxis]
-    x = x[:,np.newaxis]
-    s2 = (x - guess)**2
-    s2[s2 < 1e-4] = 1e-4
-    sigma = 1/s2
-    Cobs = np.eye(np.size(x))
-    #print(f"size of x {np.shape(x)}")
-
-    # plt.figure(10+func)
-    # plt.plot(x,y,'k-*')
-    # plt.show()
-
-    #Itererer
-    for i in range(niter): 
-        errorlevel = 0
-        G = df(m=m, x=x, func=func)
-        GT = np.dot(np.transpose(G),Cobs)
-        #GT = G.T
-        #print(f"size of G {np.shape(G)}")
-        if func == 1:
-            dy = y - func1(m,x)
-        elif func == 2:
-            dy = y - func2(m,x)
-        
-        #sigma = 1 #Tilret sigma ved lejlighed
-        #print(f"size of sigma {np.shape(sigma)}")
-        
-        A = np.dot(GT,G)
-        b = np.dot(GT,dy)
-
-        #print(f"size of cobs {np.shape(Cobs)}")
-        #print(f"Iteration {i}:")
-        
-        #Moore-Penrose pseudo-inverse
-        #print(m)
-        #print(A)q
-        #print(b)
-        try: 
-            delta = np.linalg.inv(A).dot(b) #solve(A,b, assume_a='sym')
-        except np.linalg.LinAlgError:
-            errorlevel = 2
-            break
-        except ValueError:
-            errorlevel = 3
-            break
-        m = m + np.transpose(delta)[0]
-        res = np.transpose(delta).dot(delta)[0][0]
-        #print(f"Residuals for {i}: {res}")
-        if res < 1e-6:
-            break
-        errorlevel = 1
-        
-    errortype =  ["Solution converges too slowly","Coefficient matrix is singular","Solution is divergent"]
-
-    if errorlevel:
-        print(f"Warning: {errortype[errorlevel - 1]} - Solution discarded!!!")
-
-    return m, errorlevel
-
-
-#--------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 def func1(m,x):
     return m[0] + m[1]*np.exp(-m[2]*x)
@@ -424,140 +207,6 @@ def func5(m,x):
     return m[0] + m[1]*np.exp(-np.power(m[2]*x,m[3]))
 
 #--------------------------------------------------------------
-
-def df(m,x,func):
-
-    if func == 1:
-        G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
-        np.exp(m[2]*x), #dfd1
-        m[1]*x*np.exp(m[2]*x)]) #dfd2
-    elif func == 2:
-       G = np.hstack([np.ones(np.size(x))[:,np.newaxis], #dfd0
-       (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x), #dfd1
-       ((x-m[2])/(m[1]**2)) * func2([0,m[1],m[2],m[3]],x), #dfd2
-       func2([0,m[1],m[2],1],x)]) #dfd3
-
-    return G 
-
-
-# def dfd0(m,x): #c_0
-#     return np.ones(np.size(x))[:,np.newaxis]
-
-# def df1d1(m,x):
-#     return np.exp(m[2]*x)
-
-# def df1d2(m,x):
-#     return m[1]*m[2]*np.exp(m[2]*x)
-
-# def df2d1(m,x): #sigma
-#     return (((x - m[2])**2 - m[1]**2)/(m[1]**3)) * func2([0,m[1],m[2],m[3]],x)
-
-# def df2d2(m,x): #mu
-#     return ((x-m[2])/(m[1]**2)) * func2([0,m[1],m[2],m[3]],x)
-
-# def df2d3(m,x): #C_1
-#     return func2([0,m[1],m[2],1],x)
-
-
-
-
-def scanclip (clip, lags=100, conversion = 90/2000, sections = 3):   
-
-
-
-
-    # plt.figure()
-    # plt.plot(np.arange(n)*conversion,M,'b-.')
-    # plt.xlabel('Depth [mm]')
-    # plt.ylabel('ACL')
-    # plt.title('Autocorrelation Length')
-    # plt.show()
-
-    # fclip = np.transpose(clip)
-
-    # fn = np.shape(fclip)[0]
-    # fM = np.zeros(fn)
-
-
-    # plt.figure()
-    # plt.imshow(fclip, cmap = 'gray')
-    # plt.show(block = False)
-
-
-    # print(f"fn is {fn}")
-    # for idx, i in enumerate(fclip):
-    #     auto = autoCor([i], nlags=lags)
-    #     acl = autocolen(auto,conversion)
-    #     fM[idx] = acl
-
-
-    # cm1 = M[:,np.newaxis]
-    # cm2 = fM[:,np.newaxis]
-
-    # aci = np.sqrt(np.dot(cm1,cm2.T))
-
-    # var1 = aci #fftshift(aci)
-    # var2 = np.log(np.abs(np.real(fft2(var1))))
-
-    #aci [aci > 0.35] = 1
-    
-    # if np.shape(aci) == np.shape(clip):
-    #     plt.figure()
-    #     plt.imshow(var2, cmap = 'gray')
-    #     plt.show(block = True)
-    # else:
-    #     print("Image Mismatic!")
-    #     print(f"Shape of clip is {np.shape(clip)} while shape of fclip is {np.shape(fclip)}..")
-
-    return 0
-
-
-
-
-def lsm2(x,y, func=1, limit = np.exp(-2)):
-    """
-    Least square method
-    """
-
-    idx = y>limit
-    i = np.where(idx == False)[0][0]
-
-    y = y[:i,np.newaxis]
-    x = x[:i,np.newaxis]
-
-    ly = np.log(y)
-
-    A = np.hstack([np.ones(np.shape(x)),x])
-    if func == 2:
-        A = np.hstack([np.ones(np.shape(x)),x, x**2])
-        #print(np.shape(A))
-
-    ATA = np.transpose(A) @ A
-    b = np.transpose(A) @ ly
-
-
-    m = np.linalg.inv(ATA) @ b # Computes 'inv(A^T A) A^T y' efficiently
-
-
-    #print(m)
-
-    if func == 1:
-        a = m[0][0]; b = m[1][0]
-
-        a1 = np.exp(a)
-        k = -b
-        return np.array([a1,k,0])
-
-    if func == 2:
-        a = m[0][0]; b = m[1][0]; c = m[2][0]
-        a2 = np.exp(c - b**2 / (4*a)) * np.sqrt(-np.pi/a) #a2
-        mu = -b / (2*a) #mu
-        sigma = np.sqrt(-1/(2*a)) #sigma
-        return np.array([sigma,mu,a2])
-
-    return [0,0,0]
- 
-
 
 def lsm3(x,y, func=1, limit = np.exp(-2), L=1):
     """
@@ -625,7 +274,6 @@ def lsm3(x,y, func=1, limit = np.exp(-2), L=1):
     if func == 4:
         a = m[0][0]
         k = -a
-        #print(f"k = {k}")
         A = np.hstack([x[1:]**2])
         ATA = np.transpose(A) @ A
         ly = np.power(y[1:],-1/k) - 1
@@ -637,13 +285,11 @@ def lsm3(x,y, func=1, limit = np.exp(-2), L=1):
             print(f"Unable to compute function {func}: Singular Matrix")
             n = [[1]]
         
-        #print(n)
         if n[0][0] < 0:
             print('Warning: Fixed negative exponent!')
             n[0][0] = -n[0][0]
 
         L1 = np.sqrt(n[0][0])
-        #print(f"L = {1/L1}")
 
         return np.array([1,L1,k]), i
 
@@ -661,8 +307,6 @@ def lsm3(x,y, func=1, limit = np.exp(-2), L=1):
 
 
 def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = True, sectors = 3, saveas = None, plotshow = True):
-
-    #print(np.shape(plotdata))
 
     #plt.figure()
     fig, axx = plt.subplots(1, sectors)
@@ -686,7 +330,6 @@ def plot_acf2(auflength, funcTypes, plotdata, xmax = 5, block = True, sectors = 
         ax.set_ylim([-0.02, 1])
         ax.set_xlim([-0.02*xmax, xmax])
         ax.legend()
-    #ax2.set_title("Autocorrelation Length")
     fig.set_figheight(4)
     fig.set_figwidth(4*sectors)
     if saveas != None:
