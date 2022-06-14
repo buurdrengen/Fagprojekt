@@ -45,7 +45,6 @@ def plot_threshold(clip, blurredClip, conversion, saveas = None, plotshow = True
     if plotshow:
         plt.show(block = True)
     plt.close()
-    print("Done!")
 
 
 if __name__ == "__main__":
