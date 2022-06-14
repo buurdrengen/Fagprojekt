@@ -72,7 +72,7 @@ sigmaset = np.zeros([filesize,3])
 rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
-Table = np.empty(filesize*3, dtype = 'U256')
+TableH = np.empty(filesize*3, dtype = 'U256')
 TableT = np.empty(filesize*3, dtype = 'U256')
 
 for nfo, filename in enumerate(os.listdir(files)):
@@ -165,11 +165,18 @@ for nfo, filename in enumerate(os.listdir(files)):
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
+
         ts = " & "
+        pRMSE = -np.log10(np.copy(RMSE))
         pRMSET = -np.log10(np.copy(RMSET))
-        TableT[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}\\n" , ts , f"{auflengthT[0]:0.3f}" , " \\pm " , f"{uncertaintyT[0]:0.3f}" , ts , f"{pRMSET[0,0]:0.2f}" , ts , f"{pRMSET[0,1]:0.2f}" , ts ,  f"{pRMSET[0,2]:0.2f}" , ts ,  f"{pRMSET[0,3]:0.2f}" , ts ,  f"{kvalueT[0]:0.3f}" , ts,  f"{xvalueT[0]:0.3f}" , ts,  f"{rho_T[0]:0.3f}" , " \\\\\\n"])
-        TableT[3*fileidx + 1] = "".join(["\\cline{2-9}\\n" , f"{(fileidx + 1):0.0f}" , ts , f"{auflengthT[1]:0.3f}" , " \\pm " , f"{uncertaintyT[1]:0.3f}" , ts , f"{pRMSET[1,0]:0.2f}" , ts , f"{pRMSET[1,1]:0.2f}" , ts ,  f"{pRMSET[1,2]:0.2f}" , ts ,  f"{pRMSET[1,3]:0.2f}" , ts ,  f"{kvalueT[1]:0.3f}" , ts,  f"{xvalueT[1]:0.3f}" , ts,  f"{rho_T[1]:0.3f}" , " \\\\\\n"])
-        TableT[3*fileidx + 2] =  "".join(["\\cline{2-9}\\n" , ts , f"{auflengthT[2]:0.3f}" , " \\pm " , f"{uncertaintyT[2]:0.3f}" , ts , f"{pRMSET[2,0]:0.2f}" , ts , f"{pRMSET[2,1]:0.2f}" , ts ,  f"{pRMSET[2,2]:0.2f}" , ts ,  f"{pRMSET[2,3]:0.2f}" , ts ,  f"{kvalueT[2]:0.3f}" , ts,  f"{xvalueT[2]:0.3f}" , ts,  f"{rho_T[2]:0.3f}" , " \\\\\\n"])
+
+        TableH[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflength[0]:0.3f}" , " \\pm " , f"{uncertainty[0]:0.3f}" , ts , f"{pRMSE[0,0]:0.2f}" , ts , f"{pRMSE[0,1]:0.2f}" , ts ,  f"{pRMSE[0,2]:0.2f}" , ts ,  f"{pRMSE[0,3]:0.2f}" , ts ,  f"{kvalue[0]:0.3f}" , ts,  f"{xvalue[0]:0.3f}" , ts,  f"{rho[0]:0.3f}" , " \\\\"])
+        TableH[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflength[1]:0.3f}" , " \\pm " , f"{uncertainty[1]:0.3f}" , ts , f"{pRMSE[1,0]:0.2f}" , ts , f"{pRMSE[1,1]:0.2f}" , ts ,  f"{pRMSE[1,2]:0.2f}" , ts ,  f"{pRMSE[1,3]:0.2f}" , ts ,  f"{kvalue[1]:0.3f}" , ts,  f"{xvalue[1]:0.3f}" , ts,  f"{rho[1]:0.3f}" , " \\\\"])
+        TableH[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflength[2]:0.3f}" , " \\pm " , f"{uncertainty[2]:0.3f}" , ts , f"{pRMSE[2,0]:0.2f}" , ts , f"{pRMSE[2,1]:0.2f}" , ts ,  f"{pRMSE[2,2]:0.2f}" , ts ,  f"{pRMSE[2,3]:0.2f}" , ts ,  f"{kvalue[2]:0.3f}" , ts,  f"{xvalue[2]:0.3f}" , ts,  f"{rho[2]:0.3f}" , " \\\\"])
+
+        TableT[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflengthT[0]:0.3f}" , " \\pm " , f"{uncertaintyT[0]:0.3f}" , ts , f"{pRMSET[0,0]:0.2f}" , ts , f"{pRMSET[0,1]:0.2f}" , ts ,  f"{pRMSET[0,2]:0.2f}" , ts ,  f"{pRMSET[0,3]:0.2f}" , ts ,  f"{kvalueT[0]:0.3f}" , ts,  f"{xvalueT[0]:0.3f}" , ts,  f"{rho_T[0]:0.3f}" , " \\\\"])
+        TableT[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflengthT[1]:0.3f}" , " \\pm " , f"{uncertaintyT[1]:0.3f}" , ts , f"{pRMSET[1,0]:0.2f}" , ts , f"{pRMSET[1,1]:0.2f}" , ts ,  f"{pRMSET[1,2]:0.2f}" , ts ,  f"{pRMSET[1,3]:0.2f}" , ts ,  f"{kvalueT[1]:0.3f}" , ts,  f"{xvalueT[1]:0.3f}" , ts,  f"{rho_T[1]:0.3f}" , " \\\\"])
+        TableT[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflengthT[2]:0.3f}" , " \\pm " , f"{uncertaintyT[2]:0.3f}" , ts , f"{pRMSET[2,0]:0.2f}" , ts , f"{pRMSET[2,1]:0.2f}" , ts ,  f"{pRMSET[2,2]:0.2f}" , ts ,  f"{pRMSET[2,3]:0.2f}" , ts ,  f"{kvalueT[2]:0.3f}" , ts,  f"{xvalueT[2]:0.3f}" , ts,  f"{rho_T[2]:0.3f}" , " \\\\"])
 
 
     except KeyError:
@@ -193,7 +200,10 @@ for nfo, filename in enumerate(os.listdir(files)):
 # L compared to depth - Kan udkommenteres ->
 print('Postprocessing...')
 
-np.savetxt("table_H.txt",tabulate(TableT), delimiter='', newline='\n')
+with open("Table_H.txt",'w') as f:
+    f.write(tabulate(TableH).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
+with open("Table_T.txt",'w') as f:
+    f.write(tabulate(TableT).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
 
 splitter = [14,20,27,29,36]
 funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
