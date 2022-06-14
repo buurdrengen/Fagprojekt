@@ -132,10 +132,10 @@ for nfo, filename in enumerate(os.listdir(files)):
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
     funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    # print(' -> Plotdata H...')
-    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    # print(' -> Plotdata V...')
-    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = False, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    print(' -> Plotdata H...')
+    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    print(' -> Plotdata V...')
+    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
     # print(' -> Threshold H...')
     # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
     # print(' -> Threshold V...')

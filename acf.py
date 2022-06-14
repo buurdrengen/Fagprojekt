@@ -63,7 +63,7 @@ def acf(clip, lags=50, conversion = 90/2000, plot=False, plotfunc=[1,2], plotnam
             plotdata = np.vstack([plotdata,x,y])
             
             for jdx, pf in enumerate(plotfunc):
-                coeffs, iidx = lsm3(x,y,pf, limit=ip)
+                coeffs, iidx = lsm3(x,y,pf, limit=ip,L=acl_est)
                 c = np.hstack([0,coeffs])
                 #print(c)
                 if pf == 1:
@@ -559,7 +559,7 @@ def lsm2(x,y, func=1, limit = np.exp(-2)):
  
 
 
-def lsm3(x,y, func=1, limit = np.exp(-2)):
+def lsm3(x,y, func=1, limit = np.exp(-2), L=1):
     """
     Least square method
     """
@@ -588,7 +588,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     if func == 4:
         ly = np.log(y[1:])
-        A = np.hstack([np.log(x[1:])])
+        A = np.hstack([np.log(1 + (x[1:]/L)**2)])
 
     if func == 5:
         ly = np.log(-ly[1:])
@@ -624,7 +624,7 @@ def lsm3(x,y, func=1, limit = np.exp(-2)):
 
     if func == 4:
         a = m[0][0]
-        k = a
+        k = -a
         #print(f"k = {k}")
         A = np.hstack([x[1:]**2])
         ATA = np.transpose(A) @ A
