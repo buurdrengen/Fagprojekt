@@ -137,14 +137,14 @@ for nfo, filename in enumerate(os.listdir(files)):
     plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
     print(' -> Plotdata V...')
     plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
-    # print(' -> Threshold H...')
-    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    # print(' -> Threshold V...')
-    # plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
-    # print(' -> Sigma H...')
-    # plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    # print(' -> Sigma V...')
-    # plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    print(' -> Threshold H...')
+    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    print(' -> Threshold V...')
+    plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    print(' -> Sigma H...')
+    plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    print(' -> Sigma V...')
+    plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
