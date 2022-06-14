@@ -15,6 +15,38 @@ from plot_sigma import plot_sigma
 # fit = np.array([1,2,4,5])
 # mastertic = time.perf_counter()
 
-compdata = np.loadtxt('rhoplotdata.txt',delimiter=',')
-print(np.shape(compdata))
+compdata = np.loadtxt('rhoplotdata.txt', delimiter=',')
+splitter = [14,20,27,29,36]
+texts = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
+#print(np.shape(compdata))
+
+splBack = 0
+for spl,tx in zip(splitter,texts):
+    setH = compdata[splBack:spl]
+    print(f"Shape of section = {np.shape(setH)}")
+    print(f"Shape of rho = {np.shape(setH[:,0:3])}")
+    sz = (spl-splBack)*3
+    rhoH = np.reshape(setH[:,0:3],[sz])
+    LH = np.reshape(setH[:,3:6],[sz])
+    sigmaH = np.reshape(setH[:,6:9],[sz])
+    rhoV = np.reshape(setH[:,9:12],[sz])
+    LV = np.reshape(setH[:,12:15],[sz])
+    sigmaV = np.reshape(setH[:,15:18],[sz])
+    splBack = spl
+
+    plt.errorbar(rhoH, LH, sigmaH, ls = 'none', c='k', fmt='o', capsize=10, elinewidth=1)
+    plt.xlabel('Inclusion Density [%]')
+    plt.ylabel('Autocorrelation Length [mm]')
+    plt.title(tx + ' - ' + 'Horizontal')
+    plt.savefig(tx.replace(' ','_') + '_H.png',dpi=300,format='png')
+    #plt.show(block='True')
+    plt.close()
+
+    plt.errorbar(rhoV, LV, sigmaV, ls = 'none', c='k', fmt='o', capsize=10, elinewidth=1)
+    plt.xlabel('Inclusion Density [%]')
+    plt.ylabel('Autocorrelation Length [mm]')
+    plt.title(tx + ' - ' + 'Vertical')
+    plt.savefig(tx.replace(' ','_') + '_V.png',dpi=300,format='png')
+    #plt.show(block='True')
+    plt.close()
 
