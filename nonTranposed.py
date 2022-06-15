@@ -207,7 +207,7 @@ with open("Table_T.txt",'w') as f:
 splitter = [14,20,27,29,36]
 funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
 
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot])
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot]) #Virk
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
@@ -217,29 +217,7 @@ N = len(os.listdir(files_nonT))
 L_mean = [0,0,0]
 
 
-plt.close()
-colmap = np.array(['b','r','y','m','c'])
-idxback = 0
-for i in range(5):
-    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],0], c=colmap[i], label=funcnames[i])
-    idxback = splitter[i]
 
-plt.xlabel('Image Number')
-plt.ylabel('Average ACL [mm]')
-plt.title('Autocorrelation Length - Horizontal')
-plt.legend()
-plt.savefig('StemplotH.png',dpi=300,format='png')
-
-plt.close()
-idxback = 0
-for i in range(5):
-    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],1], c=colmap[i], label=funcnames[i])
-    idxback = splitter[i]
-plt.xlabel('Image Number')
-plt.ylabel('Average ACL [mm]')
-plt.title('Autocorrelation Length - Vertical')
-plt.legend()
-plt.savefig('StemplotV.png',dpi=300,format='png')
 
 
 plt.close()
