@@ -71,6 +71,7 @@ lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
 TableH = np.empty(filesize*3, dtype = 'U256')
 TableT = np.empty(filesize*3, dtype = 'U256')
+stemplot = np.zeros([filesize,2])
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -139,14 +140,14 @@ for nfo, filename in enumerate(os.listdir(files)):
     plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
     print(' -> Plotdata V...')
     plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
-    print(' -> Threshold H...')
-    plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Threshold V...')
-    plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
-    print(' -> Sigma H...')
-    plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
-    print(' -> Sigma V...')
-    plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Threshold H...')
+    # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Threshold V...')
+    # plot_threshold(clip=np.copy(rawclip.T), blurredClip=np.copy(blurredClip.T), conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
+    # print(' -> Sigma H...')
+    # plot_sigma(clip=np.copy(rawclip), threshold=threshold, conversion=conversion, saveas = filename[0:-4], plotshow = False)
+    # print(' -> Sigma V...')
+    # plot_sigma(clip=np.copy(rawclip.T), threshold=threshold, conversion=conversion, saveas = filename[0:-4] + "_T", plotshow = False)
     #-----------------------------------------------------------------
     
     variables = [yMiddle, xMiddle, marginY, marginX, conversion, blur, threshold, auflength[0], \
@@ -156,6 +157,8 @@ for nfo, filename in enumerate(os.listdir(files)):
 
     try:
         fileidx = fileset[filename[0:-4]]
+        stemplot[fileidx,0] = np.sum(auflength)/3
+        stemplot[fileidx,1] = np.sum(auflengthT)/3
         rhoset[fileidx] = rho
         lset[fileidx] = auflength
         sigmaset[fileidx] = uncertainty
@@ -204,7 +207,7 @@ with open("Table_T.txt",'w') as f:
 splitter = [14,20,27,29,36]
 funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
 
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
@@ -213,7 +216,34 @@ variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0
 N = len(os.listdir(files_nonT))
 L_mean = [0,0,0]
 
+
 plt.close()
+colmap = np.array(['b','r','y','m','c'])
+idxback = 0
+for i in range(5):
+    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],0], c=colmap[i], label=funcnames[i])
+    idxback = splitter[i]
+
+plt.xlabel('Image Number')
+plt.ylabel('Average ACL [mm]')
+plt.title('Autocorrelation Length - Horizontal')
+plt.legend()
+plt.savefig('StemplotH.png',dpi=300,format='png')
+
+plt.close()
+idxback = 0
+for i in range(5):
+    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],1], c=colmap[i], label=funcnames[i])
+    idxback = splitter[i]
+plt.xlabel('Image Number')
+plt.ylabel('Average ACL [mm]')
+plt.title('Autocorrelation Length - Vertical')
+plt.legend()
+plt.savefig('StemplotV.png',dpi=300,format='png')
+
+
+plt.close()
+
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharey = True, sharex=True)
 fig.suptitle('FYI error')
 fig.supylabel('Autocorrelation [mm]')
