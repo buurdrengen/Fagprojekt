@@ -69,6 +69,10 @@ rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
 
+fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
+ax1.grid()
+ax2.grid()
+
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
         # print(np.arange(len(variables)))
@@ -108,7 +112,7 @@ for nfo, filename in enumerate(os.listdir(files)):
     for i in range(3):
         section = num_pix[blox[i]:blox[i+1],:]
         rho[i] = np.sum(section) / np.size(section)
-    # print(rho)
+    
 
 
     num_pix_T = blurredClip.T < threshold.T
@@ -119,9 +123,7 @@ for nfo, filename in enumerate(os.listdir(files)):
     for i in range(3):
         section_T = num_pix_T[blox_T[i]:blox_T[i+1],:]
         rho_T[i] = np.sum(section_T) / np.size(section_T)
-    # print(rho)
     
-#------------------
     auflength  = np.empty(3)
     uncertainty = np.empty(3)
     RMSE = np.empty([3,4])
@@ -159,6 +161,27 @@ for nfo, filename in enumerate(os.listdir(files)):
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
+
+        if fileidx < 15:
+            color = 'k'
+            Label = 'FYI'
+        if (fileidx < 21) and (fileidx > 14):
+            color = 'r'
+            Label = 'SYI'
+        if  (fileidx < 28) and (fileidx > 20):
+            color = 'g'
+            Label = 'Hummocks'
+        if  (fileidx < 30) and (fileidx > 27):
+            color = 'b'
+            Label = 'Lead Ice'
+        if  fileidx > 29:
+            color = 'm'
+            Label = 'Meltpond'
+        ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2), \
+            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+        ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2), \
+            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+
     except KeyError:
         print(f"{filename[0:-4]} is not a member of test..")
         pass
@@ -174,6 +197,18 @@ for nfo, filename in enumerate(os.listdir(files)):
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
     
+ax1.set_title('Horizontal')
+ax2.set_title('Vertical')
+fig1.supxlabel('Image No.')
+fig1.supylabel('Autocorrelation Length [mm]')
+fig1.savefig('Image_No_L')
+fig1.legend()
+
+print('Postprocessing...')
+
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
+print(f"Shape of compset = {np.shape(compset)}")
+np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
 #-----------------------------------------------------------------
 # L compared to depth - Kan udkommenteres ->
@@ -235,62 +270,30 @@ for filename in os.listdir(files_nonT):
     xval_all = np.append(xval_all, xval)
     kval_all = np.append(kval_all, kval)
 
-
-    if filename[0:-4] == "20200220_221521":
+    if filename[0:-4] in ["20200220_221521", "20200220_223734", "20200220_225515", "20200220_231318"]:
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
+                f.readline()
+                f.readline()
+                marginY = int(f.readline()[0:-1])
+                f.readline()
+                conversion = np.float64(f.readline()[0:-1])
         blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
-        ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200220_223734":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 100
-        ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200220_225515":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 200
-        ax1.scatter(sections, L, c = 'k')
-        ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200220_231318":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 300
+        if filename[0:-4] == "20200220_221521":
+            sections = sections
+        if filename[0:-4] == "20200220_223734":
+            sections = sections + 100
+        if filename[0:-4] == "20200220_225515":
+            sections = sections + 200
+        if filename[0:-4] == "20200220_231318":
+            sections = sections + 300
         ax1.scatter(sections, L, c = 'k')
         ax1.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax1.set_title('No. 1, 2, 3 and 4')
-
-    if filename[0:-4] == "20200206_094159":
+        
+    if filename[0:-4] in ["20200206_094159", "20200206_101354", "20200206_103511"]:
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
             f.readline()
@@ -301,37 +304,17 @@ for filename in os.listdir(files_nonT):
         blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
-        ax2.scatter(sections, L, c = 'k')
-        ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200206_101354":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 100
-        ax2.scatter(sections, L, c = 'k')
-        ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200206_103511":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 200
+        if filename[0:-4] == "20200206_094159":
+            sections = sections
+        if filename[0:-4] == "20200206_101354":
+            sections = sections + 100
+        if filename[0:-4] == "20200206_103511":
+            sections = sections + 200
         ax2.scatter(sections, L, c = 'k')
         ax2.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax2.set_title('No. 5,6 and 7')
 
-    if filename[0:-4] == "20200122_215146":
+    if filename[0:-4] in ["20200122_215146", "20200122_221025", "20200122_222713"]:
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
             f.readline()
@@ -342,37 +325,17 @@ for filename in os.listdir(files_nonT):
         blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
-        ax3.scatter(sections, L, c = 'k')
-        ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200122_221025":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 130
-        ax3.scatter(sections, L, c = 'k')
-        ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200122_222713":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 225
+        if filename[0:-4] == "20200122_215146":
+            sections = sections
+        if filename[0:-4] == "20200122_221025":
+            sections = sections + 130
+        if filename[0:-4] == "20200122_222713":
+            sections = sections + 225
         ax3.scatter(sections, L, c = 'k')
         ax3.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
         ax3.set_title('No. 8, 9 and 10')
-        
-    if filename[0:-4] == "20200219_135306":
+
+    if filename[0:-4] in ["20200219_135306", "20200219_141939", "20200219_143636"]:
         imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
         with open(imagePlacement, 'r') as f:
             f.readline()
@@ -383,46 +346,24 @@ for filename in os.listdir(files_nonT):
         blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
         for i in range(3):
             sections[i] = (blox[i] + blox[i+1])/2 * conversion
-        ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200219_141939":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 130
-        ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-    if filename[0:-4] == "20200219_143636":
-        imagePlacement = os.getcwd() + '\\variables\\' + filename[0:-4] + '.txt'
-        with open(imagePlacement, 'r') as f:
-            f.readline()
-            f.readline()
-            marginY = int(f.readline()[0:-1])
-            f.readline()
-            conversion = np.float64(f.readline()[0:-1])
-        blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
-        for i in range(3):
-            sections[i] = (blox[i] + blox[i+1])/2 * conversion + 225
-        ax4.scatter(sections, L, c = 'k')
-        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
-        ax4.set_title('No. 11, 12 and 13')
+        if filename[0:-4] == "20200219_135306":
+            sections = sections
+        if filename[0:-4] == "20200219_141939":
+            sections = sections + 130
+        if filename[0:-4] == "20200219_143636":
+            sections = sections + 225
+
 
 
 fig.savefig('errorDepth')
 
-plt.close()
-fig = plt.figure()
-plt.title('Autocorrelation Horizontal')
-plt.stem(np.arange(1,37), L_all)
-plt.xlabel('image No.')
-plt.ylabel('Autocorrelation Length')
-fig.savefig('L Horizontal')
+# plt.close()
+# fig = plt.figure()
+# plt.title('Autocorrelation Horizontal')
+# plt.stem(np.arange(1,37), L_all)
+# plt.xlabel('image No.')
+# plt.ylabel('Autocorrelation Length')
+# fig.savefig('L Horizontal')
 
 plt.close()
 fig = plt.figure(1)
@@ -432,21 +373,19 @@ plt.hist([RMSE_exp_all, RMSE_gauss_all, RMSE_xpow_all, RMSE_xexp_all], stacked =
 plt.legend(['Exponential', 'Gaussian', 'k-power', 'k-exponential'])
 plt.xscale('log')
 fig.savefig('RMSE')
-plt.close()
 
 plt.close()
 fig = plt.figure(1)
 plt.title('k value for k-exponential horizontally')
 plt.hist(kval_all, bins=13, color = "orange")
 fig.savefig('kval_horizontally')
-plt.close()
 
 plt.close()
 fig = plt.figure(1)
 plt.title('k value for k-power horizontally')
 plt.hist(xval_all, bins=13, color = "skyblue")
 fig.savefig('xval_horizontally')
-plt.close()
+
 mastertoc = time.perf_counter()
 print(f"Workload completed in {time.strftime( '%H:%M:%S', time.gmtime(mastertoc - mastertic))}!")
 
