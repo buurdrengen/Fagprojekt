@@ -107,6 +107,7 @@ RMSE_xpow_all = np.array([])
 RMSE_xexp_all = np.array([])
 kval_all = np.array([])
 xval_all = np.array([])
+L_all = np.array([])
 
 for filename in os.listdir(files_T):
     with open(os.path.join(files_T, filename), 'r') as f: # open in readonly mode
@@ -128,12 +129,25 @@ for filename in os.listdir(files_T):
 
     sections = np.empty(3)
 
+    L_all = np.append(L_all, L)
     RMSE_exp_all = np.append(RMSE_exp_all, RMSE_exp)
     RMSE_gauss_all = np.append(RMSE_gauss_all, RMSE_gauss)
     RMSE_xpow_all = np.append(RMSE_xpow_all, RMSE_xpow)
     RMSE_xexp_all = np.append(RMSE_xexp_all, RMSE_xexp)
     xval_all = np.append(xval_all, xval)
     kval_all = np.append(kval_all, kval)
+
+print('')
+print(L_all)
+print(np.arange(1,37))
+plt.close()
+fig = plt.figure()
+plt.title('Autocorrelation Length Vertical')
+plt.stem(np.arange(1,37), L_all)
+plt.xlabel('image No.')
+plt.ylabel('Autocorrelation Length')
+fig.savefig('L Vertical')
+plt.close()
 
 plt.close()
 fig = plt.figure()

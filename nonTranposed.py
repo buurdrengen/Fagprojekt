@@ -99,7 +99,7 @@ for nfo, filename in enumerate(os.listdir(files)):
     clip[blurredClip > threshold] = 0
 
 
-#--------------
+    #--------------
     num_pix = blurredClip < threshold
     n = np.shape(num_pix)[0]
     blox = np.int32(np.round(np.linspace(0,2*marginY,4)))
@@ -205,6 +205,7 @@ RMSE_xpow_all = np.array([])
 RMSE_xexp_all = np.array([])
 kval_all = np.array([])
 xval_all = np.array([])
+L_all = np.array([])
 
 for filename in os.listdir(files_nonT):
     with open(os.path.join(files_nonT, filename), 'r') as f: # open in readonly mode
@@ -226,6 +227,7 @@ for filename in os.listdir(files_nonT):
 
     sections = np.empty(3)
 
+    L_all = np.append(L_all, L)
     RMSE_exp_all = np.append(RMSE_exp_all, RMSE_exp)
     RMSE_gauss_all = np.append(RMSE_gauss_all, RMSE_gauss)
     RMSE_xpow_all = np.append(RMSE_xpow_all, RMSE_xpow)
@@ -414,9 +416,13 @@ for filename in os.listdir(files_nonT):
 
 fig.savefig('errorDepth')
 
-
-print(np.min(RMSE_xexp_all))
-print(np.max(RMSE_gauss_all))
+plt.close()
+fig = plt.figure()
+plt.title('Autocorrelation Horizontal')
+plt.stem(np.arange(1,37), L_all)
+plt.xlabel('image No.')
+plt.ylabel('Autocorrelation Length')
+fig.savefig('L Horizontal')
 
 plt.close()
 fig = plt.figure(1)
