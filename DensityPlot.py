@@ -32,7 +32,7 @@ def Density_plot(compdata,splitter,texts):
         sigmaV = np.reshape(setH[:,15:18],[sz])
         splBack = spl
 
-        plt.errorbar(rhoH*100, LH, sigmaH, ls = 'none', c='m',ecolor='k', fmt='o', capsize=6, elinewidth=0.7, lw = 0.5)
+        plt.errorbar(rhoH*100, LH, sigmaH, ls = 'none', c='m',ecolor='k', fmt='s', capsize=6, elinewidth=0.7, lw = 0.5)
         plt.xlabel('Inclusion Density [%]')
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Horizontal')
@@ -49,42 +49,6 @@ def Density_plot(compdata,splitter,texts):
         plt.savefig('plotimg/' + tx.replace(' ','_') + '_V.png',dpi=300,format='png')
         #plt.show(block='True')
         plt.close()
-
-
-
-        plt.close()
-
-
-    stemplot = compdata[:,18:20]
-    colmap = np.array(['b','r','k','m','c'])
-    idx = np.arange(np.size(stemplot,0)) + 1
-    idxback = 0
-
-    for i in range(5):
-        plt.stem(idx[idxback:splitter[i]], stemplot[idxback:splitter[i],0], markerfmt="".join([colmap[i], "o"]), linefmt=colmap[i], basefmt = colmap[i], label=funcnames[i])
-        idxback = splitter[i]
-
-    plt.xlabel('Image Number')
-    plt.ylabel('Average ACL [mm]')
-    plt.title('Autocorrelation Length - Horizontal')
-    plt.grid()
-    plt.legend()
-    plt.savefig('StemplotH.png',dpi=300,format='png')
-    plt.close()
-
-    idxback = 0
-
-    for i in range(5):
-        plt.stem(idx[idxback:splitter[i]], stemplot[idxback:splitter[i],1], markerfmt="".join([colmap[i], "o"]), linefmt=colmap[i], basefmt = colmap[i], label=funcnames[i])
-        idxback = splitter[i]
-    plt.xlabel('Image Number')
-    plt.ylabel('Average ACL [mm]')
-    plt.title('Autocorrelation Length - Vertical')
-    plt.grid()
-    plt.legend()
-    plt.savefig('StemplotV.png',dpi=300,format='png')
-
-    
 
 
 

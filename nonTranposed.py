@@ -10,7 +10,6 @@ from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
 from plot_sigma import plot_sigma
-from tabulate import tabulate
 
 files = os.getcwd() + '/variables'
 images = os.getcwd() + '/images'
@@ -69,9 +68,6 @@ sigmaset = np.zeros([filesize,3])
 rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
-TableH = np.empty(filesize*3, dtype = 'U256')
-TableT = np.empty(filesize*3, dtype = 'U256')
-stemplot = np.zeros([filesize,2])
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -135,11 +131,11 @@ for nfo, filename in enumerate(os.listdir(files)):
     auflengthT, uncertaintyT, funcTypeT, plotdataT, RMSET, kvalueT, xvalueT = acf(np.copy(clip.T), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    print(' -> Plotdata H...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    print(' -> Plotdata V...')
-    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    # print(' -> Plotdata H...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    # print(' -> Plotdata V...')
+    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
     # print(' -> Threshold H...')
     # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
     # print(' -> Threshold V...')
@@ -157,28 +153,12 @@ for nfo, filename in enumerate(os.listdir(files)):
 
     try:
         fileidx = fileset[filename[0:-4]]
-        stemplot[fileidx,0] = np.sum(auflength)/3
-        stemplot[fileidx,1] = np.sum(auflengthT)/3
         rhoset[fileidx] = rho
         lset[fileidx] = auflength
         sigmaset[fileidx] = uncertainty
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
-
-        ts = " & "
-        pRMSE = -np.log10(np.copy(RMSE))
-        pRMSET = -np.log10(np.copy(RMSET))
-
-        TableH[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflength[0]:0.3f}" , " \\pm " , f"{uncertainty[0]:0.3f}" , ts , f"{pRMSE[0,0]:0.2f}" , ts , f"{pRMSE[0,1]:0.2f}" , ts ,  f"{pRMSE[0,2]:0.2f}" , ts ,  f"{pRMSE[0,3]:0.2f}" , ts ,  f"{kvalue[0]:0.3f}" , ts,  f"{xvalue[0]:0.3f}" , ts,  f"{rho[0]:0.3f}" , " \\\\"])
-        TableH[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflength[1]:0.3f}" , " \\pm " , f"{uncertainty[1]:0.3f}" , ts , f"{pRMSE[1,0]:0.2f}" , ts , f"{pRMSE[1,1]:0.2f}" , ts ,  f"{pRMSE[1,2]:0.2f}" , ts ,  f"{pRMSE[1,3]:0.2f}" , ts ,  f"{kvalue[1]:0.3f}" , ts,  f"{xvalue[1]:0.3f}" , ts,  f"{rho[1]:0.3f}" , " \\\\"])
-        TableH[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflength[2]:0.3f}" , " \\pm " , f"{uncertainty[2]:0.3f}" , ts , f"{pRMSE[2,0]:0.2f}" , ts , f"{pRMSE[2,1]:0.2f}" , ts ,  f"{pRMSE[2,2]:0.2f}" , ts ,  f"{pRMSE[2,3]:0.2f}" , ts ,  f"{kvalue[2]:0.3f}" , ts,  f"{xvalue[2]:0.3f}" , ts,  f"{rho[2]:0.3f}" , " \\\\"])
-
-        TableT[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflengthT[0]:0.3f}" , " \\pm " , f"{uncertaintyT[0]:0.3f}" , ts , f"{pRMSET[0,0]:0.2f}" , ts , f"{pRMSET[0,1]:0.2f}" , ts ,  f"{pRMSET[0,2]:0.2f}" , ts ,  f"{pRMSET[0,3]:0.2f}" , ts ,  f"{kvalueT[0]:0.3f}" , ts,  f"{xvalueT[0]:0.3f}" , ts,  f"{rho_T[0]:0.3f}" , " \\\\"])
-        TableT[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflengthT[1]:0.3f}" , " \\pm " , f"{uncertaintyT[1]:0.3f}" , ts , f"{pRMSET[1,0]:0.2f}" , ts , f"{pRMSET[1,1]:0.2f}" , ts ,  f"{pRMSET[1,2]:0.2f}" , ts ,  f"{pRMSET[1,3]:0.2f}" , ts ,  f"{kvalueT[1]:0.3f}" , ts,  f"{xvalueT[1]:0.3f}" , ts,  f"{rho_T[1]:0.3f}" , " \\\\"])
-        TableT[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflengthT[2]:0.3f}" , " \\pm " , f"{uncertaintyT[2]:0.3f}" , ts , f"{pRMSET[2,0]:0.2f}" , ts , f"{pRMSET[2,1]:0.2f}" , ts ,  f"{pRMSET[2,2]:0.2f}" , ts ,  f"{pRMSET[2,3]:0.2f}" , ts ,  f"{kvalueT[2]:0.3f}" , ts,  f"{xvalueT[2]:0.3f}" , ts,  f"{rho_T[2]:0.3f}" , " \\\\"])
-
-
     except KeyError:
         print(f"{filename[0:-4]} is not a member of test..")
         pass
@@ -199,15 +179,7 @@ for nfo, filename in enumerate(os.listdir(files)):
 # L compared to depth - Kan udkommenteres ->
 print('Postprocessing...')
 
-with open("Table_H.txt",'w') as f:
-    f.write(tabulate(TableH).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
-with open("Table_T.txt",'w') as f:
-    f.write(tabulate(TableT).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
-
-splitter = [14,20,27,29,36]
-funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
-
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot])
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
@@ -216,34 +188,7 @@ variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0
 N = len(os.listdir(files_nonT))
 L_mean = [0,0,0]
 
-
 plt.close()
-colmap = np.array(['b','r','y','m','c'])
-idxback = 0
-for i in range(5):
-    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],0], c=colmap[i], label=funcnames[i])
-    idxback = splitter[i]
-
-plt.xlabel('Image Number')
-plt.ylabel('Average ACL [mm]')
-plt.title('Autocorrelation Length - Horizontal')
-plt.legend()
-plt.savefig('StemplotH.png',dpi=300,format='png')
-
-plt.close()
-idxback = 0
-for i in range(5):
-    plt.stem(np.arange(splitter[i]- idxback) + 1, stemplot[idxback:splitter[i],1], c=colmap[i], label=funcnames[i])
-    idxback = splitter[i]
-plt.xlabel('Image Number')
-plt.ylabel('Average ACL [mm]')
-plt.title('Autocorrelation Length - Vertical')
-plt.legend()
-plt.savefig('StemplotV.png',dpi=300,format='png')
-
-
-plt.close()
-
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharey = True, sharex=True)
 fig.suptitle('FYI error')
 fig.supylabel('Autocorrelation [mm]')
