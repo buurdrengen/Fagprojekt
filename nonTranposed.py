@@ -68,10 +68,12 @@ sigmaset = np.zeros([filesize,3])
 rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
+stemplot = np.zeros([filesize,4])
 
-fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
-ax1.grid()
-ax2.grid()
+
+# fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
+# ax1.grid()
+# ax2.grid()
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -161,6 +163,10 @@ for nfo, filename in enumerate(os.listdir(files)):
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
+        stemplot[fileidx,0] = np.sum(auflength)/3
+        stemplot[fileidx,1] = np.sum(auflengthT)/3
+        stemplot[fileidx,2] = np.sqrt(np.sum(uncertainty**2)) /3
+        stemplot[fileidx,3] = np.sqrt(np.sum(uncertaintyT**2)) /3
 
         if fileidx < 15:
             color = 'k'
@@ -177,13 +183,13 @@ for nfo, filename in enumerate(os.listdir(files)):
         if  fileidx > 29:
             color = 'm'
             Label = 'Meltpond'
-        ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2), \
-            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
-        ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2), \
-            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+        # ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2) /3, \
+        #     ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+        # ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2) /3, \
+        #     ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
 
     except KeyError:
-        print(f"{filename[0:-4]} is not a member of test..")
+        print(f"    {filename[0:-4]} is not a member of test..")
         pass
 
     #print(RMSE)
@@ -197,24 +203,15 @@ for nfo, filename in enumerate(os.listdir(files)):
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
     
-ax1.set_title('Horizontal')
-ax2.set_title('Vertical')
-fig1.supxlabel('Image No.')
-fig1.supylabel('Autocorrelation Length [mm]')
-fig1.savefig('Image_No_L')
-fig1.legend()
+# ax1.set_title('Horizontal')
+# ax2.set_title('Vertical')
+# fig1.supxlabel('Image No.')
+# fig1.supylabel('Autocorrelation Length [mm]')
+# fig1.savefig('Image_No_L')
+# fig1.legend()
 
 print('Postprocessing...')
-
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
-print(f"Shape of compset = {np.shape(compset)}")
-np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
-
-#-----------------------------------------------------------------
-# L compared to depth - Kan udkommenteres ->
-print('Postprocessing...')
-
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
