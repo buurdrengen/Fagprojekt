@@ -81,7 +81,8 @@ def Density_plot(compdata,splitter,texts):
 if __name__ == "__main__":
 
     compdata = np.loadtxt('rhoplotdata.txt',delimiter=',')
+    print(f"Size of compdata = {np.shape(compdata)}")
     splitter = [14,20,27,29,36]
-    funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
+    funcnames = ["First-Year Ice","Second-Year Ice","Hummocks","Lead Ice","Melt Ponds"]
 
     Density_plot(compdata=compdata,splitter=splitter,texts=funcnames)
