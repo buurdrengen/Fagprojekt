@@ -177,9 +177,9 @@ for nfo, filename in enumerate(os.listdir(files)):
         if  fileidx > 29:
             color = 'm'
             Label = 'Meltpond'
-        ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2), \
+        ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2)/3, \
             ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
-        ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2), \
+        ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2)/3, \
             ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
 
     except KeyError:
