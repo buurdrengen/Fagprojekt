@@ -37,6 +37,7 @@ def Density_plot(compdata,splitter,texts):
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Horizontal')
         plt.grid(True)
+        #plt.ylim([0,1])
         plt.savefig('plotimg/' + tx.replace(' ','_') + '_H.png',dpi=300,format='png')
         #plt.show(block='True')
         plt.close()
@@ -46,16 +47,46 @@ def Density_plot(compdata,splitter,texts):
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Vertical')
         plt.grid(True)
+        #plt.ylim([0,1])
         plt.savefig('plotimg/' + tx.replace(' ','_') + '_V.png',dpi=300,format='png')
         #plt.show(block='True')
         plt.close()
 
 
 
+    stemplot = compdata[:,18:22]
+    colmap = np.array(['k','r','b','g','m'])
+    idx = np.arange(np.size(stemplot,0)) + 1
+    idxback = 0
+
+    fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
+    ax1.grid()
+    ax2.grid()
+
+
+    for i in range(5):
+        ax1.errorbar(idx[idxback:splitter[i]], stemplot[idxback:splitter[i],0], yerr=stemplot[idxback:splitter[i],2], ls = 'none', c=colmap[i],ecolor=colmap[i], fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=funcnames[i])
+        ax2.errorbar(idx[idxback:splitter[i]], stemplot[idxback:splitter[i],1], yerr=stemplot[idxback:splitter[i],3], ls = 'none', c=colmap[i],ecolor=colmap[i], fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=funcnames[i])
+        idxback = splitter[i]
+
+    ax1.set_title('Horizontal')
+    ax1.set_ylim([0,0.5])
+    ax2.set_ylim([0,0.8])
+    ax2.set_title('Vertical')
+    fig1.supxlabel('Image No.')
+    fig1.supylabel('Autocorrelation Length [mm]')
+    fig1.savefig('Image_No_L')
+    ax1.legend()
+    fig1.savefig('StemplotHV.png',dpi=300,format='png')
+    plt.close()
+
+
+
 if __name__ == "__main__":
 
     compdata = np.loadtxt('rhoplotdata.txt',delimiter=',')
+    print(f"Size of compdata = {np.shape(compdata)}")
     splitter = [14,20,27,29,36]
-    funcnames = ["First Year Ice","Second Year Ice","Hummocks","Lead-Ice","Melt-Ponds"]
+    funcnames = ["First-Year Ice","Second-Year Ice","Hummocks","Lead Ice","Melt Ponds"]
 
     Density_plot(compdata=compdata,splitter=splitter,texts=funcnames)

@@ -10,6 +10,7 @@ from clipBlur import *
 from acf import acf, plot_acf2
 from plot_threshold import plot_threshold
 from plot_sigma import plot_sigma
+from tabulate import tabulate
 
 files = os.getcwd() + '/variables'
 images = os.getcwd() + '/images'
@@ -68,10 +69,15 @@ sigmaset = np.zeros([filesize,3])
 rhoset_t = np.zeros([filesize,3])
 lset_t = np.zeros([filesize,3])
 sigmaset_t = np.zeros([filesize,3])
+stemplot = np.zeros([filesize,4])
+TableH = np.empty(filesize*3, dtype = 'U256')
+TableT = np.empty(filesize*3, dtype = 'U256')
+ts = " & "
 
-fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
-ax1.grid()
-ax2.grid()
+
+# fig1, (ax1,ax2) = plt.subplots(nrows=2, ncols=1, sharex = True)
+# ax1.grid()
+# ax2.grid()
 
 for nfo, filename in enumerate(os.listdir(files)):
     with open(os.path.join(files, filename), 'r') as f: # open in readonly mode
@@ -114,7 +120,6 @@ for nfo, filename in enumerate(os.listdir(files)):
         rho[i] = np.sum(section) / np.size(section)
     
 
-
     num_pix_T = blurredClip.T < threshold.T
     n_T = np.shape(num_pix_T)[0]
     blox_T = np.int32(np.round(np.linspace(0,2*marginX,4)))
@@ -133,11 +138,11 @@ for nfo, filename in enumerate(os.listdir(files)):
     auflengthT, uncertaintyT, funcTypeT, plotdataT, RMSET, kvalueT, xvalueT = acf(np.copy(clip.T), lags = marginX-1, conversion = conversion, plot = False, plotfunc = fit)
     #-----------------------------------------------------------------
     # Plot - Kan udkommenteres ->
-    # funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
-    # print(' -> Plotdata H...')
-    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
-    # print(' -> Plotdata V...')
-    # plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
+    funcTypes = np.array(["Exponential","Gaussian", "x-Power", "x-Exponential"])
+    print(' -> Plotdata H...')
+    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4], plotshow=False)
+    print(' -> Plotdata V...')
+    plot_acf2(auflength, funcTypes, plotdata, xmax = 2, block = True, sectors = 3, saveas = filename[0:-4] + "_T", plotshow=False)
     # print(' -> Threshold H...')
     # plot_threshold(clip=np.copy(rawclip), blurredClip=np.copy(blurredClip), conversion=conversion, saveas = filename[0:-4], plotshow = False)
     # print(' -> Threshold V...')
@@ -161,6 +166,20 @@ for nfo, filename in enumerate(os.listdir(files)):
         rhoset_t[fileidx] = rho_T
         lset_t[fileidx] = auflengthT
         sigmaset_t[fileidx] = uncertaintyT
+        stemplot[fileidx,0] = np.sum(auflength)/3
+        stemplot[fileidx,1] = np.sum(auflengthT)/3
+        stemplot[fileidx,2] = np.sqrt(np.sum(uncertainty**2)) /3
+        stemplot[fileidx,3] = np.sqrt(np.sum(uncertaintyT**2)) /3
+        pRMSE = -np.log10(RMSE)
+        pRMSET = -np.log10(RMSET)
+
+        TableH[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflength[0]:0.3f}" , " \\pm " , f"{uncertainty[0]:0.3f}" , ts , f"{pRMSE[0,0]:0.2f}" , ts , f"{pRMSE[0,1]:0.2f}" , ts ,  f"{pRMSE[0,2]:0.2f}" , ts ,  f"{pRMSE[0,3]:0.2f}" , ts ,  f"{kvalue[0]:0.3f}" , ts,  f"{xvalue[0]:0.3f}" , ts,  f"{rho[0]:0.3f}" , " \\\\"])
+        TableH[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflength[1]:0.3f}" , " \\pm " , f"{uncertainty[1]:0.3f}" , ts , f"{pRMSE[1,0]:0.2f}" , ts , f"{pRMSE[1,1]:0.2f}" , ts ,  f"{pRMSE[1,2]:0.2f}" , ts ,  f"{pRMSE[1,3]:0.2f}" , ts ,  f"{kvalue[1]:0.3f}" , ts,  f"{xvalue[1]:0.3f}" , ts,  f"{rho[1]:0.3f}" , " \\\\"])
+        TableH[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflength[2]:0.3f}" , " \\pm " , f"{uncertainty[2]:0.3f}" , ts , f"{pRMSE[2,0]:0.2f}" , ts , f"{pRMSE[2,1]:0.2f}" , ts ,  f"{pRMSE[2,2]:0.2f}" , ts ,  f"{pRMSE[2,3]:0.2f}" , ts ,  f"{kvalue[2]:0.3f}" , ts,  f"{xvalue[2]:0.3f}" , ts,  f"{rho[2]:0.3f}" , " \\\\"])
+
+        TableT[3*fileidx] = "".join(["\\Xhline{4\\arrayrulewidth}NL" , ts , f"{auflengthT[0]:0.3f}" , " \\pm " , f"{uncertaintyT[0]:0.3f}" , ts , f"{pRMSET[0,0]:0.2f}" , ts , f"{pRMSET[0,1]:0.2f}" , ts ,  f"{pRMSET[0,2]:0.2f}" , ts ,  f"{pRMSET[0,3]:0.2f}" , ts ,  f"{kvalueT[0]:0.3f}" , ts,  f"{xvalueT[0]:0.3f}" , ts,  f"{rho_T[0]:0.3f}" , " \\\\"])
+        TableT[3*fileidx + 1] = "".join(["\\cline{2-9}NL" , f"{(fileidx + 1):0.0f}" , ts , f"{auflengthT[1]:0.3f}" , " \\pm " , f"{uncertaintyT[1]:0.3f}" , ts , f"{pRMSET[1,0]:0.2f}" , ts , f"{pRMSET[1,1]:0.2f}" , ts ,  f"{pRMSET[1,2]:0.2f}" , ts ,  f"{pRMSET[1,3]:0.2f}" , ts ,  f"{kvalueT[1]:0.3f}" , ts,  f"{xvalueT[1]:0.3f}" , ts,  f"{rho_T[1]:0.3f}" , " \\\\"])
+        TableT[3*fileidx + 2] =  "".join(["\\cline{2-9}NL" , ts , f"{auflengthT[2]:0.3f}" , " \\pm " , f"{uncertaintyT[2]:0.3f}" , ts , f"{pRMSET[2,0]:0.2f}" , ts , f"{pRMSET[2,1]:0.2f}" , ts ,  f"{pRMSET[2,2]:0.2f}" , ts ,  f"{pRMSET[2,3]:0.2f}" , ts ,  f"{kvalueT[2]:0.3f}" , ts,  f"{xvalueT[2]:0.3f}" , ts,  f"{rho_T[2]:0.3f}" , " \\\\"])
 
         if fileidx < 15:
             color = 'k'
@@ -177,13 +196,13 @@ for nfo, filename in enumerate(os.listdir(files)):
         if  fileidx > 29:
             color = 'm'
             Label = 'Meltpond'
-        ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2)/3, \
-            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
-        ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2)/3, \
-            ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+        # ax1.errorbar(fileidx+1, np.sum(auflength)/3, yerr = np.sum(uncertainty**2)**(1/2) /3, \
+        #     ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
+        # ax2.errorbar(fileidx+1, np.sum(auflengthT)/3, yerr =np.sum(uncertaintyT**2)**(1/2) /3, \
+        #     ls = 'none', c=color,ecolor=color, fmt='o', capsize=6, elinewidth=0.7, lw = 0.5, label=Label)
 
     except KeyError:
-        print(f"{filename[0:-4]} is not a member of test..")
+        print(f"    {filename[0:-4]} is not a member of test..")
         pass
 
     #print(RMSE)
@@ -191,32 +210,31 @@ for nfo, filename in enumerate(os.listdir(files)):
     np.savetxt(filenameSave, saveFile, delimiter=' ', newline = "\n", fmt = "%s")
 
 
+
+
     clip[blurredClip > threshold] = 1
     clip = np.uint8(clip*255)
-    skimage.io.imsave(imageSave, clip)
+    # skimage.io.imsave(imageSave, clip)
     toc = time.perf_counter()
     print(f"    Done in {time.strftime('%M:%S', time.gmtime(toc - tic))}")
     
-ax1.set_title('Horizontal')
-ax2.set_title('Vertical')
-fig1.supxlabel('Image No.')
-fig1.supylabel('Autocorrelation Length [mm]')
-fig1.savefig('Image_No_L')
-fig1.legend()
+# ax1.set_title('Horizontal')
+# ax2.set_title('Vertical')
+# fig1.supxlabel('Image No.')
+# fig1.supylabel('Autocorrelation Length [mm]')
+# fig1.savefig('Image_No_L')
+# fig1.legend()
 
 print('Postprocessing...')
-
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
+compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t, stemplot])
 print(f"Shape of compset = {np.shape(compset)}")
 np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
 
-#-----------------------------------------------------------------
-# L compared to depth - Kan udkommenteres ->
-print('Postprocessing...')
 
-compset = np.hstack([rhoset,lset,sigmaset,rhoset_t,lset_t,sigmaset_t])
-print(f"Shape of compset = {np.shape(compset)}")
-np.savetxt("rhoplotdata.txt",compset,delimiter=',',newline='\n')
+with open("Table_H.txt",'w') as f:
+    f.write(tabulate(TableH).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
+with open("Table_T.txt",'w') as f:
+    f.write(tabulate(TableT).replace("    ", "_").replace(" ","").replace("_"," ").replace("NL","\n"))
 
 files_nonT = os.getcwd() + '/variables_nonT'
 variables = [[1.0,1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0], [1.0, 1.0,1.0]]
@@ -352,6 +370,9 @@ for filename in os.listdir(files_nonT):
             sections = sections + 130
         if filename[0:-4] == "20200219_143636":
             sections = sections + 225
+        ax4.scatter(sections, L, c = 'k')
+        ax4.errorbar(sections, L, sigma, ls = 'none', c='k', capsize = 5)
+        ax4.set_title('No. 11, 12 and 13')
 
 
 
