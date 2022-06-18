@@ -183,7 +183,7 @@ def autocolen(acf,confint,scale=1):
         sy2 = confint[n0-1]
         sa = np.sqrt(sy1**2 + sy2**2)
 
-        sigma = np.sqrt( np.exp(-2) * sa/dy**2  + np.sqrt(sy1**2 * y2**2 + sy2**2 * y1**2)/np.power(y1 - y2,2) )
+        sigma = np.sqrt( np.exp(-2) * sa**2 /dy**2  + (sy1**2 * y2**2 + sy2**2 * y1**2)/np.power(y1 - y2,4) )
     else:
         n = 0; sigma = 0
         #print(f"n er {n}")

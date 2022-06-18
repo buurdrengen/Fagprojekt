@@ -37,6 +37,7 @@ def Density_plot(compdata,splitter,texts):
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Horizontal')
         plt.grid(True)
+        plt.ylim([0,1])
         plt.savefig('plotimg/' + tx.replace(' ','_') + '_H.png',dpi=300,format='png')
         #plt.show(block='True')
         plt.close()
@@ -46,6 +47,7 @@ def Density_plot(compdata,splitter,texts):
         plt.ylabel('Autocorrelation Length [mm]')
         plt.title(tx + ' - ' + 'Vertical')
         plt.grid(True)
+        plt.ylim([0,1])
         plt.savefig('plotimg/' + tx.replace(' ','_') + '_V.png',dpi=300,format='png')
         #plt.show(block='True')
         plt.close()
@@ -68,6 +70,8 @@ def Density_plot(compdata,splitter,texts):
         idxback = splitter[i]
 
     ax1.set_title('Horizontal')
+    ax1.set_ylim([0,0.8])
+    ax2.set_ylim([0,0.8])
     ax2.set_title('Vertical')
     fig1.supxlabel('Image No.')
     fig1.supylabel('Autocorrelation Length [mm]')
